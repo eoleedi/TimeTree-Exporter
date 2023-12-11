@@ -9,7 +9,7 @@
 4. A timetree.ics file will be generated in the same directory, then you can import it to your calendar app.
 
 ## How to download timetree data
-1. Go to [https://timetreeapp.com/login](https://timetreeapp.com/login)
+1. Go to [https://timetreeapp.com/signin](https://timetreeapp.com/signin)
 2. Open the developer tools before logging in
 3. Go to the network tab
 4. Turn on preserve log
