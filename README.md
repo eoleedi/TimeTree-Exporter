@@ -41,8 +41,8 @@
 - [x] **Location**
 - [ ] **Location Latitude**
 - [ ] **Location Longitude**
-- [ ] **URL**
-- [ ] **Note**
+- [x] **URL**
+- [x] **Note**
 - [ ] **Lunar**
 - [ ] **Attendees**
 - [ ] **Recurrences**
