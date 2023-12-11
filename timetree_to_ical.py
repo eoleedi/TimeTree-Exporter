@@ -1,3 +1,8 @@
+"""
+This module converts Timetree events to iCal format.
+It is intended to be used with the Timetree API response files.
+https://timetreeapp.com/api/v1/calendar/{calendar_id}/events/sync
+"""
 import json
 import os
 from datetime import datetime, timedelta, timezone
@@ -58,7 +63,7 @@ if __name__ == "__main__":
             continue
         print(f"Parsing {response}")
         events_data = fetch_events(f"responses/{response}")
-        ical_data = convert_to_ical(events_data, cal)
+        ICAL_DATA = convert_to_ical(events_data, cal)
 
     with open("timetree.ics", "wb") as f:
-        f.write(ical_data)
+        f.write(ICAL_DATA)
