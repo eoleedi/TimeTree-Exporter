@@ -1,7 +1,9 @@
 # TimeTree Exporter
-> This tool is currently in development and is not ready for use.
-> However, basic functionality is working such as event title, time, alert.
-> 
+A Tool for Exporting TimeTree Calendar to iCal
+
+> ⚠️ This tool is currently under development. \
+> However, basic functionality should be working such as event title, time, alert, location, url, and note.
+
 # Usage
 1. Download the timetree data manually and put it in the responses folder(see below)
 2. Install the requirements `pip3 install -r requirements.txt`
@@ -11,18 +13,34 @@
 ## How to download timetree data
 1. Go to [https://timetreeapp.com/signin](https://timetreeapp.com/signin)
 2. Open the developer tools before logging in
+      > Can be opened by pressing F12
 3. Go to the network tab
+      > Remember to Press Ctrl + R to start recording
 4. Turn on preserve log
-5. Log in
-6. Type in "sync" in the filter box
-7. You will see couple of requests with the name "sync"
-   - There seems to be a maximum of 300 events in single requests.
-8. Right click on the request and select "Copy Response"
-9.  Paste it into a json file under the response folder under this project (etc. sync.json)
-10. Do the same thing for all the requests with steps 7~9
+5. Type in "sync" in the filter box
+6. Log in
+7. Click on the calendar you want to export
+8. You will see couple of requests with the name "sync"
+      > There seems to be a maximum of 300 events in single requests. \
+      > If you have more than 300 events, you will see multiple requests with the name "sync"
+9.  Right click on the request and select "Copy Response"
+10. Paste it into a json file under the response folder under this project (etc. sync.json)
+      > The file name should end with .json
+11. Do the same thing for all the requests with steps 7~9
 
+![Prepare for signin: Step 1~5](/assets/images/prepare-for-signin.png)
+*Prepare for signin: Step 1~5*
+![Copy response: Step 8~9](/assets/images/copy-response.png)
+*Copy response: Step 8~9*
 
-# ROADMAP of the properties mapping to iCal
+# Requirements
+icalendar==5.0.11
+
+# Limitations
+Currently, TimeTree data can only be downloaded manually through a web browser. \
+And the TimeTree API will be terminated on Dec 22, 2023, so not sure if this technique is going to work after that.
+
+# Roadmap of the properties mapping to iCal
 - [ ] **ID**
 - [ ] **Primary ID**
 - [ ] **Calendar ID**
