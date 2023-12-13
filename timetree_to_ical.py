@@ -10,6 +10,26 @@ from icalendar import Calendar, Event
 from dateutil import tz
 
 
+def add_event_datetime(event, event_raw, key):
+    """Add event start or end time to iCal event"""
+    if key not in ["start", "end"]:
+        raise ValueError("Key must be 'start' or 'end'")
+
+    event_datetime = datetime.fromtimestamp(
+        event_raw[f"{key}_at"] / 1000, tz.gettz(event_raw[f"{key}_timezone"])
+    )
+    if event_raw["all_day"]:
+        event.add(f"dt{key}", event_datetime.date())
+    else:
+        event.add(
+            f"dt{key}",
+            event_datetime,
+            {"tzid": event_raw[f"{key}_timezone"]}
+            if event_raw[f"{key}_timezone"] != "UTC"
+            else {},
+        )
+
+
 def convert_to_ical(events_raw: json, calendar: Calendar = None):
     """Convert Timetree events to iCal format"""
     if calendar is None:
@@ -25,18 +45,8 @@ def convert_to_ical(events_raw: json, calendar: Calendar = None):
 
         # Add start and end times with timezone handling
         try:
-            event.add(
-                "dtstart",
-                datetime.fromtimestamp(
-                    event_raw["start_at"] / 1000, tz.gettz(event_raw["start_timezone"])
-                ),
-            )
-            event.add(
-                "dtend",
-                datetime.fromtimestamp(
-                    event_raw["end_at"] / 1000, tz.gettz(event_raw["end_timezone"])
-                ),
-            )
+            for key in ["start", "end"]:
+                add_event_datetime(event, event_raw, key)
         except KeyError as error:
             print(f"Missing key in event data: {error}")
             continue
