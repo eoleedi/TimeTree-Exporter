@@ -9,6 +9,12 @@ from datetime import datetime, timedelta, timezone
 from icalendar import Calendar, Event
 from dateutil import tz
 
+params_timetree2ical = {
+    "note": "description",
+    "location": "location",
+    "url": "url",
+}
+
 
 def add_event_datetime(event, event_raw, key):
     """Add event start or end time to iCal event"""
@@ -28,6 +34,13 @@ def add_event_datetime(event, event_raw, key):
             if event_raw[f"{key}_timezone"] != "UTC"
             else {},
         )
+
+
+def add_event_detail(event, event_raw, key, default=None):
+    """Add event detail to iCal event"""
+    value = event_raw.get(key, default)
+    if value is not None and value != "":
+        event.add(params_timetree2ical[key], value)
 
 
 def convert_to_ical(events_raw: json, calendar: Calendar = None):
@@ -51,17 +64,9 @@ def convert_to_ical(events_raw: json, calendar: Calendar = None):
             print(f"Missing key in event data: {error}")
             continue
 
-        # Add location if available
-        if event_raw.get("location") != "":
-            event.add("location", event_raw.get("location"))
-
-        # Add description if available
-        if event_raw.get("note") is not None:
-            event.add("description", event_raw.get("note"))
-
-        # Add URL if available
-        if event_raw.get("url") is not None:
-            event.add("url", event_raw.get("url"))
+        # Add details if available
+        for key in ["location", "note", "url"]:
+            add_event_detail(event, event_raw, key)
 
         # Add alarms if available
         for alert_minutes in event_raw.get("alerts", []):
