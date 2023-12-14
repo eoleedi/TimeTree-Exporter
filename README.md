@@ -75,5 +75,5 @@ And the TimeTree API will be terminated on Dec 22, 2023, so not sure if this tec
 - [ ] **Files**
 - [ ] **Deactivated At**
 - [ ] **Pinned At**
-- [ ] **Updated At**
-- [ ] **Created At**
+- [x] **Updated At**
+- [x] **Created At**

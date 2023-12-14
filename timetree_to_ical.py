@@ -55,6 +55,14 @@ def convert_to_ical(events_raw: json, calendar: Calendar = None):
         event.add("uid", event_raw["uuid"])
         event.add("summary", event_raw["title"])
         event.add("dtstamp", datetime.now(timezone.utc))
+        event.add(
+            "created",
+            datetime.fromtimestamp(event_raw["created_at"] / 1000, tz.gettz("UTC")),
+        )
+        event.add(
+            "last-modify",
+            datetime.fromtimestamp(event_raw["updated_at"] / 1000, tz.gettz("UTC")),
+        )
 
         # Add start and end times with timezone handling
         try:
