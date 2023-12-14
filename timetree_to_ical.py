@@ -76,6 +76,10 @@ def convert_to_ical(events_raw: json, calendar: Calendar = None):
         for key in ["location", "note", "url"]:
             add_event_detail(event, event_raw, key)
 
+        # Add lan, lon if available
+        if event_raw.get("location_lat") and event_raw.get("location_lon"):
+            event.add("geo", (event_raw["location_lat"], event_raw["location_lon"]))
+
         # Add alarms if available
         for alert_minutes in event_raw.get("alerts", []):
             alarm = Event()

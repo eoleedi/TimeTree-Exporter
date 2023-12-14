@@ -57,8 +57,8 @@ And the TimeTree API will be terminated on Dec 22, 2023, so not sure if this tec
 - [x] **End Timezone**
 - [ ] **Label ID**
 - [x] **Location**
-- [ ] **Location Latitude**
-- [ ] **Location Longitude**
+- [x] **Location Latitude**
+- [x] **Location Longitude**
 - [x] **URL**
 - [x] **Note**
 - [ ] **Lunar**
