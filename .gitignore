@@ -1,3 +1,4 @@
 responses/sync*
 timetree.ics
 .venv
+.DS_Store
