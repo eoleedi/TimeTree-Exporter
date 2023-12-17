@@ -6,7 +6,8 @@ https://timetreeapp.com/api/v1/calendar/{calendar_id}/events/sync
 import json
 import os
 from datetime import datetime, timedelta, timezone
-from icalendar import Calendar, Event
+from icalendar import Calendar, Event, vRecur, vDDDTypes
+from icalendar.parser import Contentline
 from dateutil import tz
 
 params_timetree2ical = {
@@ -14,6 +15,19 @@ params_timetree2ical = {
     "location": "location",
     "url": "url",
 }
+
+
+def add_recurrences(event, event_raw):
+    """Add recurrences to iCal event"""
+    for recurrence in event_raw["recurrences"]:
+        contentline = Contentline(recurrence)
+        name, _parameters, value = contentline.parts()
+        if name.lower() == "rrule":
+            event.add(name, vRecur.from_ical(value))
+        elif name.lower() == "exdate" or name.lower() == "rdate":
+            event.add(name, vDDDTypes.from_ical(value))
+        else:
+            raise ValueError(f"Unknown recurrence type: {name}")
 
 
 def add_event_datetime(event, event_raw, key):
@@ -79,6 +93,10 @@ def convert_to_ical(events_raw: json, calendar: Calendar = None):
         # Add lan, lon if available
         if event_raw.get("location_lat") and event_raw.get("location_lon"):
             event.add("geo", (event_raw["location_lat"], event_raw["location_lon"]))
+
+        # Add recurrences if available
+        if len(event_raw.get("recurrences")):  # Check if it's empty list
+            add_recurrences(event, event_raw)
 
         # Add alarms if available
         for alert_minutes in event_raw.get("alerts", []):

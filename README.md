@@ -63,7 +63,7 @@ And the TimeTree API will be terminated on Dec 22, 2023, so not sure if this tec
 - [x] **Note**
 - [ ] **Lunar**
 - [ ] **Attendees**
-- [ ] **Recurrences**
+- [x] **Recurrences**
 - [ ] **Recurring UUID**
 - [x] **Alerts**
 - [ ] **Parent ID**
