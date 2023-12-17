@@ -6,7 +6,7 @@ https://timetreeapp.com/api/v1/calendar/{calendar_id}/events/sync
 import json
 import os
 from datetime import datetime, timedelta, timezone
-from icalendar import Calendar, Event, vRecur, vDDDTypes
+from icalendar import Calendar, Event, vRecur, vDDDTypes, vDate, vDatetime, vGeo
 from icalendar.parser import Contentline
 from dateutil import tz
 
@@ -39,15 +39,9 @@ def add_event_datetime(event, event_raw, key):
         event_raw[f"{key}_at"] / 1000, tz.gettz(event_raw[f"{key}_timezone"])
     )
     if event_raw["all_day"]:
-        event.add(f"dt{key}", event_datetime.date())
+        event.add(f"dt{key}", vDate(event_datetime))
     else:
-        event.add(
-            f"dt{key}",
-            event_datetime,
-            {"tzid": event_raw[f"{key}_timezone"]}
-            if event_raw[f"{key}_timezone"] != "UTC"
-            else {},
-        )
+        event.add(f"dt{key}", vDatetime(event_datetime))
 
 
 def add_event_detail(event, event_raw, key, default=None):
@@ -71,11 +65,15 @@ def convert_to_ical(events_raw: json, calendar: Calendar = None):
         event.add("dtstamp", datetime.now(timezone.utc))
         event.add(
             "created",
-            datetime.fromtimestamp(event_raw["created_at"] / 1000, tz.gettz("UTC")),
+            vDatetime(
+                datetime.fromtimestamp(event_raw["created_at"] / 1000, tz.gettz("UTC"))
+            ),
         )
         event.add(
             "last-modify",
-            datetime.fromtimestamp(event_raw["updated_at"] / 1000, tz.gettz("UTC")),
+            vDatetime(
+                datetime.fromtimestamp(event_raw["updated_at"] / 1000, tz.gettz("UTC"))
+            ),
         )
 
         # Add start and end times with timezone handling
@@ -92,7 +90,9 @@ def convert_to_ical(events_raw: json, calendar: Calendar = None):
 
         # Add lan, lon if available
         if event_raw.get("location_lat") and event_raw.get("location_lon"):
-            event.add("geo", (event_raw["location_lat"], event_raw["location_lon"]))
+            event.add(
+                "geo", vGeo((event_raw["location_lat"], event_raw["location_lon"]))
+            )
 
         # Add recurrences if available
         if len(event_raw.get("recurrences")):  # Check if it's empty list
