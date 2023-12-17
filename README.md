@@ -50,7 +50,7 @@ And the TimeTree API will be terminated on Dec 22, 2023, so not sure if this tec
 - [ ] **Author ID**
 - [ ] **Author Type**
 - [x] **Title**
-- [ ] **All Day**
+- [x] **All Day**
 - [x] **Start At**
 - [x] **Start Timezone**
 - [x] **End At**
