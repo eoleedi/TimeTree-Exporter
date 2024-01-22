@@ -6,7 +6,15 @@ https://timetreeapp.com/api/v1/calendar/{calendar_id}/events/sync
 import json
 import os
 from datetime import datetime, timedelta, timezone
-from icalendar import Calendar, Event, vRecur, vDDDTypes, vDate, vDatetime, vGeo
+from icalendar import (
+    Calendar,
+    Event,
+    vRecur,
+    vDate,
+    vDatetime,
+    vGeo,
+)
+from icalendar.prop import vDDDLists
 from icalendar.parser import Contentline
 from dateutil import tz
 
@@ -21,11 +29,11 @@ def add_recurrences(event, event_raw):
     """Add recurrences to iCal event"""
     for recurrence in event_raw["recurrences"]:
         contentline = Contentline(recurrence)
-        name, _parameters, value = contentline.parts()
+        name, parameters, value = contentline.parts()
         if name.lower() == "rrule":
-            event.add(name, vRecur.from_ical(value))
+            event.add(name, vRecur.from_ical(value), parameters)
         elif name.lower() == "exdate" or name.lower() == "rdate":
-            event.add(name, vDDDTypes.from_ical(value))
+            event.add(name, vDDDLists.from_ical(value), parameters)
         else:
             raise ValueError(f"Unknown recurrence type: {name}")
 
