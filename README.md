@@ -26,7 +26,7 @@ A Tool for Exporting TimeTree Calendar to iCal
 9.  Right click on the request and select "Copy Response"
 10. Paste it into a json file under the response folder under this project (etc. sync.json)
       > The file name should end with .json
-11. Do the same thing for all the requests with steps 7~9
+11. Do the same thing for all the requests with steps 7~10
 
 ![Prepare for signin: Step 1~5](/assets/images/prepare-for-signin.png)
 *Prepare for signin: Step 1~5*
