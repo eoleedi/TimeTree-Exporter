@@ -1,15 +1,13 @@
 # TimeTree Exporter
 A Tool for Exporting TimeTree Calendar to iCal
 
-> ⚠️ This tool is currently under development. \
-> However, basic functionality should be working such as event title, time, alert, location, url, and note.
-
 # Usage
 1. Download the timetree data manually and put it in the responses folder(see below)
 2. Install the requirements `pip3 install -r requirements.txt`
 3. Run `python3 timetree_to_ical.py`
 4. A timetree.ics file will be generated in the same directory, then you can import it to your calendar app.
-
+## Recommendation
+You are recommended to import the ics file into a separate calendar (take google calendar as an example) as if anything goes wrong, you can just delete the calendar and reimport it.
 ## How to download timetree data
 1. Go to [https://timetreeapp.com/signin](https://timetreeapp.com/signin)
 2. Open the developer tools before logging in
