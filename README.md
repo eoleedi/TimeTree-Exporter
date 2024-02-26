@@ -1,5 +1,6 @@
 # TimeTree Exporter
-A Tool for Exporting TimeTree Calendar to iCal
+A Tool for Exporting TimeTree Calendar and Convert to iCal format(.ics) 
+(The .ics file can then be imported into other calendar apps such as Google Calendar, Apple Calendar, Outlook Calendar, etc.)
 
 # Usage
 1. Download the timetree data manually and put it in the responses folder(see below)
@@ -35,8 +36,7 @@ You are recommended to import the ics file into a separate calendar (take google
 icalendar==5.0.11
 
 # Limitations
-Currently, TimeTree data can only be downloaded manually through a web browser. \
-And the TimeTree API will be terminated on Dec 22, 2023, so not sure if this technique is going to work after that.
+Currently, TimeTree data can only be downloaded manually through a web browser.
 
 # Roadmap of the properties mapping to iCal
 - [ ] **ID**
