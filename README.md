@@ -1,5 +1,5 @@
 # TimeTree Exporter
-A Tool for Exporting TimeTree Calendar and Convert to iCal format(.ics) 
+A Tool for Exporting TimeTree Calendar and Convert to iCal format(.ics) \
 (The .ics file can then be imported into other calendar apps such as Google Calendar, Apple Calendar, Outlook Calendar, etc.)
 
 # Usage
