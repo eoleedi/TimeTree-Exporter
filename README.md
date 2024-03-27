@@ -33,7 +33,7 @@ You are recommended to import the ics file into a separate calendar (take google
 *Copy response: Step 8~9*
 
 # Requirements
-icalendar==5.0.11
+icalendar==5.0.12
 
 # Limitations
 Currently, TimeTree data can only be downloaded manually through a web browser.
