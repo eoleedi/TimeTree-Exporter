@@ -156,7 +156,7 @@ if __name__ == "__main__":
 
     # Handling multiple files or folders
     filenames = []
-    for path in args.path:
+    for path in args.input:
         if os.path.isdir(path):
             filenames += [os.path.join(path, file) for file in os.listdir(path)]
         elif os.path.isfile(path):
@@ -175,5 +175,7 @@ if __name__ == "__main__":
         events_data = fetch_events(filename)
         if events_data:
             ICAL_DATA = convert_to_ical(events_data, cal)
-            with open(args.output, "wb") as f: # Path Traversal Vulnerability if on a server
+            with open(
+                args.output, "wb"
+            ) as f:  # Path Traversal Vulnerability if on a server
                 f.write(ICAL_DATA)
