@@ -31,9 +31,9 @@ You are recommended to import the ics file into a separate calendar (take google
       > The file name should end with .json
 11. Do the same thing for all the requests with steps 7~10
 
-![Prepare for signin: Step 1~5](/assets/images/prepare-for-signin.png)
+![Prepare for signin: Step 1~5](https://github.com/eoleedi/TimeTree-exporter/raw/main/assets/images/prepare-for-signin.png)
 *Prepare for signin: Step 1~5*
-![Copy response: Step 8~9](/assets/images/copy-response.png)
+![Copy response: Step 8~9](https://github.com/eoleedi/TimeTree-exporter/raw/main/assets/images/copy-response.png)
 *Copy response: Step 8~9*
 
 # Requirements
