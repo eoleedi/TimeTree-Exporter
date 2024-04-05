@@ -173,7 +173,5 @@ if __name__ == "__main__":
         events_data = fetch_events(filename)
         if events_data:
             ICAL_DATA = convert_to_ical(events_data, cal)
-            with open(
-                args.output, "wb"
-            ) as f:  # Path Traversal Vulnerability if on a server
-                f.write(ICAL_DATA)
+    with open(args.output, "wb") as f:  # Path Traversal Vulnerability if on a server
+        f.write(ICAL_DATA)
