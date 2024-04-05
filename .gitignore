@@ -2,3 +2,6 @@ responses/sync*
 timetree.ics
 .venv
 .DS_Store
+*.pyc
+dist
+*.egg-info

@@ -1,0 +1,36 @@
+[build-system]
+requires = ["setuptools", "setuptools-scm"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["timetree_exporter"]
+
+[project]
+name = "timetree-exporter"
+dynamic = ["version"]
+authors = [
+  { name="Fong-Chun Tsai", email="eoleedimin@gmail.com" },
+]
+description = "A Tool for Exporting TimeTree Calendar and Convert to iCal format(.ics)"
+keywords = ["timetree", "exporter", "icalendar", "ics"]
+readme = "README.md"
+requires-python = ">=3.8"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+dependencies = [
+    "icalendar",
+]
+
+[project.urls]
+Homepage = "https://github.com/eoleedi/TimeTree-Exporter"
+Repository = "https://github.com/eoleedi/TimeTree-Exporter"
+Issues = "https://github.com/eoleedi/TimeTree-Exporter/issues"
+Changelog = "https://github.com/eoleedi/TimeTree-Exporter/CHANGELOG.md"
+
+[project.scripts]
+timetree-exporter = "timetree_exporter.__main__:main"
+
+[tool.setuptools_scm]
