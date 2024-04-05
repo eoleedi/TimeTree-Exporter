@@ -61,10 +61,8 @@ def add_event_detail(event, event_raw, key, default=None):
         event.add(params_timetree2ical[key], value)
 
 
-def convert_to_ical(events_raw: json, calendar: Calendar = None):
+def convert_to_ical(events_raw: json, calendar: Calendar = Calendar()):
     """Convert Timetree events to iCal format"""
-    if calendar is None:
-        calendar = Calendar()
 
     for event_raw in events_raw:
         event = Event()
