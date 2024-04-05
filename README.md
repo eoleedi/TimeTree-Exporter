@@ -3,12 +3,14 @@ A Tool for Exporting TimeTree Calendar and Convert to iCal format(.ics) \
 (The .ics file can then be imported into other calendar apps such as Google Calendar, Apple Calendar, Outlook Calendar, etc.)
 
 # Usage
-1. Download the timetree data manually and put it in the responses folder(see below)
-2. Install the requirements `pip3 install -r requirements.txt`
-3. Run `python3 timetree_to_ical.py`
-4. A timetree.ics file will be generated in the same directory, then you can import it to your calendar app.
+1. Clone the repository `git clone`
+2. Change the directory to the project folder `cd timetree_exporter`
+3. Download the timetree data manually and put it in the responses folder(see below)
+4. Install the requirements `pip3 install -r requirements.txt`
+5. Run `python3 -m timetree_exporter responses`
+6. A timetree.ics file will be generated in the same directory, then you can import it to your calendar app.
 ## Advanced Usage
-You can also specify the output file name by running `python3 timetree_to_ical.py -o <output_file_name>.ics`, or specify the input file / folder path name by running `python3 timetree_to_ical.py -i <input_file_name>.json`
+You can also specify the output file name by running `python3 -m timetree_exporter -o <output_file_name>.ics`
 ## Recommendation
 You are recommended to import the ics file into a separate calendar (take google calendar as an example) as if anything goes wrong, you can just delete the calendar and reimport it.
 ## How to download timetree data
