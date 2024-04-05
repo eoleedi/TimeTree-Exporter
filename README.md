@@ -4,7 +4,7 @@ A Tool for Exporting TimeTree Calendar and Convert to iCal format(.ics) \
 
 # Usage
 1. Clone the repository `git clone`
-2. Change the directory to the project folder `cd timetree_exporter`
+2. Change the directory to the project folder `cd TimeTree-exporter`
 3. Download the timetree data manually and put it in the responses folder(see below)
 4. Install the requirements `pip3 install -r requirements.txt`
 5. Run `python3 -m timetree_exporter responses`
