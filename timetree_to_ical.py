@@ -3,6 +3,8 @@ This module converts Timetree events to iCal format.
 It is intended to be used with the Timetree API response files.
 https://timetreeapp.com/api/v1/calendar/{calendar_id}/events/sync
 """
+
+import argparse
 import json
 import os
 from datetime import datetime, timedelta, timezone
@@ -131,15 +133,49 @@ def fetch_events(file_path):
 
 
 if __name__ == "__main__":
-    responses = os.listdir("responses")
+    # Parse arguments
+    parser = argparse.ArgumentParser(
+        description="Convert Timetree events to iCal format"
+    )
+    parser.add_argument(
+        "-o",
+        "--output",
+        type=str,
+        help="Path to the output iCal file",
+        default="timetree.ics",
+    )
+    parser.add_argument(
+        "-i",
+        "--input",
+        type=str,
+        help="Path to the Timetree response file(s)/folder",
+        nargs="+",
+        default=["responses"],
+    )
+    args = parser.parse_args()
+
+    # Handling multiple files or folders
+    filenames = []
+    for path in args.input:
+        if os.path.isdir(path):
+            filenames += [os.path.join(path, file) for file in os.listdir(path)]
+        elif os.path.isfile(path):
+            filenames.append(path)
+        else:
+            print(f"Invalid path: {path}")
+
+    # Convert to iCal format
     cal = Calendar()
-    for response in responses:
-        if not response.endswith(".json"):
+    for filename in filenames:
+        # Skip non-JSON files
+        if not filename.endswith(".json"):
+            print(f"Skipping {filename} (Invalid file type, should be .json)")
             continue
-        print(f"Parsing {response}")
-        events_data = fetch_events(f"responses/{response}")
+        print(f"Parsing {filename}")
+        events_data = fetch_events(filename)
         if events_data:
             ICAL_DATA = convert_to_ical(events_data, cal)
-
-    with open("timetree.ics", "wb") as f:
-        f.write(ICAL_DATA)
+            with open(
+                args.output, "wb"
+            ) as f:  # Path Traversal Vulnerability if on a server
+                f.write(ICAL_DATA)
