@@ -3,16 +3,21 @@ A Tool for Exporting TimeTree Calendar and Convert to iCal format(.ics) \
 (The .ics file can then be imported into other calendar apps such as Google Calendar, Apple Calendar, Outlook Calendar, etc.)
 
 # Usage
-1. Clone the repository `git clone`
+
+First, download the timetree data manually and put it in the responses folder(see below)
+
+## Method 1: Pip
+1. Install the package `pip3 install timetree-exporter`
+2. Run `timetree-exporter <path-to-responses-folder>`
+3. A timetree.ics file will be generated in the same directory, then you can import it to your calendar app.
+
+## Method 2: Cloning the repository
+1. Clone the repository `git clone https://github.com/eoleedi/TimeTree-exporter.git`
 2. Change the directory to the project folder `cd TimeTree-exporter`
-3. Download the timetree data manually and put it in the responses folder(see below)
-4. Install the requirements `pip3 install -r requirements.txt`
-5. Run `python3 -m timetree_exporter responses`
-6. A timetree.ics file will be generated in the same directory, then you can import it to your calendar app.
-## Advanced Usage
-You can also specify the output file name by running `python3 -m timetree_exporter -o <output_file_name>.ics`
-## Recommendation
-You are recommended to import the ics file into a separate calendar (take google calendar as an example) as if anything goes wrong, you can just delete the calendar and reimport it.
+3. Install the requirements `pip3 install -r requirements.txt`
+4. Run `python3 -m timetree_exporter responses`
+5. A timetree.ics file will be generated in the same directory, then you can import it to your calendar app.
+   
 ## How to download timetree data
 1. Go to [https://timetreeapp.com/signin](https://timetreeapp.com/signin)
 2. Open the developer tools before logging in
@@ -35,6 +40,12 @@ You are recommended to import the ics file into a separate calendar (take google
 *Prepare for signin: Step 1~5*
 ![Copy response: Step 8~9](https://github.com/eoleedi/TimeTree-exporter/raw/main/assets/images/copy-response.png)
 *Copy response: Step 8~9*
+
+# Advanced Usage
+You can also specify the output file name by running `python3 -m timetree_exporter -o <output_file_name>.ics` or `timetree-exporter -o <output_file_name>.ics`
+
+# Recommendation
+You are recommended to import the ics file into a separate calendar (take google calendar as an example) as if anything goes wrong, you can just delete the calendar and reimport it.
 
 # Requirements
 icalendar==5.0.12
