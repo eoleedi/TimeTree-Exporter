@@ -24,6 +24,7 @@ class TimeTreeEvent:
         location_lat: str,
         location_lon: str,
         location: str,
+        parent_id: str,
     ):
         # pylint: disable=too-many-arguments
         # pylint: disable=too-many-locals
@@ -43,6 +44,7 @@ class TimeTreeEvent:
         self.all_day = all_day
         self.alerts = alerts
         self.recurrences = recurrences
+        self.parent_id = parent_id
 
     @classmethod
     def from_dict(cls, event_data: dict):
@@ -64,6 +66,7 @@ class TimeTreeEvent:
             all_day=event_data.get("all_day"),
             alerts=event_data.get("alerts"),
             recurrences=event_data.get("recurrences"),
+            parent_id=event_data.get("parent_id"),
         )
 
     def __str__(self):

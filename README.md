@@ -79,7 +79,7 @@ Currently, TimeTree data can only be downloaded manually through a web browser.
 - [x] **Recurrences**
 - [ ] **Recurring UUID**
 - [x] **Alerts**
-- [ ] **Parent ID**
+- [x] **Parent ID**
 - [ ] **Link Object ID**
 - [ ] **Link Object ID String**
 - [ ] **Row Order**

@@ -78,6 +78,11 @@ class ICalEventFormatter:
         """Return the URL of the event."""
         return self.time_tree_event.url if self.time_tree_event.url != "" else None
 
+    @property
+    def related_to(self):
+        """Return the parent ID of the event."""
+        return self.time_tree_event.parent_id
+
     def get_datetime(self, is_start_time):
         """Return the start or end time of the event."""
         if is_start_time:
@@ -155,6 +160,8 @@ class ICalEventFormatter:
             event.add("url", self.url)
         if self.description:
             event.add("description", self.description)
+        if self.related_to:
+            event.add("related-to", self.related_to)
 
         for alert in self.alerts:
             event.add_component(alert)
