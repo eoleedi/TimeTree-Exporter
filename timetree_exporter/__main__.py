@@ -50,6 +50,8 @@ for filename in filenames:
         time_tree_event = TimeTreeEvent.from_dict(event)
         formatter = ICalEventFormatter(time_tree_event)
         iCalEvent = formatter.to_ical()
+        if iCalEvent is None:
+            continue
         cal.add_component(iCalEvent)
 
 # Write calendar to file

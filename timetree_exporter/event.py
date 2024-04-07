@@ -1,5 +1,7 @@
 """This module provides the TimeTreeEvent class for representing TimeTree events."""
 
+import dataclasses
+
 
 class TimeTreeEvent:
     """TimeTree event class"""
@@ -25,6 +27,7 @@ class TimeTreeEvent:
         location_lon: str,
         location: str,
         parent_id: str,
+        event_type: int,
     ):
         # pylint: disable=too-many-arguments
         # pylint: disable=too-many-locals
@@ -45,6 +48,7 @@ class TimeTreeEvent:
         self.alerts = alerts
         self.recurrences = recurrences
         self.parent_id = parent_id
+        self.event_type = event_type
 
     @classmethod
     def from_dict(cls, event_data: dict):
@@ -67,7 +71,16 @@ class TimeTreeEvent:
             alerts=event_data.get("alerts"),
             recurrences=event_data.get("recurrences"),
             parent_id=event_data.get("parent_id"),
+            event_type=event_data.get("type"),
         )
 
     def __str__(self):
         return self.title
+
+
+@dataclasses.dataclass
+class TimeTreeEventType(enumerate):
+    """TimeTree event type enumeration"""
+
+    NORMAL = 0
+    BIRTHDAY = 1
