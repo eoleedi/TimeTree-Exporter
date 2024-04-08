@@ -48,6 +48,9 @@ for filename in filenames:
     # Add events to calendar
     for event in events:
         time_tree_event = TimeTreeEvent.from_dict(event)
+        # Skip events with invalid start/end times
+        if time_tree_event.start_at < 0 or time_tree_event.end_at < 0:
+            continue
         formatter = ICalEventFormatter(time_tree_event)
         iCalEvent = formatter.to_ical()
         if iCalEvent is None:
