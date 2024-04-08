@@ -8,7 +8,7 @@ from icalendar import Event, vRecur, vDate, vDatetime, vGeo
 from icalendar.prop import vDDDLists
 from icalendar.parser import Contentline
 from dateutil import tz
-from timetree_exporter.event import TimeTreeEvent
+from timetree_exporter.event import TimeTreeEvent, TimeTreeEventType
 
 
 class ICalEventFormatter:
@@ -142,6 +142,11 @@ class ICalEventFormatter:
 
     def to_ical(self) -> Event:
         """Return the iCal event."""
+        if (
+            self.time_tree_event.event_type == TimeTreeEventType.BIRTHDAY
+        ):  # Skip if event is a birthday
+            return None
+
         event = Event()
 
         event.add("uid", self.uid)
