@@ -51,10 +51,10 @@ def main():
         for event in events:
             time_tree_event = TimeTreeEvent.from_dict(event)
             formatter = ICalEventFormatter(time_tree_event)
-            iCalEvent = formatter.to_ical()
-            if iCalEvent is None:
+            ical_event = formatter.to_ical()
+            if ical_event is None:
                 continue
-            cal.add_component(iCalEvent)
+            cal.add_component(ical_event)
 
     # Write calendar to file
     with open(args.output, "wb") as f:  # Path Traversal Vulnerability if on a server
