@@ -28,7 +28,7 @@ dependencies = [
 Homepage = "https://github.com/eoleedi/TimeTree-Exporter"
 Repository = "https://github.com/eoleedi/TimeTree-Exporter"
 Issues = "https://github.com/eoleedi/TimeTree-Exporter/issues"
-Changelog = "https://github.com/eoleedi/TimeTree-Exporter/CHANGELOG.md"
+Changelog = "https://github.com/eoleedi/TimeTree-exporter/blob/main/CHANGELOG.md"
 
 [project.scripts]
 timetree-exporter = "timetree_exporter.__main__:main"
