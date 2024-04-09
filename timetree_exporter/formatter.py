@@ -152,8 +152,7 @@ class ICalEventFormatter:
 
         event.add("uid", self.uid)
         event.add("summary", self.summary)
-        # event.add("dtstamp", datetime.now(tz.tzutc()))
-        event.add("dtstamp", datetime.fromtimestamp(0, tz.tzutc()))
+        event.add("dtstamp", datetime.now(tz.tzutc()))
         event.add("created", self.created)
         event.add("last-modify", self.last_modify)
         event.add("dtstart", self.dtstart)
