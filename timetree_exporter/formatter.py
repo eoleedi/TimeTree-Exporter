@@ -9,6 +9,7 @@ from icalendar.prop import vDDDLists
 from icalendar.parser import Contentline
 from dateutil import tz
 from timetree_exporter.event import TimeTreeEvent, TimeTreeEventType
+from timetree_exporter.utils import convert_timestamp_to_datetime
 
 
 class ICalEventFormatter:
@@ -33,8 +34,8 @@ class ICalEventFormatter:
     def created(self):
         """Return the creation time of the event."""
         return vDatetime(
-            datetime.fromtimestamp(
-                self.time_tree_event.created_at / 1000, tz.gettz("UTC")
+            convert_timestamp_to_datetime(
+                self.time_tree_event.created_at / 1000, tz.tzutc()
             )
         )
 
@@ -42,8 +43,8 @@ class ICalEventFormatter:
     def last_modify(self):
         """Return the last modification time of the event."""
         return vDatetime(
-            datetime.fromtimestamp(
-                self.time_tree_event.updated_at / 1000, tz.gettz("UTC")
+            convert_timestamp_to_datetime(
+                self.time_tree_event.updated_at / 1000, tz.tzutc()
             )
         )
 
@@ -94,13 +95,13 @@ class ICalEventFormatter:
 
         if self.time_tree_event.all_day:
             return vDate(
-                datetime.fromtimestamp(
+                convert_timestamp_to_datetime(
                     time / 1000,
                     tz.gettz(timezone),
                 )
             )
         return vDatetime(
-            datetime.fromtimestamp(
+            convert_timestamp_to_datetime(
                 time / 1000,
                 tz.gettz(timezone),
             )
@@ -151,7 +152,8 @@ class ICalEventFormatter:
 
         event.add("uid", self.uid)
         event.add("summary", self.summary)
-        event.add("dtstamp", datetime.now(tz.tzutc()))
+        # event.add("dtstamp", datetime.now(tz.tzutc()))
+        event.add("dtstamp", datetime.fromtimestamp(0, tz.tzutc()))
         event.add("created", self.created)
         event.add("last-modify", self.last_modify)
         event.add("dtstart", self.dtstart)
