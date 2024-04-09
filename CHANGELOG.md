@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.2.2](https://github.com/eoleedi/TimeTree-exporter/compare/v0.2.1...v0.2.2) (2024-04-09)
+
+
+### Bug Fixes
+
+* define main function in __main__.py to match the script ([#28](https://github.com/eoleedi/TimeTree-exporter/issues/28)) ([24cceba](https://github.com/eoleedi/TimeTree-exporter/commit/24ccebafee8198f8acb0862b722c0c63182bd845))
+
+
+### Documentation
+
+* update Changelog's URL ([05e9d58](https://github.com/eoleedi/TimeTree-exporter/commit/05e9d58282cd9657d749aaea542dc3b13554f401))
+
 ## [0.2.1](https://github.com/eoleedi/TimeTree-exporter/compare/v0.2.0...v0.2.1) (2024-04-09)
 
 
