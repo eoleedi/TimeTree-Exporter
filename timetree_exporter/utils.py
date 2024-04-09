@@ -2,6 +2,8 @@
 
 import json
 import os
+from datetime import datetime, timedelta
+from dateutil import tz
 
 
 def get_events_from_file(file_path) -> list:
@@ -26,3 +28,12 @@ def paths_to_filelist(paths: list) -> list:
         else:
             print(f"Invalid path: {path}")
     return filenames
+
+
+def convert_timestamp_to_datetime(timestamp, tzinfo=tz.tzutc()):
+    """
+    Convert timestamp to datetime for both positive and negative timestamps on different platforms.
+    """
+    if timestamp >= 0:
+        return datetime.fromtimestamp(timestamp, tzinfo)
+    return datetime.fromtimestamp(0, tzinfo) + timedelta(seconds=int(timestamp))
