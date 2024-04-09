@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.2.0](https://github.com/eoleedi/TimeTree-exporter/compare/v0.1.0...v0.2.0) (2024-04-09)
+
+
+### Features
+
+* map parent_id to iCal's RELATED-TO ([#15](https://github.com/eoleedi/TimeTree-exporter/issues/15)) ([6780cbe](https://github.com/eoleedi/TimeTree-exporter/commit/6780cbea0d907135605a30363ccdf5b7ea467b47))
+
+
+### Bug Fixes
+
+* accept negative timestamp on all platform ([#23](https://github.com/eoleedi/TimeTree-exporter/issues/23)) ([f2bf2f7](https://github.com/eoleedi/TimeTree-exporter/commit/f2bf2f7c342275f3beb3a3af3406c063929efab2))
+* Discard TimeTree's Birthday Event ([#17](https://github.com/eoleedi/TimeTree-exporter/issues/17)) ([aa407ba](https://github.com/eoleedi/TimeTree-exporter/commit/aa407ba468e8f1396fd75373094aec3535ffbeb5))
+
 ## 0.1.0 (2024-04-06)
 
 
