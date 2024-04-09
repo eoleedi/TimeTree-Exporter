@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.1](https://github.com/eoleedi/TimeTree-exporter/compare/v0.2.0...v0.2.1) (2024-04-09)
+
+
+### Bug Fixes
+
+* use now as dtstamp ([#24](https://github.com/eoleedi/TimeTree-exporter/issues/24)) ([36c2d23](https://github.com/eoleedi/TimeTree-exporter/commit/36c2d2392bf964de9c8823b23b24f8802162923b))
+
 ## [0.2.0](https://github.com/eoleedi/TimeTree-exporter/compare/v0.1.0...v0.2.0) (2024-04-09)
 
 
