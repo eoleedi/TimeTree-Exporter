@@ -5,9 +5,14 @@ https://timetreeapp.com/api/v1/calendar/{calendar_id}/events/sync
 """
 
 import argparse
+import logging
 from icalendar import Calendar
 from timetree_exporter import TimeTreeEvent, ICalEventFormatter
 from timetree_exporter.utils import get_events_from_file, paths_to_filelist
+
+
+logger = logging.getLogger(__name__)
+package_logger = logging.getLogger(__package__)
 
 
 def main():
@@ -30,22 +35,35 @@ def main():
         help="Path to the output iCal file",
         default="timetree.ics",
     )
+    parser.add_argument(
+        "-v",
+        "--verbose",
+        help="Increase output verbosity",
+        action="store_true",
+    )
     args = parser.parse_args()
+
+    # Set logging level
+    if args.verbose:
+        package_logger.setLevel(logging.DEBUG)
 
     cal = Calendar()
     filenames = paths_to_filelist(args.input)
+    imported_events_count = 0
 
     for filename in filenames:
         # Skip non-JSON files
         if not filename.endswith(".json"):
-            print(f"Skipping {filename} (Invalid file type, should be .json)")
+            logger.warning("Skipping %s (Invalid file type, should be .json)", filename)
             continue
-        print(f"Parsing {filename}")
+        logger.info("Parsing %s", filename)
 
         # Get events from file
         events = get_events_from_file(filename)
         if events is None:
             continue
+
+        imported_events_count += len(events)
 
         # Add events to calendar
         for event in events:
@@ -55,6 +73,11 @@ def main():
             if ical_event is None:
                 continue
             cal.add_component(ical_event)
+    logger.info(
+        "A Total of %d/%d events added to the calendar",
+        len(cal.subcomponents),
+        imported_events_count,
+    )
 
     # Write calendar to file
     with open(args.output, "wb") as f:  # Path Traversal Vulnerability if on a server

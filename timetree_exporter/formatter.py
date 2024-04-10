@@ -3,6 +3,7 @@ This module provides the ICalEventFormatter class
 for formatting TimeTree events into iCalendar format.
 """
 
+import logging
 from datetime import datetime, timedelta
 from icalendar import Event, vRecur, vDate, vDatetime, vGeo
 from icalendar.prop import vDDDLists
@@ -10,6 +11,9 @@ from icalendar.parser import Contentline
 from dateutil import tz
 from timetree_exporter.event import TimeTreeEvent, TimeTreeEventType
 from timetree_exporter.utils import convert_timestamp_to_datetime
+
+
+logger = logging.getLogger(__name__)
 
 
 class ICalEventFormatter:
@@ -139,6 +143,7 @@ class ICalEventFormatter:
             elif name.lower() == "exdate" or name.lower() == "rdate":
                 event.add(name, vDDDLists.from_ical(value), parameters)
             else:
+                logger.error("Unknown recurrence type: %s", name)
                 raise ValueError(f"Unknown recurrence type: {name}")
 
     def to_ical(self) -> Event:
@@ -146,6 +151,18 @@ class ICalEventFormatter:
         if (
             self.time_tree_event.event_type == TimeTreeEventType.BIRTHDAY
         ):  # Skip if event is a birthday
+            logger.debug(
+                "Skipping birthday event\n \
+                    uid: %s \n \
+                    summary: '%s' \n \
+                    time: %s ~ %s \n \
+                    ",
+                self.uid,
+                self.summary,
+                self.dtstart.dt.strftime("%Y-%m-%d %H:%M:%S"),
+                self.dtend.dt.strftime("%Y-%m-%d %H:%M:%S"),
+            )
+
             return None
 
         event = Event()

@@ -2,8 +2,11 @@
 
 import json
 import os
+import logging
 from datetime import datetime, timedelta
 from dateutil import tz
+
+logger = logging.getLogger(__name__)
 
 
 def get_events_from_file(file_path) -> list:
@@ -13,7 +16,7 @@ def get_events_from_file(file_path) -> list:
             response_data = json.load(response_file)
             return response_data["events"]
     except FileNotFoundError:
-        print(f"File not found: {file_path}")
+        logger.error("File not found: %s", file_path)
         return None
 
 
@@ -26,7 +29,7 @@ def paths_to_filelist(paths: list) -> list:
         elif os.path.isfile(path):
             filenames.append(path)
         else:
-            print(f"Invalid path: {path}")
+            logger.error("Invalid path: %s", path)
     return filenames
 
 
