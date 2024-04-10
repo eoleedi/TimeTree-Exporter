@@ -6,6 +6,7 @@ https://timetreeapp.com/api/v1/calendar/{calendar_id}/events/sync
 
 import argparse
 import logging
+import os
 from icalendar import Calendar
 from timetree_exporter import TimeTreeEvent, ICalEventFormatter
 from timetree_exporter.utils import get_events_from_file, paths_to_filelist
@@ -82,6 +83,9 @@ def main():
     # Write calendar to file
     with open(args.output, "wb") as f:  # Path Traversal Vulnerability if on a server
         f.write(cal.to_ical())
+        logger.info(
+            "The .ics calendar file is saved to %s", os.path.abspath(args.output)
+        )
 
 
 if __name__ == "__main__":
