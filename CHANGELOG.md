@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.3](https://github.com/eoleedi/TimeTree-exporter/compare/v0.2.2...v0.2.3) (2024-04-10)
+
+
+### Documentation
+
+* move assets into docs folder ([2931fb2](https://github.com/eoleedi/TimeTree-exporter/commit/2931fb212f2e78f89ba849ee6510b237c5372db3))
+
 ## [0.2.2](https://github.com/eoleedi/TimeTree-exporter/compare/v0.2.1...v0.2.2) (2024-04-09)
 
 
