@@ -28,6 +28,7 @@ class TimeTreeEvent:
         location: str,
         parent_id: str,
         event_type: int,
+        category: int,
     ):
         # pylint: disable=too-many-arguments
         # pylint: disable=too-many-locals
@@ -49,6 +50,7 @@ class TimeTreeEvent:
         self.recurrences = recurrences
         self.parent_id = parent_id
         self.event_type = event_type
+        self.category =  category
 
     @classmethod
     def from_dict(cls, event_data: dict):
@@ -72,6 +74,7 @@ class TimeTreeEvent:
             recurrences=event_data.get("recurrences"),
             parent_id=event_data.get("parent_id"),
             event_type=event_data.get("type"),
+            category=event_data.get("category"),
         )
 
     def __str__(self):
@@ -84,3 +87,11 @@ class TimeTreeEventType(enumerate):
 
     NORMAL = 0
     BIRTHDAY = 1
+
+
+@dataclasses.dataclass
+class TimeTreeEventCategory(enumerate):
+    """TimeTree event category enumeration"""
+
+    NORMAL = 1
+    MEMO = 2
