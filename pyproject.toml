@@ -30,6 +30,3 @@ Changelog = "https://github.com/eoleedi/TimeTree-exporter/blob/main/CHANGELOG.md
 timetree-exporter = "timetree_exporter.__main__:main"
 
 [tool.setuptools_scm]
-
-[tool.setuptools.dynamic]
-version = { attr = "timetree_exporter.__version__" }
