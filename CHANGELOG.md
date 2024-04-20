@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.3.0](https://github.com/eoleedi/TimeTree-Exporter/compare/v0.2.3...v0.3.0) (2024-04-20)
+
+
+### Features
+
+* parse category and skip memo ([#33](https://github.com/eoleedi/TimeTree-Exporter/issues/33)) ([0166f6f](https://github.com/eoleedi/TimeTree-Exporter/commit/0166f6f53284927b89a9a830e830f9d8318877e9))
+
+
+### Bug Fixes
+
+* add __version__ attribute in the package ([d3ed38f](https://github.com/eoleedi/TimeTree-Exporter/commit/d3ed38f67cf73c9f15025f2078d5454b4c372132))
+
 ## [0.2.3](https://github.com/eoleedi/TimeTree-exporter/compare/v0.2.2...v0.2.3) (2024-04-10)
 
 
