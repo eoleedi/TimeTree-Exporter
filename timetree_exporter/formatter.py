@@ -9,7 +9,11 @@ from icalendar import Event, vRecur, vDate, vDatetime, vGeo
 from icalendar.prop import vDDDLists
 from icalendar.parser import Contentline
 from dateutil import tz
-from timetree_exporter.event import TimeTreeEvent, TimeTreeEventType
+from timetree_exporter.event import (
+    TimeTreeEvent,
+    TimeTreeEventType,
+    TimeTreeEventCategory,
+)
 from timetree_exporter.utils import convert_timestamp_to_datetime
 
 
@@ -153,6 +157,21 @@ class ICalEventFormatter:
         ):  # Skip if event is a birthday
             logger.debug(
                 "Skipping birthday event\n \
+                    uid: %s \n \
+                    summary: '%s' \n \
+                    time: %s ~ %s \n \
+                    ",
+                self.uid,
+                self.summary,
+                self.dtstart.dt.strftime("%Y-%m-%d %H:%M:%S"),
+                self.dtend.dt.strftime("%Y-%m-%d %H:%M:%S"),
+            )
+
+            return None
+        if self.time_tree_event.category == TimeTreeEventCategory.MEMO:
+            # Skip if event is a memo
+            logger.debug(
+                "Skipping memo event\n \
                     uid: %s \n \
                     summary: '%s' \n \
                     time: %s ~ %s \n \

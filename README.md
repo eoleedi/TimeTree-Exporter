@@ -58,7 +58,7 @@ Currently, TimeTree data can only be downloaded manually through a web browser.
 - [ ] **Primary ID**
 - [ ] **Calendar ID**
 - [x] **UUID**
-- [ ] **Category**
+- [x] **Category**
 - [x] **Type**
 - [ ] **Author ID**
 - [ ] **Author Type**
