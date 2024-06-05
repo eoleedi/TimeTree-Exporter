@@ -53,6 +53,11 @@ icalendar==5.0.12
 # Limitations
 Currently, TimeTree data can only be downloaded manually through a web browser.
 
+# Support
+If you think it's helpful, kindly support me!
+
+[!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/eoleedi)
+
 # Roadmap of the properties mapping to iCal
 - [ ] **ID**
 - [ ] **Primary ID**
