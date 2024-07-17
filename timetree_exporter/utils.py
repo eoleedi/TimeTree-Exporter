@@ -4,7 +4,7 @@ import json
 import os
 import logging
 from datetime import datetime, timedelta
-from dateutil import tz
+from zoneinfo import ZoneInfo
 
 logger = logging.getLogger(__name__)
 
@@ -33,7 +33,7 @@ def paths_to_filelist(paths: list) -> list:
     return filenames
 
 
-def convert_timestamp_to_datetime(timestamp, tzinfo=tz.tzutc()):
+def convert_timestamp_to_datetime(timestamp, tzinfo=ZoneInfo("UTC")):
     """
     Convert timestamp to datetime for both positive and negative timestamps on different platforms.
     """

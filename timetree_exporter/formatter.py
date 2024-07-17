@@ -5,10 +5,10 @@ for formatting TimeTree events into iCalendar format.
 
 import logging
 from datetime import datetime, timedelta
+from zoneinfo import ZoneInfo
 from icalendar import Event, vRecur, vDate, vDatetime, vGeo
 from icalendar.prop import vDDDLists
 from icalendar.parser import Contentline
-from dateutil import tz
 from timetree_exporter.event import (
     TimeTreeEvent,
     TimeTreeEventType,
@@ -43,7 +43,7 @@ class ICalEventFormatter:
         """Return the creation time of the event."""
         return vDatetime(
             convert_timestamp_to_datetime(
-                self.time_tree_event.created_at / 1000, tz.tzutc()
+                self.time_tree_event.created_at / 1000, ZoneInfo("UTC")
             )
         )
 
@@ -52,7 +52,7 @@ class ICalEventFormatter:
         """Return the last modification time of the event."""
         return vDatetime(
             convert_timestamp_to_datetime(
-                self.time_tree_event.updated_at / 1000, tz.tzutc()
+                self.time_tree_event.updated_at / 1000, ZoneInfo("UTC")
             )
         )
 
@@ -105,13 +105,13 @@ class ICalEventFormatter:
             return vDate(
                 convert_timestamp_to_datetime(
                     time / 1000,
-                    tz.gettz(timezone),
+                    ZoneInfo(timezone),
                 )
             )
         return vDatetime(
             convert_timestamp_to_datetime(
                 time / 1000,
-                tz.gettz(timezone),
+                ZoneInfo(timezone),
             )
         )
 
@@ -188,7 +188,7 @@ class ICalEventFormatter:
 
         event.add("uid", self.uid)
         event.add("summary", self.summary)
-        event.add("dtstamp", datetime.now(tz.tzutc()))
+        event.add("dtstamp", datetime.now(ZoneInfo("UTC")))
         event.add("created", self.created)
         event.add("last-modify", self.last_modify)
         event.add("dtstart", self.dtstart)
