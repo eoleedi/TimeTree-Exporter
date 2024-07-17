@@ -12,7 +12,7 @@ authors = [{ name = "Fong-Chun Tsai", email = "eoleedimin@gmail.com" }]
 description = "A Tool for Exporting TimeTree Calendar and Convert to iCal format(.ics)"
 keywords = ["timetree", "exporter", "icalendar", "ics"]
 readme = "README.md"
-requires-python = ">=3.8"
+requires-python = ">=3.9"
 classifiers = [
   "Programming Language :: Python :: 3",
   "License :: OSI Approved :: MIT License",
