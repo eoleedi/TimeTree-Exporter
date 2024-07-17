@@ -126,16 +126,16 @@ class ICalEventFormatter:
         return self.get_datetime(is_start_time=False)
 
     @property
-    def alerts(self):
-        """Return the alerts of the event."""
-        alerts = []
+    def alarms(self):
+        """Return the alarms of the event."""
+        alarms = []
         for alert in self.time_tree_event.alerts:
             alarm = Alarm()
             alarm.add("action", "DISPLAY")
             alarm.add("description", "Reminder")
             alarm.add("trigger", timedelta(minutes=-alert))
-            alerts.append(alarm)
-        return alerts
+            alarms.append(alarm)
+        return alarms
 
     def add_recurrences(self, event):
         """Add recurrences to iCal event"""
@@ -205,8 +205,8 @@ class ICalEventFormatter:
         if self.related_to:
             event.add("related-to", self.related_to)
 
-        for alert in self.alerts:
-            event.add_component(alert)
+        for alarm in self.alarms:
+            event.add_component(alarm)
 
         self.add_recurrences(event)
 
