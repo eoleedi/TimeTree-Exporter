@@ -6,7 +6,7 @@ for formatting TimeTree events into iCalendar format.
 import logging
 from datetime import datetime, timedelta
 from zoneinfo import ZoneInfo
-from icalendar import Event, vRecur, vDate, vDatetime, vGeo
+from icalendar import Event, vRecur, vDate, vDatetime, vGeo, Alarm
 from icalendar.prop import vDDDLists
 from icalendar.parser import Contentline
 from timetree_exporter.event import (
@@ -130,7 +130,7 @@ class ICalEventFormatter:
         """Return the alerts of the event."""
         alerts = []
         for alert in self.time_tree_event.alerts:
-            alarm = Event()
+            alarm = Alarm()
             alarm.add("action", "DISPLAY")
             alarm.add("description", "Reminder")
             alarm.add("trigger", timedelta(minutes=-alert))
