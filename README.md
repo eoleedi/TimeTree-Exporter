@@ -51,7 +51,8 @@ You are recommended to import the ics file into a separate calendar (take google
 icalendar==5.0.12
 
 # Limitations
-Currently, TimeTree data can only be downloaded manually through a web browser.
+1. Currently, TimeTree data can only be downloaded manually through a web browser.
+2. Alarms(Alerts) can't be imported to Google Calendar through iCal format due to Google's bug.
 
 # Support
 If you think it's helpful, kindly support me!
