@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.3.1](https://github.com/eoleedi/TimeTree-Exporter/compare/v0.3.0...v0.3.1) (2024-07-17)
+
+
+### Bug Fixes
+
+* alerts are not properly implemented (fix [#39](https://github.com/eoleedi/TimeTree-Exporter/issues/39)) ([#41](https://github.com/eoleedi/TimeTree-Exporter/issues/41)) ([20859de](https://github.com/eoleedi/TimeTree-Exporter/commit/20859dec779bd397799ad3b7ff27667d94aa4836))
+* use zoneinfo instead of dateutil.tz to solve TZID=CEST not recognized by google cal issue ([fbae55e](https://github.com/eoleedi/TimeTree-Exporter/commit/fbae55ea49f1f4889afa04f0fbbd35c794017996))
+
+
+### Documentation
+
+* formatting ([f53a1ae](https://github.com/eoleedi/TimeTree-Exporter/commit/f53a1ae421ef620bbfcbee361fa34062f9945a68))
+
 ## [0.3.0](https://github.com/eoleedi/TimeTree-Exporter/compare/v0.2.3...v0.3.0) (2024-04-20)
 
 
