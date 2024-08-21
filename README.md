@@ -56,6 +56,7 @@ You are recommended to import the ics file into a separate calendar (take google
 ## Requirements
 
 icalendar==5.0.12
+tzdata==2024.1
 
 ## Limitations
 
