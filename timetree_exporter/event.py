@@ -32,6 +32,7 @@ class TimeTreeEvent:
     ):
         # pylint: disable=too-many-arguments
         # pylint: disable=too-many-locals
+        # pylint: disable=too-many-positional-arguments
         self.uuid = uuid
         self.title = title
         self.created_at = created_at
