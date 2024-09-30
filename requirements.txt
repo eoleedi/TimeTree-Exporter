@@ -1,2 +1,2 @@
-icalendar==5.0.12
+icalendar==6.0.0
 tzdata==2024.1
