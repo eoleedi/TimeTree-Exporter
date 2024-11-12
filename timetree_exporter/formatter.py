@@ -128,6 +128,8 @@ class ICalEventFormatter:
     @property
     def alarms(self):
         """Return the alarms of the event."""
+        if self.time_tree_event.alerts is None:
+            return []
         alarms = []
         for alert in self.time_tree_event.alerts:
             alarm = Alarm()
@@ -139,6 +141,8 @@ class ICalEventFormatter:
 
     def add_recurrences(self, event):
         """Add recurrences to iCal event"""
+        if self.time_tree_event.recurrences is None:
+            return
         for recurrence in self.time_tree_event.recurrences:
             contentline = Contentline(recurrence)
             name, parameters, value = contentline.parts()

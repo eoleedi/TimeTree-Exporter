@@ -14,7 +14,14 @@ def get_events_from_file(file_path) -> list:
     try:
         with open(file_path, "r", encoding="UTF-8") as response_file:
             response_data = json.load(response_file)
-            return response_data["events"]
+            if "events" in response_data:
+                return response_data["events"]
+            if "public_events" in response_data:
+                return response_data["public_events"]
+            logger.error(
+                "Invalid response file: %s. \n No 'events' or 'public_events' column in the file",
+                file_path,
+            )
     except FileNotFoundError:
         logger.error("File not found: %s", file_path)
         return None
