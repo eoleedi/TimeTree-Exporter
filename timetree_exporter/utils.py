@@ -22,6 +22,7 @@ def get_events_from_file(file_path) -> list:
                 "Invalid response file: %s. \n No 'events' or 'public_events' column in the file",
                 file_path,
             )
+            return None
     except FileNotFoundError:
         logger.error("File not found: %s", file_path)
         return None
