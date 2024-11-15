@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.2](https://github.com/eoleedi/TimeTree-Exporter/compare/v0.3.1...v0.3.2) (2024-11-15)
+
+
+### Bug Fixes
+
+* typo, last-modify should be last-modified ([2f77e92](https://github.com/eoleedi/TimeTree-Exporter/commit/2f77e925ea7b755b7be17534263c5bfbd6058ee9))
+
 ## [0.3.1](https://github.com/eoleedi/TimeTree-Exporter/compare/v0.3.0...v0.3.1) (2024-07-17)
 
 
