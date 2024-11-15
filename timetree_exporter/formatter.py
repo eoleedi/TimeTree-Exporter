@@ -48,7 +48,7 @@ class ICalEventFormatter:
         )
 
     @property
-    def last_modify(self):
+    def last_modified(self):
         """Return the last modification time of the event."""
         return vDatetime(
             convert_timestamp_to_datetime(
@@ -190,7 +190,7 @@ class ICalEventFormatter:
         event.add("summary", self.summary)
         event.add("dtstamp", datetime.now(ZoneInfo("UTC")))
         event.add("created", self.created)
-        event.add("last-modify", self.last_modify)
+        event.add("last-modified", self.last_modified)
         event.add("dtstart", self.dtstart)
         event.add("dtend", self.dtend)
 
