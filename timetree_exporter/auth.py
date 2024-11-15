@@ -4,13 +4,14 @@ This module contains the User class, which is responsible for handling user-rela
 
 import uuid
 import logging
+from typing import Union
 import requests
 from timetree_exporter.const import API_BASEURI, API_USER_AGENT
 
 logger = logging.getLogger(__name__)
 
 
-def login(email, password) -> str | None:
+def login(email, password) -> Union[str, None]:
     """
     Log in to the TimeTree app and return the session ID.
     """
