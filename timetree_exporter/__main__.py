@@ -1,19 +1,45 @@
 """
-This module converts Timetree events to iCal format.
-It is intended to be used with the Timetree API response files.
-https://timetreeapp.com/api/v1/calendar/{calendar_id}/events/sync
+This module login in to TimeTree and converts Timetree events to iCal format.
 """
 
 import argparse
 import logging
 import os
+from getpass import getpass
 from icalendar import Calendar
 from timetree_exporter import TimeTreeEvent, ICalEventFormatter
-from timetree_exporter.utils import get_events_from_file, paths_to_filelist
+from timetree_exporter.auth import login
+from timetree_exporter.calendar import TimeTreeCalendar
 
 
 logger = logging.getLogger(__name__)
 package_logger = logging.getLogger(__package__)
+
+
+def get_events(email: str, password: str):
+    """Get events from the Timetree API."""
+    session_id = login(email, password)
+    calendar = TimeTreeCalendar(session_id)
+    metadatas = calendar.get_metadata()
+    for i, metadata in enumerate(metadatas):
+        print(f"{i+1}. id: {str(metadata['id'])}, name: {metadata['name']}")
+    calendar_num = input("Which Calendar do you want to export?(Default to 1)")
+    if calendar_num == "":
+        calendar_num = 1
+    elif not calendar_num.isdigit():
+        print("Calendar Number must be a number")
+        raise ValueError
+    else:
+        calendar_num = int(calendar_num)
+
+    if calendar_num > len(metadatas) or calendar_num < 1:
+        print("Invalid Calendar Number, must be between 1 and", len(metadatas))
+        raise ValueError
+
+    calendar_id = metadatas[int(calendar_num) - 1]["id"]
+    calendar_name = metadatas[int(calendar_num) - 1]["name"]
+
+    return calendar.get_events(calendar_id, calendar_name)
 
 
 def main():
@@ -22,12 +48,6 @@ def main():
     parser = argparse.ArgumentParser(
         description="Convert Timetree events to iCal format",
         prog="timetree_exporter",
-    )
-    parser.add_argument(
-        "input",
-        type=str,
-        help="Path to the Timetree response file(s)/folder",
-        nargs="+",
     )
     parser.add_argument(
         "-o",
@@ -44,40 +64,31 @@ def main():
     )
     args = parser.parse_args()
 
+    email = input("Enter your email address: ")
+    password = getpass("Enter your password: ")
+
     # Set logging level
     if args.verbose:
         package_logger.setLevel(logging.DEBUG)
 
     cal = Calendar()
-    filenames = paths_to_filelist(args.input)
-    imported_events_count = 0
+    events = get_events(email, password)
 
-    for filename in filenames:
-        # Skip non-JSON files
-        if not filename.endswith(".json"):
-            logger.warning("Skipping %s (Invalid file type, should be .json)", filename)
+    logger.info("Found %d events", len(events))
+
+    # Add events to calendar
+    for event in events:
+        time_tree_event = TimeTreeEvent.from_dict(event)
+        formatter = ICalEventFormatter(time_tree_event)
+        ical_event = formatter.to_ical()
+        if ical_event is None:
             continue
-        logger.info("Parsing %s", filename)
+        cal.add_component(ical_event)
 
-        # Get events from file
-        events = get_events_from_file(filename)
-        if events is None:
-            continue
-
-        imported_events_count += len(events)
-
-        # Add events to calendar
-        for event in events:
-            time_tree_event = TimeTreeEvent.from_dict(event)
-            formatter = ICalEventFormatter(time_tree_event)
-            ical_event = formatter.to_ical()
-            if ical_event is None:
-                continue
-            cal.add_component(ical_event)
     logger.info(
-        "A Total of %d/%d events added to the calendar",
+        "A total of %d/%d events are added to the calendar",
         len(cal.subcomponents),
-        imported_events_count,
+        len(events),
     )
 
     # Write calendar to file
