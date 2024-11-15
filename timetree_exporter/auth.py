@@ -15,10 +15,6 @@ def login(email, password) -> Union[str, None]:
     """
     Log in to the TimeTree app and return the session ID.
     """
-    session = requests.Session()
-    url = "https://timetreeapp.com/signin"
-    response = session.get(url)
-
     url = f"{API_BASEURI}/auth/email/signin"
     payload = {
         "uid": email,
@@ -29,7 +25,8 @@ def login(email, password) -> Union[str, None]:
         "Content-Type": "application/json",
         "X-Timetreea": API_USER_AGENT,
     }
-    response = session.put(url, json=payload, headers=headers)
+
+    response = requests.put(url, json=payload, headers=headers, timeout=10)
 
     if response.status_code != 200:
         logger.error("Login failed: %s", response.text)
