@@ -40,10 +40,6 @@ First, download the timetree data manually and put it in the responses folder(se
       > The file name should end with .json
 11. Do the same thing for all the requests with steps 7~10
 
-#### Public Calendar
-
-If you want to download the public calendar's data, search for public_events instead of sync in step 4.
-
 ![Prepare for signin: Step 1~5](https://github.com/eoleedi/TimeTree-exporter/raw/main/docs/assets/images/prepare-for-signin.png)
 *Prepare for signin: Step 1~5*
 ![Copy response: Step 8~9](https://github.com/eoleedi/TimeTree-exporter/raw/main/docs/assets/images/copy-response.png)

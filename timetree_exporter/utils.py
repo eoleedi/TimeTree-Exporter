@@ -16,7 +16,7 @@ def get_events_from_file(file_path) -> list:
             response_data = json.load(response_file)
             if "events" in response_data:
                 return response_data["events"]
-            if "public_events" in response_data:
+            if "public_events" in response_data: # Partal support for public events
                 return response_data["public_events"]
             logger.error(
                 "Invalid response file: %s. \n No 'events' or 'public_events' column in the file",
