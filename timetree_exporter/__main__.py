@@ -62,9 +62,18 @@ def main():
         help="Increase output verbosity",
         action="store_true",
     )
+    parser.add_argument(
+        "--email",
+        type=str,
+        help="Email address",
+        default=None,
+    )
     args = parser.parse_args()
 
-    email = input("Enter your email address: ")
+    if args.email is None:
+        email = input("Enter your email address: ")
+    else:
+        email = args.email
     password = getpass("Enter your password: ")
 
     # Set logging level
