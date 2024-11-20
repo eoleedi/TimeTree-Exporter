@@ -82,6 +82,9 @@ class TimeTreeCalendar:
         if r_json["chunk"] is True:
             events.extend(self.get_events_recur(calendar_id, r_json["since"]))
 
-        logger.debug("Top 5 fetched event: \n %s", json.dumps(events[:5], indent=2, ensure_ascii=False))
+        logger.debug(
+            "Top 5 fetched event: \n %s",
+            json.dumps(events[:5], indent=2, ensure_ascii=False),
+        )
 
         return events
