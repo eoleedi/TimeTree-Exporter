@@ -51,7 +51,7 @@ class TimeTreeEvent:
         self.recurrences = recurrences
         self.parent_id = parent_id
         self.event_type = event_type
-        self.category =  category
+        self.category = category
 
     @classmethod
     def from_dict(cls, event_data: dict):
