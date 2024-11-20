@@ -2,9 +2,12 @@
 Timetree calendar API
 """
 
+import json
 import logging
+
 import requests
 from requests.exceptions import HTTPError
+
 from timetree_exporter.const import API_BASEURI, API_USER_AGENT
 
 logger = logging.getLogger(__name__)
@@ -52,6 +55,7 @@ class TimeTreeCalendar:
         r_json = response.json()
 
         events = r_json["events"]
+        logger.info("Fetched %d events", len(events))
         if r_json["chunk"] is True:
             events.extend(self.get_events_recur(calendar_id, r_json["since"]))
         return events
@@ -74,7 +78,10 @@ class TimeTreeCalendar:
 
         r_json = response.json()
         events = r_json["events"]
+        logger.info("Fetched %d events", len(events))
         if r_json["chunk"] is True:
             events.extend(self.get_events_recur(calendar_id, r_json["since"]))
+
+        logger.debug("Top 5 fetched event: \n %s", json.dumps(events[:5], indent=2, ensure_ascii=False))
 
         return events
