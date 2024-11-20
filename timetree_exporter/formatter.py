@@ -1,5 +1,5 @@
 """
-This module provides the ICalEventFormatter class 
+This module provides the ICalEventFormatter class
 for formatting TimeTree events into iCalendar format.
 """
 
