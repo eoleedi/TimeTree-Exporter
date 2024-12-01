@@ -1,5 +1,36 @@
 # Changelog
 
+## [0.4.0](https://github.com/eoleedi/TimeTree-Exporter/compare/v0.3.1...v0.4.0) (2024-12-01)
+
+
+### Features
+
+* automate login and fetch ([8c076e4](https://github.com/eoleedi/TimeTree-Exporter/commit/8c076e4426cf419a0ffb71d1bce41542cbfa695e))
+* pass email by param ([cd549d2](https://github.com/eoleedi/TimeTree-Exporter/commit/cd549d2f947e0eb1818c2bad6ca3078a792d2c5d))
+
+
+### Bug Fixes
+
+* check alarms and recurrences none & add support for public calendar ([65bbcfc](https://github.com/eoleedi/TimeTree-Exporter/commit/65bbcfc2a3668a29b26825c4eb4fd29ae2a7ef1c))
+* default saving path to current working directory ([b909a0c](https://github.com/eoleedi/TimeTree-Exporter/commit/b909a0c5a7f34f58fdd5ca7a5f66388381069925))
+* filter out deactivated calendars ([c7bdf90](https://github.com/eoleedi/TimeTree-Exporter/commit/c7bdf90b71c6bcfc189ba9b95fe00dd08acc2b5b))
+* improve login stability ([bf978bc](https://github.com/eoleedi/TimeTree-Exporter/commit/bf978bc1575236f4a903682b5f524d6931b2f801))
+* remove irrelavent info of cal id ([618b233](https://github.com/eoleedi/TimeTree-Exporter/commit/618b233e78167c983b88c6ac21e71f3a90d7732a))
+* return None if events can't be found ([b34b136](https://github.com/eoleedi/TimeTree-Exporter/commit/b34b1362f1010c578491816cd027f02f1d012d43))
+* typo, last-modify should be last-modified ([2f77e92](https://github.com/eoleedi/TimeTree-Exporter/commit/2f77e925ea7b755b7be17534263c5bfbd6058ee9))
+* use Union for python 3.9 compatability ([fa37615](https://github.com/eoleedi/TimeTree-Exporter/commit/fa37615a1d15cc50be9841a7a9e86912e3398d95))
+
+
+### Reverts
+
+* support public calendar events ([c9b75ba](https://github.com/eoleedi/TimeTree-Exporter/commit/c9b75bad8b25d9e958b3705445689177c7bee144))
+
+
+### Documentation
+
+* remove requirements as it is specified in requirements.txt ([507922e](https://github.com/eoleedi/TimeTree-Exporter/commit/507922eb6226c4fbb2e109b949e8c9503dc3546b))
+* update README ([feaba4d](https://github.com/eoleedi/TimeTree-Exporter/commit/feaba4d1925aa4cc8883f54df8cc2829f41cb678))
+
 ## [0.3.1](https://github.com/eoleedi/TimeTree-Exporter/compare/v0.3.0...v0.3.1) (2024-07-17)
 
 
