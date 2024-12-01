@@ -8,8 +8,8 @@ import os
 from getpass import getpass
 from icalendar import Calendar
 from timetree_exporter import TimeTreeEvent, ICalEventFormatter
-from timetree_exporter.auth import login
-from timetree_exporter.calendar import TimeTreeCalendar
+from timetree_exporter.api.auth import login
+from timetree_exporter.api.calendar import TimeTreeCalendar
 
 
 logger = logging.getLogger(__name__)
