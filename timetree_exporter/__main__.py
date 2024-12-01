@@ -73,6 +73,7 @@ def main():
         action="store_true",
     )
     parser.add_argument(
+        "-e",
         "--email",
         type=str,
         help="Email address",
