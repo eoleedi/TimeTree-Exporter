@@ -64,7 +64,7 @@ def main():
         "--output",
         type=str,
         help="Path to the output iCal file",
-        default="timetree.ics",
+        default=os.path.join(os.getcwd(), "timetree.ics"),
     )
     parser.add_argument(
         "-v",
