@@ -33,12 +33,6 @@ A Tool for Exporting TimeTree Calendar and Convert to iCal format(.ics) \
 
 You are recommended to import the ics file into a separate calendar (take google calendar as an example) as if anything goes wrong, you can just delete the calendar and reimport it.
 
-## Requirements
-
-- icalendar==5.0.12
-- tzdata==2024.1
-- requests==2.31.0
-
 ## Limitations
 
 Alarms(Alerts) can't be imported to Google Calendar through iCal format due to Google's bug.
