@@ -33,7 +33,7 @@ def get_events(email: str, password: str):
 
     # Print out the list of calendars for the user to choose from
     for i, metadata in enumerate(metadatas):
-        print(f"{i+1}. id: {str(metadata['id'])}, name: {metadata['name']}")
+        print(f"{i+1}. {metadata['name'] if metadata['name'] else 'Unnamed'}")
 
     # Ask the user to choose a calendar
     calendar_num = (
