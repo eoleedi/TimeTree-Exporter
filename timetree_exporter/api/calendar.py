@@ -8,7 +8,7 @@ import logging
 import requests
 from requests.exceptions import HTTPError
 
-from timetree_exporter.const import API_BASEURI, API_USER_AGENT
+from timetree_exporter.api.const import API_BASEURI, API_USER_AGENT
 
 logger = logging.getLogger(__name__)
 
