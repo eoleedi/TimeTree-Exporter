@@ -34,21 +34,20 @@ def get_events(email: str, password: str):
     # Print out the list of calendars for the user to choose from
     for i, metadata in enumerate(metadatas):
         print(f"{i+1}. id: {str(metadata['id'])}, name: {metadata['name']}")
-    calendar_num = input("Which Calendar do you want to export?(Default to 1)")
-    if calendar_num == "":
-        calendar_num = 1
-    elif not calendar_num.isdigit():
-        print("Calendar Number must be a number")
-        raise ValueError
-    else:
-        calendar_num = int(calendar_num)
 
-    if calendar_num > len(metadatas) or calendar_num < 1:
-        print("Invalid Calendar Number, must be between 1 and", len(metadatas))
-        raise ValueError
+    # Ask the user to choose a calendar
+    calendar_num = (
+        input("Which Calendar do you want to export? (Default to 1): ") or "1"
+    )
+    if not calendar_num.isdigit() or not 1 <= int(calendar_num) <= len(metadatas):
+        raise ValueError(
+            f"Invalid Calendar Number. Must be a number between 1 and {len(metadatas)}"
+        )
+    idx = int(calendar_num) - 1
 
-    calendar_id = metadatas[int(calendar_num) - 1]["id"]
-    calendar_name = metadatas[int(calendar_num) - 1]["name"]
+    # Get events from the selected calendar
+    calendar_id = metadatas[idx]["id"]
+    calendar_name = metadatas[idx]["name"]
 
     return calendar.get_events(calendar_id, calendar_name)
 
