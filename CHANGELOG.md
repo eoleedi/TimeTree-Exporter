@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.1](https://github.com/eoleedi/TimeTree-Exporter/compare/v0.4.0...v0.4.1) (2024-12-01)
+
+
+### Bug Fixes
+
+* add abbr option -e for --email ([344b959](https://github.com/eoleedi/TimeTree-Exporter/commit/344b959c351ae8c2cb0cc922b80330be80ab4145))
+
 ## [0.4.0](https://github.com/eoleedi/TimeTree-Exporter/compare/v0.3.1...v0.4.0) (2024-12-01)
 
 
