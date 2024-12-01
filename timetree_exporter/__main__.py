@@ -21,6 +21,17 @@ def get_events(email: str, password: str):
     session_id = login(email, password)
     calendar = TimeTreeCalendar(session_id)
     metadatas = calendar.get_metadata()
+
+    # Filter out deactivated calendars
+    metadatas = [
+        metadata for metadata in metadatas if metadata["deactivated_at"] is None
+    ]
+
+    if len(metadatas) == 0:
+        logger.error("No active calendars found")
+        raise ValueError
+
+    # Print out the list of calendars for the user to choose from
     for i, metadata in enumerate(metadatas):
         print(f"{i+1}. id: {str(metadata['id'])}, name: {metadata['name']}")
     calendar_num = input("Which Calendar do you want to export?(Default to 1)")
