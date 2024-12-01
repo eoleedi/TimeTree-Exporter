@@ -18,7 +18,7 @@ classifiers = [
   "License :: OSI Approved :: MIT License",
   "Operating System :: OS Independent",
 ]
-dependencies = ["icalendar", "tzdata"]
+dependencies = ["icalendar", "tzdata", "requests"]
 
 [project.urls]
 Homepage = "https://github.com/eoleedi/TimeTree-Exporter"
