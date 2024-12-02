@@ -8,9 +8,7 @@
 
 name: Upload Python Package
 
-on:
-  release:
-    types: [published]
+on: [push]
 
 permissions:
   contents: read
@@ -36,3 +34,5 @@ jobs:
       run: poetry build
     - name: Publish package
       uses: pypa/gh-action-pypi-publish@v1.12.2
+      with:
+        repository-url: https://test.pypi.org/legacy/
