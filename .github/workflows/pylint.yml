@@ -19,4 +19,4 @@ jobs:
       - name: Install Dependencies
         run: poetry install
       - name: Analysing the code with pylint
-        run: pylint $(git ls-files '*.py')
+        run: poetry run pylint $(git ls-files '*.py')
