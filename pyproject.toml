@@ -29,6 +29,7 @@ Changelog = "https://github.com/eoleedi/TimeTree-exporter/blob/main/CHANGELOG.md
 
 [tool.poetry.group.dev.dependencies]
 pylint = "^3.3.2"
+pre-commit = "^4.0.1"
 
 [build-system]
 requires = ["poetry-core"]
