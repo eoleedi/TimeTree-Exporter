@@ -22,12 +22,13 @@ A Tool for Exporting TimeTree Calendar and Convert to iCal format(.ics) \
 
 1. Clone the repository `git clone https://github.com/eoleedi/TimeTree-exporter.git`
 2. Change the directory to the project folder `cd TimeTree-exporter`
-3. Install the requirements `pip3 install -r requirements.txt`
-4. Run `python3 -m timetree_exporter`
-    - Preferably, you can run `python3 -m timetree_exporter -e <email>` to skip the input of email
-    - and `python3 -m timetree_exporter -o <output-file-path>.ics` to specify the output file path
-5. Type in the email and password of your TimeTree account as prompted.
-6. A timetree.ics file will be generated in the same directory, then you can import it to your calendar app.
+3. Install poetry `pip3 install poetry`
+4. Install the requirements `poetry install --no-dev`
+5. Run `poetry run timetree-exporter`
+    - Preferably, you can run `poetry run timetree-exporter -e <email>` to skip the input of email
+    - and `poetry run timetree-exporter -o <output-file-path>.ics` to specify the output file path
+6. Type in the email and password of your TimeTree account as prompted.
+7. A timetree.ics file will be generated in the same directory, then you can import it to your calendar app.
 
 ## Recommendation
 
