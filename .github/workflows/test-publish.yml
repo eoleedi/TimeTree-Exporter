@@ -30,6 +30,10 @@ jobs:
       run: curl -sSL https://install.python-poetry.org | python - -y
     - name: Install Dependencies
       run: poetry install --no-dev
+    - name: Set up local versioning
+      run: |
+        GIT_HASH=$(git rev-parse --short HEAD)
+        poetry version "$(poetry version --short)+$GIT_HASH"
     - name: Build package
       run: poetry build
     - name: Publish package
