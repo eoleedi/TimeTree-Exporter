@@ -27,6 +27,9 @@ Repository = "https://github.com/eoleedi/TimeTree-Exporter"
 Issues = "https://github.com/eoleedi/TimeTree-Exporter/issues"
 Changelog = "https://github.com/eoleedi/TimeTree-exporter/blob/main/CHANGELOG.md"
 
+[tool.poetry.group.dev.dependencies]
+pylint = "^3.3.2"
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
