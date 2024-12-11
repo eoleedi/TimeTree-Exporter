@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.2](https://github.com/eoleedi/TimeTree-Exporter/compare/v0.4.1...v0.4.2) (2024-12-11)
+
+
+### Documentation
+
+* ignore row order as it's a property for timetree notes ([3fdb415](https://github.com/eoleedi/TimeTree-Exporter/commit/3fdb4157e9e4cf5f307476fd0d18ad99ed9fdc29))
+
 ## [0.4.1](https://github.com/eoleedi/TimeTree-Exporter/compare/v0.4.0...v0.4.1) (2024-12-01)
 
 

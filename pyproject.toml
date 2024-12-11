@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "timetree-exporter"
-version = "0.4.1"
+version = "0.4.2"
 description = "A Tool for Exporting TimeTree Calendar and Convert to iCal format(.ics)"
 authors = ["Fong-Chun Tsai <eoleedimin@gmail.com>"]
 license = "MIT License"
