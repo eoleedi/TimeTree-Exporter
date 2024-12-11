@@ -74,7 +74,7 @@ If you think it's helpful, kindly support me!
 - [x] **Parent ID**
 - [ ] **Link Object ID**
 - [ ] **Link Object ID String**
-- [ ] **Row Order**
+- [ ] ~~**Row Order**~~ (Ignore since it's a property for timetree notes)
 - [ ] **Attachment**
 - [ ] **Like Count**
 - [ ] **Files**
