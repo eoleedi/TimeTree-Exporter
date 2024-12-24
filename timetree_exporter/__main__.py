@@ -7,7 +7,7 @@ import logging
 import os
 from getpass import getpass
 from icalendar import Calendar
-from timetree_exporter import TimeTreeEvent, ICalEventFormatter
+from timetree_exporter import TimeTreeEvent, ICalEventFormatter, __version__
 from timetree_exporter.api.auth import login
 from timetree_exporter.api.calendar import TimeTreeCalendar
 
@@ -78,6 +78,11 @@ def main():
         type=str,
         help="Email address",
         default=None,
+    )
+    parser.add_argument(
+        "--version",
+        action="version",
+        version=f"%(prog)s {__version__}",
     )
     args = parser.parse_args()
 
