@@ -1,38 +1,44 @@
 # TimeTree Exporter
 
 A Tool for Exporting TimeTree Calendar and Convert to iCal format(.ics) \
+This script works by scraping the TimeTree web app and converting the data to iCal format.
 (The .ics file can then be imported into other calendar apps such as Google Calendar, Apple Calendar, Outlook Calendar, etc.)
+
+## Installation
+
+If you are on mac, you can install it using brew:
+
+```bash
+brew install eoleedi/timetree-exporter/timetree-exporter
+```
+
+You can also install it using pip or pipx:
+
+```bash
+pip install timetree-exporter
+```
+
+Timetree Exporter requires Python 3.9 or later.
 
 ## Usage
 
-1. Run the script and type the email and password of your TimeTree account.
-2. Select the calendar you want to export.
-3. Done! A timetree.ics file will be generated, then you can import it to your calendar app.
+```bash
+timetree-exporter -o path/to/output.ics
+```
 
-### Method 1: Pip
+This will prompt you to enter your TimeTree email and password and select the calendar you want to export.
 
-1. Install the package `pip3 install timetree-exporter`
-2. Run `timetree-exporter`
-   - Preferably, you can run `timetree-exporter -e <email>` to skip the input of email
-   - and `timetree-exporter -o <output-file-path>.ics` to specify the output file path
-3. Type in the email and password of your TimeTree account as prompted.
-4. A timetree.ics file will be generated in the same directory, then you can import it to your calendar app.
+Then, you can import the ics file to your calendar app.
 
-### Method 2: Cloning the repository
+💡 Note: You are advised to import the ICS file into a separate calendar (e.g., Google Calendar) so that if anything goes wrong, you can simply delete the calendar and reimport it.
 
-1. Clone the repository `git clone https://github.com/eoleedi/TimeTree-exporter.git`
-2. Change the directory to the project folder `cd TimeTree-exporter`
-3. Install poetry `pip3 install poetry`
-4. Install the requirements `poetry install --no-dev`
-5. Run `poetry run timetree-exporter`
-    - Preferably, you can run `poetry run timetree-exporter -e <email>` to skip the input of email
-    - and `poetry run timetree-exporter -o <output-file-path>.ics` to specify the output file path
-6. Type in the email and password of your TimeTree account as prompted.
-7. A timetree.ics file will be generated in the same directory, then you can import it to your calendar app.
+### Additional Options
 
-## Recommendation
+- You can specify your email address using the `-e` option.
 
-You are recommended to import the ics file into a separate calendar (take google calendar as an example) as if anything goes wrong, you can just delete the calendar and reimport it.
+    ```bash
+    timetree-exporter -e <email>
+    ```
 
 ## Limitations
 
