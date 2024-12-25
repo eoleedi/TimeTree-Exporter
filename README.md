@@ -3,6 +3,8 @@
 [![PyPI](https://img.shields.io/pypi/v/timetree-exporter.svg)](https://pypi.org/project/timetree-exporter/)
 [![Python 3.x](https://img.shields.io/pypi/pyversions/timetree-exporter.svg?logo=python&logoColor=white)](https://pypi.org/project/timetree-exporter/)
 [![License](https://img.shields.io/github/license/eoleedi/TimeTree-Exporter)](https://github.com/eoleedi/TimeTree-Exporter/blob/main/LICENSE)
+[![Downloads](https://img.shields.io/pypi/dm/timetree-exporter)](https://pypistats.org/packages/timetree-exporter)
+[![Buy Me A Coffee](https://img.shields.io/badge/Buy%20Me%20A%20Coffee-Donate-orange.svg?logo=buymeacoffee&logoColor=white)](https://www.buymeacoffee.com/eoleedi)
 
 A Tool for Exporting TimeTree Calendar and Convert to iCal format(.ics) \
 This script works by scraping the TimeTree web app and converting the data to iCal format.
