@@ -1,5 +1,9 @@
 # TimeTree Exporter
 
+[![PyPI](https://img.shields.io/pypi/v/timetree-exporter.svg)](https://pypi.org/project/timetree-exporter/)
+[![Python 3.x](https://img.shields.io/pypi/pyversions/timetree-exporter.svg?logo=python&logoColor=white)](https://pypi.org/project/timetree-exporter/)
+[![License](https://img.shields.io/github/license/eoleedi/TimeTree-Exporter)](https://github.com/eoleedi/TimeTree-Exporter/blob/main/LICENSE)
+
 A Tool for Exporting TimeTree Calendar and Convert to iCal format(.ics) \
 This script works by scraping the TimeTree web app and converting the data to iCal format.
 (The .ics file can then be imported into other calendar apps such as Google Calendar, Apple Calendar, Outlook Calendar, etc.)
