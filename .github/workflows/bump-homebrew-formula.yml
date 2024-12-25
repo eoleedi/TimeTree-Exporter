@@ -1,0 +1,16 @@
+on:
+  workflow_run:
+    workflows: ["Upload Python Package"]
+    types:
+      - completed
+  workflow_dispatch:
+
+jobs:
+  bump-hoomebrew-formula:
+    name: Bump Homebrew Formula
+    uses: dawidd6/action-homebrew-bump-formula@v4
+    with:
+      formula: timetree-exporter
+      tap: eoleedi/timetree-exporter
+      no_fork: true
+      token: ${{ secrets.HOMEBREW_FORMULA_TOKEN }}
