@@ -1,27 +1,35 @@
-[tool.poetry]
+[project]
 name = "timetree-exporter"
 version = "0.5.1"
 description = "A Tool for Exporting TimeTree Calendar and Convert to iCal format(.ics)"
-authors = ["Fong-Chun Tsai <eoleedimin@gmail.com>"]
-license = "MIT License"
+authors = [{ name = "Fong-Chun Tsai", email = "eoleedimin@gmail.com" }]
+license = { text = "MIT" }
 readme = "README.md"
 keywords = ["timetree", "exporter", "icalendar", "ics"]
 classifiers = [
-  # Supported Python versions
-  "Programming Language :: Python :: 3",
-  "Programming Language :: Python :: 3.9",
-  "Programming Language :: Python :: 3.10",
-  "Programming Language :: Python :: 3.11",
-  "Programming Language :: Python :: 3.12",
-  "Programming Language :: Python :: 3.13",
-  # License
-  "License :: OSI Approved :: MIT License",
-  # OS
-  "Operating System :: OS Independent",
+    # Supported Python versions
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    # License
+    "License :: OSI Approved :: MIT License",
+    # OS
+    "Operating System :: OS Independent",
 ]
-packages = [
-    { include = "timetree_exporter" }
-]
+requires-python = ">=3.9"
+dynamic = ["dependencies"]
+
+[project.urls]
+Homepage = "https://github.com/eoleedi/TimeTree-Exporter"
+Repository = "https://github.com/eoleedi/TimeTree-Exporter"
+Issues = "https://github.com/eoleedi/TimeTree-Exporter/issues"
+Changelog = "https://github.com/eoleedi/TimeTree-exporter/blob/main/CHANGELOG.md"
+
+[project.scripts]
+timetree-exporter = "timetree_exporter.__main__:main"
 
 [tool.poetry.dependencies]
 python = "^3.9"
@@ -29,11 +37,8 @@ icalendar = ">=5.0.12,<7.0.0"
 tzdata = ">=2024.2,<2026.0"
 requests = "^2.32.3"
 
-[tool.poetry.urls]
-Homepage = "https://github.com/eoleedi/TimeTree-Exporter"
-Repository = "https://github.com/eoleedi/TimeTree-Exporter"
-Issues = "https://github.com/eoleedi/TimeTree-Exporter/issues"
-Changelog = "https://github.com/eoleedi/TimeTree-exporter/blob/main/CHANGELOG.md"
+[tool.poetry]
+packages = [{ include = "timetree_exporter" }]
 
 [tool.poetry.group.dev.dependencies]
 pylint = "^3.3.2"
@@ -43,13 +48,10 @@ pytest = "^8.2.0"
 pytest-cov = ">=5,<7"
 
 [build-system]
-requires = ["poetry-core"]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 python_files = "test_*.py"
 python_functions = "test_*"
-
-[tool.poetry.scripts]
-timetree-exporter = "timetree_exporter.__main__:main"
