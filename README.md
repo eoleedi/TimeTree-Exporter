@@ -43,7 +43,7 @@ Then, you can import the ics file to your calendar app.
 - You can specify your email address using the `-e` option.
 
     ```bash
-    timetree-exporter -e <email>
+    timetree-exporter -e email@example.com
     ```
 
 ## Limitations
