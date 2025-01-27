@@ -26,7 +26,7 @@ packages = [
 [tool.poetry.dependencies]
 python = "^3.9"
 icalendar = "^5.0.12"
-tzdata = "^2024.2"
+tzdata = ">=2024.2,<2026.0"
 requests = "^2.32.3"
 
 [tool.poetry.urls]
