@@ -15,6 +15,6 @@ jobs:
       - uses: dawidd6/action-homebrew-bump-formula@v4
         with:
             formula: timetree-exporter
-            tap: eoleedi/timetree-exporter
+            tap: eoleedi/tap
             no_fork: true
             token: ${{ secrets.HOMEBREW_FORMULA_TOKEN }}

@@ -15,7 +15,7 @@ This script works by scraping the TimeTree web app and converting the data to iC
 If you are on mac, you can install it using brew:
 
 ```bash
-brew install eoleedi/timetree-exporter/timetree-exporter
+brew install eoleedi/tap/timetree-exporter
 ```
 
 You can also install it using pip or pipx:
