@@ -38,13 +38,20 @@ Then, you can import the ics file to your calendar app.
 
 💡 Note: You are advised to import the ICS file into a separate calendar (e.g., Google Calendar) so that if anything goes wrong, you can simply delete the calendar and reimport it.
 
-### Additional Options
+### Advanced Usage
 
 - You can specify your email address using the `-e` option.
 
     ```bash
     timetree-exporter -e email@example.com
     ```
+
+- You can pass your email address and password with environment variables. (usually for automation purposes)
+
+  ```bash
+  export TIMETREE_EMAIL=email@example.com
+  export TIMETREE_PASSWORD=password
+  ```
 
 ## Limitations
 
