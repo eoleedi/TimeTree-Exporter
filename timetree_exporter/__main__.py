@@ -86,11 +86,17 @@ def main():
     )
     args = parser.parse_args()
 
-    if args.email is None:
-        email = input("Enter your email address: ")
-    else:
+    if args.email:
         email = args.email
-    password = getpass("Enter your password: ")
+    elif os.environ.get("TIMETREE_EMAIL"):
+        email = os.environ.get("TIMETREE_EMAIL")
+    else:
+        email = input("Enter your email address: ")
+
+    if os.environ.get("TIMETREE_PASSWORD"):
+        password = os.environ.get("TIMETREE_PASSWORD")
+    else:
+        password = getpass("Enter your password: ")
 
     # Set logging level
     if args.verbose:
