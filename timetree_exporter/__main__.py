@@ -45,6 +45,9 @@ def get_events(email: str, password: str, calendar_code: str):
             use_code = False
         else:
             metadata = filtered_metadatas[0]
+            print(
+                f"Using calendar: {metadata['name']} (code: {metadata['alias_code']})"
+            )
             use_code = True
 
     if not use_code:
