@@ -17,4 +17,5 @@ jobs:
             formula: timetree-exporter
             tap: eoleedi/tap
             no_fork: true
+            tag: ${{github.ref}}
             token: ${{ secrets.HOMEBREW_FORMULA_TOKEN }}
