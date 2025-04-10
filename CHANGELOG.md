@@ -1,5 +1,27 @@
 # Changelog
 
+## [0.5.0](https://github.com/eoleedi/TimeTree-Exporter/compare/v0.4.1...v0.5.0) (2025-04-10)
+
+
+### Features
+
+* support calendar code input (for automations) ([#83](https://github.com/eoleedi/TimeTree-Exporter/issues/83)) ([163be70](https://github.com/eoleedi/TimeTree-Exporter/commit/163be70d2b109cb3b9754d09738a847e1f8c65b3))
+* support passing credential with environment variables (for automations) ([#82](https://github.com/eoleedi/TimeTree-Exporter/issues/82)) ([bb701f4](https://github.com/eoleedi/TimeTree-Exporter/commit/bb701f46179c01c728b2c51e82e2bae1b9143ba0))
+
+
+### Bug Fixes
+
+* migrate from eoleedi/timetree-exporter to eoleedi/tap ([#78](https://github.com/eoleedi/TimeTree-Exporter/issues/78)) ([ea5a0a8](https://github.com/eoleedi/TimeTree-Exporter/commit/ea5a0a8986a5072ae2bb2c9b09341336110488de))
+
+
+### Documentation
+
+* add homebrew installation method and improve clarity ([49a85ef](https://github.com/eoleedi/TimeTree-Exporter/commit/49a85ef86b202c1dbd735eca73b4ec658f07b3b8))
+* add informative badges ([d7d0875](https://github.com/eoleedi/TimeTree-Exporter/commit/d7d0875d512b122a9bb5cd0b3add3f83608b9ef3))
+* ignore row order as it's a property for timetree notes ([3fdb415](https://github.com/eoleedi/TimeTree-Exporter/commit/3fdb4157e9e4cf5f307476fd0d18ad99ed9fdc29))
+* improve readability ([fdf7281](https://github.com/eoleedi/TimeTree-Exporter/commit/fdf72817529bdbbf25578cb5175dad3aef824dbf))
+* more badges ([d0c90cf](https://github.com/eoleedi/TimeTree-Exporter/commit/d0c90cfd955b00f0efec4cbd49b04437949043d7))
+
 ## [0.4.1](https://github.com/eoleedi/TimeTree-Exporter/compare/v0.4.0...v0.4.1) (2024-12-01)
 
 
