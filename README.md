@@ -46,6 +46,14 @@ Then, you can import the ics file to your calendar app.
     timetree-exporter -e email@example.com
     ```
 
+- You can specify the calendar code using the `-c` or `--calendar_code` option.
+
+    ```bash
+    timetree-exporter -c calendar_code
+    ```
+
+    Note: Find the calendar code in the URL of the calendar page or when running the script without the `-c` option.
+
 - You can pass your email address and password with environment variables. (usually for automation purposes)
 
   ```bash

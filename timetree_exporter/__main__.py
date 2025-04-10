@@ -16,8 +16,9 @@ logger = logging.getLogger(__name__)
 package_logger = logging.getLogger(__package__)
 
 
-def get_events(email: str, password: str):
+def get_events(email: str, password: str, calendar_code: str):
     """Get events from the Timetree API."""
+    use_code = bool(calendar_code)
     session_id = login(email, password)
     calendar = TimeTreeCalendar(session_id)
     metadatas = calendar.get_metadata()
@@ -31,23 +32,46 @@ def get_events(email: str, password: str):
         logger.error("No active calendars found")
         raise ValueError
 
-    # Print out the list of calendars for the user to choose from
-    for i, metadata in enumerate(metadatas):
-        print(f"{i+1}. {metadata['name'] if metadata['name'] else 'Unnamed'}")
+    if calendar_code:
+        # Filter calendars by code
+        filtered_metadatas = [
+            metadata
+            for metadata in metadatas
+            if metadata["alias_code"] == calendar_code
+        ]
 
-    # Ask the user to choose a calendar
-    calendar_num = (
-        input("Which Calendar do you want to export? (Default to 1): ") or "1"
-    )
-    if not calendar_num.isdigit() or not 1 <= int(calendar_num) <= len(metadatas):
-        raise ValueError(
-            f"Invalid Calendar Number. Must be a number between 1 and {len(metadatas)}"
+        if len(filtered_metadatas) == 0:
+            logger.error("No calendars found with the specified codes")
+            use_code = False
+        else:
+            metadata = filtered_metadatas[0]
+            print(
+                f"Using calendar: {metadata['name']} (code: {metadata['alias_code']})"
+            )
+            use_code = True
+
+    if not use_code:
+        # Print out the list of calendars for the user to choose from
+        for i, metadata in enumerate(metadatas):
+            print(
+                f"{i+1}. {metadata['name'] if metadata['name'] else 'Unnamed'} "
+                f"(code: {metadata['alias_code']})"
+            )
+
+        # Ask the user to choose a calendar
+        calendar_num = (
+            input("Which Calendar(s) do you want to export? (Default to 1): ") or "1"
         )
-    idx = int(calendar_num) - 1
+        if not calendar_num.isdigit() or not 1 <= int(calendar_num) <= len(metadatas):
+            raise ValueError(
+                f"Invalid Calendar Number. Must be a number between 1 and {len(metadatas)}"
+            )
+        idx = int(calendar_num) - 1
+        metadata = metadatas[idx]
 
     # Get events from the selected calendar
-    calendar_id = metadatas[idx]["id"]
-    calendar_name = metadatas[idx]["name"]
+    calendar_id = metadata["id"]
+    calendar_name = metadata["name"]
 
     return calendar.get_events(calendar_id, calendar_name)
 
@@ -80,6 +104,13 @@ def main():
         default=None,
     )
     parser.add_argument(
+        "-c",
+        "--calendar_code",
+        type=str,
+        help="The Calendar Code you want to export",
+        default=None,
+    )
+    parser.add_argument(
         "--version",
         action="version",
         version=f"%(prog)s {__version__}",
@@ -103,7 +134,7 @@ def main():
         package_logger.setLevel(logging.DEBUG)
 
     cal = Calendar()
-    events = get_events(email, password)
+    events = get_events(email, password, args.calendar_code)
 
     logger.info("Found %d events", len(events))
 
