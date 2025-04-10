@@ -1,14 +1,12 @@
 on:
-  workflow_run:
-    workflows: ["Upload Python Package"]
-    types:
-      - completed
+  release:
+    types: [published]
   workflow_dispatch:
 
 name: Bump Homebrew Formula
 
 jobs:
-  bump-hoomebrew-formula:
+  bump-homebrew-formula:
     name: Bump Homebrew Formula
     runs-on: macos-latest
     steps:
