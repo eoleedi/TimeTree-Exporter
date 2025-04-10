@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.1](https://github.com/eoleedi/TimeTree-Exporter/compare/v0.5.0...v0.5.1) (2025-04-10)
+
+
+### Miscellaneous Chores
+
+* release 0.5.1 (timestamp hotfix) ([d2222eb](https://github.com/eoleedi/TimeTree-Exporter/commit/d2222eb48397275f08e3dc1182933933638b7c22))
+
 ## [0.5.0](https://github.com/eoleedi/TimeTree-Exporter/compare/v0.4.1...v0.5.0) (2025-04-10)
 
 
