@@ -7,9 +7,6 @@
 # Python environment
 .venv
 
-# Poetry
-poetry.lock
-
 # Python distribution
 dist
 *.egg-info
