@@ -15,8 +15,12 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
-      - name: Install Poetry
+      - name: Install Poetry (Linux)
+        if: runner.os == 'Linux'
         run: curl -sSL https://install.python-poetry.org | python - -y
+      - name: Install Poetry (Windows)
+        if: runner.os == 'Windows'
+        run: (Invoke-WebRequest -Uri https://install.python-poetry.org -UseBasicParsing).Content | py -
       - name: Install Dependencies
         run: poetry install
       - name: Analysing the code with pylint
