@@ -1,4 +1,4 @@
-name: Pylint
+name: Linting and Testing
 
 on: [push]
 
@@ -20,3 +20,7 @@ jobs:
         run: poetry install
       - name: Analysing the code with pylint
         run: poetry run pylint $(git ls-files '*.py')
+      - name: Test with pytest
+        run: coverage run -m pytest  -v -s
+      - name: Generate Coverage Report
+        run: coverage report -m
