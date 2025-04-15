@@ -21,6 +21,6 @@ jobs:
       - name: Analysing the code with pylint
         run: poetry run pylint $(git ls-files '*.py')
       - name: Test with pytest
-        run: coverage run -m pytest  -v -s
+        run: poetry run coverage run -m pytest -v -s
       - name: Generate Coverage Report
-        run: coverage report -m
+        run: poetry run coverage report -m
