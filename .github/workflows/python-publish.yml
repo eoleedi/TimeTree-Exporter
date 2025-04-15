@@ -24,12 +24,13 @@ jobs:
       id-token: write
     steps:
     - uses: actions/checkout@v4
+    - name: Install poetry
+      run: pipx install poetry
     - name: Set up Python
       uses: actions/setup-python@v5
       with:
         python-version: '3.x'
-    - name: Install Poetry
-      run: curl -sSL https://install.python-poetry.org | python - -y
+        cache: 'poetry'
     - name: Install Dependencies
       run: poetry install --without dev
     - name: Build package
