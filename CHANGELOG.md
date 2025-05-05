@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.2](https://github.com/eoleedi/TimeTree-Exporter/compare/v0.5.1...v0.5.2) (2025-05-05)
+
+
+### Bug Fixes
+
+* run coverage with poetry ([8d7753d](https://github.com/eoleedi/TimeTree-Exporter/commit/8d7753d75cd60a86ce5f653ad5635a24235cf171))
+
 ## [0.5.1](https://github.com/eoleedi/TimeTree-Exporter/compare/v0.5.0...v0.5.1) (2025-04-10)
 
 
