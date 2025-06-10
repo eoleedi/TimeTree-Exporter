@@ -35,7 +35,7 @@ timetree-exporter = "timetree_exporter.__main__:main"
 python = "^3.9"
 icalendar = ">=5.0.12,<7.0.0"
 tzdata = ">=2024.2,<2026.0"
-requests = "^2.32.3"
+requests = "^2.32.4"
 
 [tool.poetry]
 packages = [{ include = "timetree_exporter" }]
