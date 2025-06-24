@@ -3,8 +3,11 @@
 import json
 import os
 import logging
+import inspect
+import getpass
 from datetime import datetime, timedelta
 from zoneinfo import ZoneInfo
+
 
 logger = logging.getLogger(__name__)
 
@@ -48,3 +51,29 @@ def convert_timestamp_to_datetime(timestamp, tzinfo=ZoneInfo("UTC")):
     if timestamp >= 0:
         return datetime.fromtimestamp(timestamp, tzinfo)
     return datetime.fromtimestamp(0, tzinfo) + timedelta(seconds=int(timestamp))
+
+
+def safe_getpass(prompt="Password: ", echo_char=None):
+    """Safely get a password from the user, supporting echo_char for Python 3.14+.
+    If echo_char is not supported, it falls back to the pwinput module if echo_char is needed.
+    """
+    sig = inspect.signature(getpass.getpass)
+    if "echo_char" in sig.parameters:
+        # Python 3.14+ supports echo_char
+        return getpass.getpass(  # pylint: disable=E1123
+            prompt=prompt, echo_char=echo_char
+        )
+    if echo_char is not None:
+        # Use pwinput for echo_char support in older versions
+        try:
+            from pwinput import pwinput  # pylint: disable=C0415
+
+            return pwinput(prompt=prompt, mask=echo_char)
+        except ImportError as exc:
+            logger.error("pwinput module is required for echo_char support.")
+            raise ImportError(
+                "Please install pwinput to use echo_char functionality."
+            ) from exc
+    else:
+        # Fallback for older versions
+        return getpass.getpass(prompt=prompt)

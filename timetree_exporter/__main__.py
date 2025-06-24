@@ -5,11 +5,11 @@ This module login in to TimeTree and converts Timetree events to iCal format.
 import argparse
 import logging
 import os
-from getpass import getpass
 from icalendar import Calendar
 from timetree_exporter import TimeTreeEvent, ICalEventFormatter, __version__
 from timetree_exporter.api.auth import login
 from timetree_exporter.api.calendar import TimeTreeCalendar
+from timetree_exporter.utils import safe_getpass
 
 
 logger = logging.getLogger(__name__)
@@ -127,7 +127,7 @@ def main():
     if os.environ.get("TIMETREE_PASSWORD"):
         password = os.environ.get("TIMETREE_PASSWORD")
     else:
-        password = getpass("Enter your password: ")
+        password = safe_getpass(prompt="Enter your password: ", echo_char="*")
 
     # Set logging level
     if args.verbose:

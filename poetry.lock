@@ -570,6 +570,23 @@ pyyaml = ">=5.1"
 virtualenv = ">=20.10.0"
 
 [[package]]
+name = "pwinput"
+version = "1.0.4"
+description = "A cross-platform Python module that displays **** for password input. Works on Windows, unlike getpass. Formerly called stdiomask."
+optional = false
+python-versions = "*"
+groups = ["main"]
+markers = "python_version < \"3.14\""
+files = []
+develop = false
+
+[package.source]
+type = "git"
+url = "https://github.com/binbash23/pwinput"
+reference = "24af675b08b9916486239e59a37f63d58b694ca8"
+resolved_reference = "24af675b08b9916486239e59a37f63d58b694ca8"
+
+[[package]]
 name = "pygments"
 version = "2.19.2"
 description = "Pygments is a syntax highlighting package written in Python."
@@ -893,4 +910,4 @@ test = ["covdefaults (>=2.3)", "coverage (>=7.2.7)", "coverage-enable-subprocess
 [metadata]
 lock-version = "2.1"
 python-versions = "^3.9"
-content-hash = "cde96a72bd1b5e0638f1096ed3d9d28abdd85aa8bb0ab942e78233756ce8ef3c"
+content-hash = "a9485c6495062daf75e0c1a0b50d4f6b7ad708e5e55a61f945ff19c08fe1f8a8"
