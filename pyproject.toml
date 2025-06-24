@@ -35,7 +35,7 @@ timetree-exporter = "timetree_exporter.__main__:main"
 python = "^3.9"
 icalendar = ">=5.0.12,<7.0.0"
 tzdata = ">=2024.2,<2026.0"
-requests = "^2.32.3"
+requests = ">=2.32.4"
 
 [tool.poetry]
 packages = [{ include = "timetree_exporter" }]
@@ -44,7 +44,7 @@ packages = [{ include = "timetree_exporter" }]
 pylint = "^3.3.2"
 pre-commit = "^4.0.1"
 black = ">=24.10,<26.0"
-pytest = "^8.2.0"
+pytest = "^8.4.1"
 pytest-cov = ">=5,<7"
 
 [build-system]
