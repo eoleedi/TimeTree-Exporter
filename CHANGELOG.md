@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.6.0](https://github.com/eoleedi/TimeTree-Exporter/compare/v0.5.1...v0.6.0) (2025-06-27)
+
+
+### Features
+
+* password with echo ([f3c6841](https://github.com/eoleedi/TimeTree-Exporter/commit/f3c6841b4362a24f8bfcda349a60bd4db7560be2))
+
+
+### Bug Fixes
+
+* run coverage with poetry ([8d7753d](https://github.com/eoleedi/TimeTree-Exporter/commit/8d7753d75cd60a86ce5f653ad5635a24235cf171))
+* use 3.14.0-beta.3 on lint and test ([7a1a31c](https://github.com/eoleedi/TimeTree-Exporter/commit/7a1a31cf7a05eb5060aeb82d5c41740c8886257e))
+
 ## [0.5.1](https://github.com/eoleedi/TimeTree-Exporter/compare/v0.5.0...v0.5.1) (2025-04-10)
 
 
