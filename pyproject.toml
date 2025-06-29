@@ -37,7 +37,7 @@ python = "^3.9"
 icalendar = ">=5.0.12,<7.0.0"
 tzdata = ">=2024.2,<2026.0"
 requests = "^2.32.4"
-pwinput = { git = "https://github.com/binbash23/pwinput", rev = "24af675b08b9916486239e59a37f63d58b694ca8", python = "<3.14" } # ctrl-c fix for pwinput
+pwinput-eoleedi = { version = "^1.0.3.post1", python = "<3.14" } # ctrl-c fix for pwinput
 
 [tool.poetry]
 packages = [{ include = "timetree_exporter" }]
