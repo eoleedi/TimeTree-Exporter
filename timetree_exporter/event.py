@@ -29,6 +29,8 @@ class TimeTreeEvent:
         parent_id: str,
         event_type: int,
         category: int,
+        author_id:str,
+        author_name:str
     ):
         # pylint: disable=too-many-arguments
         # pylint: disable=too-many-locals
@@ -52,6 +54,8 @@ class TimeTreeEvent:
         self.parent_id = parent_id
         self.event_type = event_type
         self.category = category
+        self.author_id = author_id
+        self.author_name = author_name
 
     @classmethod
     def from_dict(cls, event_data: dict):
@@ -76,6 +80,8 @@ class TimeTreeEvent:
             parent_id=event_data.get("parent_id"),
             event_type=event_data.get("type"),
             category=event_data.get("category"),
+            author_id=event_data.get("author_id"),
+            author_name=event_data.get("author_name"),
         )
 
     def __str__(self):

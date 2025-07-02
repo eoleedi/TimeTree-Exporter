@@ -8,7 +8,7 @@ import logging
 import requests
 from requests.exceptions import HTTPError
 
-from timetree_exporter.api.const import API_BASEURI, API_USER_AGENT
+from timetree_exporter.api.const import API_BASEURI, API_USER_AGENT,APIV2_BASEURI
 
 logger = logging.getLogger(__name__)
 
@@ -64,9 +64,21 @@ class TimeTreeCalendar:
         """
         Get events from the calendar.
         """
-        url = f"{API_BASEURI}/calendar/{calendar_id}/events/sync"
+
+        usersUrl = f"{APIV2_BASEURI}/calendars/{calendar_id}/users"
+        UserResponse = self.session.get(
+            usersUrl,
+            headers={"Content-Type": "application/json", "X-Timetreea": API_USER_AGENT},
+        )
+        if UserResponse.status_code != 200:
+            logger.error("Failed to get users of the calendar")
+            logger.error(UserResponse.text)
+    
+        r_users = UserResponse.json()
+        users = r_users["calendar_users"]
+        eventsUrl = f"{API_BASEURI}/calendar/{calendar_id}/events/sync"
         response = self.session.get(
-            url,
+            eventsUrl,
             headers={"Content-Type": "application/json", "X-Timetreea": API_USER_AGENT},
         )
         if response.status_code != 200:
@@ -78,6 +90,11 @@ class TimeTreeCalendar:
 
         r_json = response.json()
         events = r_json["events"]
+        for event in events:
+            for user in users:
+                if event["author_id"]==user["user_id"]:
+                    event["author_name"] = user["name"]
+                    break
         logger.info("Fetched %d events", len(events))
         if r_json["chunk"] is True:
             events.extend(self.get_events_recur(calendar_id, r_json["since"]))
@@ -86,5 +103,5 @@ class TimeTreeCalendar:
             "Top 5 fetched events: \n %s",
             json.dumps(events[:5], indent=2, ensure_ascii=False),
         )
-
+        
         return events
