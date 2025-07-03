@@ -112,7 +112,8 @@ class ICalEventFormatter:
             convert_timestamp_to_datetime(
                 time / 1000,
                 ZoneInfo(timezone),
-            )
+            ),
+            params={"TZID": timezone} if timezone != "UTC" else {},
         )
 
     @property
