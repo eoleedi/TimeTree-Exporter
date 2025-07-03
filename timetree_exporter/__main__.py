@@ -156,8 +156,6 @@ def main():
     # Add the required timezone information
     cal.add_missing_timezones()
 
-    print(cal.get_used_tzids())
-
     # Write calendar to file
     with open(args.output, "wb") as f:  # Path Traversal Vulnerability if on a server
         f.write(cal.to_ical())
