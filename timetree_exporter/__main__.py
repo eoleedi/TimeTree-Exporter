@@ -5,12 +5,12 @@ This module login in to TimeTree and converts Timetree events to iCal format.
 import argparse
 import logging
 import os
+from importlib.metadata import version
 from icalendar import Calendar
 from timetree_exporter import TimeTreeEvent, ICalEventFormatter, __version__
 from timetree_exporter.api.auth import login
 from timetree_exporter.api.calendar import TimeTreeCalendar
 from timetree_exporter.utils import safe_getpass
-
 
 logger = logging.getLogger(__name__)
 package_logger = logging.getLogger(__package__)
@@ -133,7 +133,11 @@ def main():
     if args.verbose:
         package_logger.setLevel(logging.DEBUG)
 
+    # Set up calendar
     cal = Calendar()
+    cal.add("prodid", f"-//TimeTree Exporter {version('timetree_exporter')}//EN")
+    cal.add("version", "2.0")
+
     events = get_events(email, password, args.calendar_code)
 
     logger.info("Found %d events", len(events))
