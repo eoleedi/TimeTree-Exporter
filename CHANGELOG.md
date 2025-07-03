@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.6.1](https://github.com/eoleedi/TimeTree-Exporter/compare/v0.6.0...v0.6.1) (2025-07-03)
+
+
+### Bug Fixes
+
+* add missing VTimeZone cal component &  vDatetime TZID param ([#113](https://github.com/eoleedi/TimeTree-Exporter/issues/113)) ([6ea8293](https://github.com/eoleedi/TimeTree-Exporter/commit/6ea8293a1d4f4317da0d52870ad15f300c76bfe5))
+* add the missing required prodid and version property ([#112](https://github.com/eoleedi/TimeTree-Exporter/issues/112)) ([7d43e0a](https://github.com/eoleedi/TimeTree-Exporter/commit/7d43e0a978176c9873f85ced059b22ae67be5a36))
+
 ## [0.6.0](https://github.com/eoleedi/TimeTree-Exporter/compare/v0.5.1...v0.6.0) (2025-06-29)
 
 
