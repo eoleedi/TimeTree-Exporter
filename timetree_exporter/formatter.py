@@ -139,6 +139,16 @@ class ICalEventFormatter:
             alarm.add("trigger", timedelta(minutes=-alert))
             alarms.append(alarm)
         return alarms
+    
+    @property
+    def authorId(self):
+        """Return the AuthorID of the event."""
+        return self.time_tree_event.author_id
+    
+    @property
+    def authorName(self):
+        """Return the AuthorName of the event."""
+        return self.time_tree_event.author_name
 
     def add_recurrences(self, event):
         """Add recurrences to iCal event"""
@@ -198,6 +208,8 @@ class ICalEventFormatter:
         event.add("last-modified", self.last_modified)
         event.add("dtstart", self.dtstart)
         event.add("dtend", self.dtend)
+        event.add("authorId",self.authorId)
+        event.add("authorName",self.authorName)
 
         if self.location:
             event.add("location", self.location)
