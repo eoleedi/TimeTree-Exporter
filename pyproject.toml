@@ -36,7 +36,7 @@ timetree-exporter = "timetree_exporter.__main__:main"
 python = "^3.9"
 icalendar = ">=6.1.0,<7.0.0"
 tzdata = ">=2024.2,<2026.0"
-requests = "^2.32.4"
+requests = "^2.32.5"
 pwinput-eoleedi = { version = "^1.0.3.post1", python = "<3.14" } # ctrl-c fix for pwinput
 
 [tool.poetry]
