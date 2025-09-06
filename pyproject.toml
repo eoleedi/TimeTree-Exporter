@@ -43,7 +43,7 @@ pwinput-eoleedi = { version = "^1.0.3.post1", python = "<3.14" } # ctrl-c fix fo
 packages = [{ include = "timetree_exporter" }]
 
 [tool.poetry.group.dev.dependencies]
-pylint = "^3.3.2"
+pylint = "^3.3.8"
 pre-commit = "^4.0.1"
 black = ">=24.10,<26.0"
 pytest = "^8.4.1"
