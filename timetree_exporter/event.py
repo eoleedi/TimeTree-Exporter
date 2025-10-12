@@ -1,57 +1,33 @@
 """This module provides the TimeTreeEvent class for representing TimeTree events."""
 
-import dataclasses
+from dataclasses import dataclass
 
 
+@dataclass
 class TimeTreeEvent:
     """TimeTree event class"""
 
     # pylint: disable=too-many-instance-attributes
 
-    def __init__(
-        self,
-        uuid: str,
-        title: str,
-        created_at: int,
-        updated_at: int,
-        recurrences: list,
-        alerts: list,
-        url: str,
-        note: str,
-        start_at: int,
-        end_at: int,
-        all_day: bool,
-        start_timezone: str,
-        end_timezone: str,
-        location_lat: str,
-        location_lon: str,
-        location: str,
-        parent_id: str,
-        event_type: int,
-        category: int,
-    ):
-        # pylint: disable=too-many-arguments
-        # pylint: disable=too-many-locals
-        # pylint: disable=too-many-positional-arguments
-        self.uuid = uuid
-        self.title = title
-        self.created_at = created_at
-        self.updated_at = updated_at
-        self.note = note
-        self.location = location
-        self.location_lat = location_lat
-        self.location_lon = location_lon
-        self.url = url
-        self.start_at = start_at
-        self.start_timezone = start_timezone
-        self.end_at = end_at
-        self.end_timezone = end_timezone
-        self.all_day = all_day
-        self.alerts = alerts
-        self.recurrences = recurrences
-        self.parent_id = parent_id
-        self.event_type = event_type
-        self.category = category
+    uuid: str
+    title: str
+    created_at: int
+    updated_at: int
+    recurrences: list
+    alerts: list
+    url: str
+    note: str
+    start_at: int
+    end_at: int
+    all_day: bool
+    start_timezone: str
+    end_timezone: str
+    location_lat: str
+    location_lon: str
+    location: str
+    parent_id: str
+    event_type: int
+    category: int
 
     @classmethod
     def from_dict(cls, event_data: dict):
@@ -82,7 +58,7 @@ class TimeTreeEvent:
         return self.title
 
 
-@dataclasses.dataclass
+@dataclass
 class TimeTreeEventType(enumerate):
     """TimeTree event type enumeration"""
 
@@ -90,7 +66,7 @@ class TimeTreeEventType(enumerate):
     BIRTHDAY = 1
 
 
-@dataclasses.dataclass
+@dataclass
 class TimeTreeEventCategory(enumerate):
     """TimeTree event category enumeration"""
 
