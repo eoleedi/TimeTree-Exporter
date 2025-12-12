@@ -7,23 +7,23 @@ repos:
       - id: trailing-whitespace
       - id: end-of-file-fixer
       - id: check-yaml
-  - repo: https://github.com/python-poetry/poetry
-    rev: "2.1.2"
-    hooks:
-      - id: poetry-check
-      - id: poetry-lock
-      - id: poetry-install
   - repo: local
     hooks:
+      - id: uv-lock
+        name: uv-lock
+        entry: uv lock
+        language: system
+        files: ^(pyproject\.toml|uv\.lock)$
+        pass_filenames: false
       - id: black
         name: black
-        entry: poetry run black
+        entry: uv run black
         language: system
         types: [python]
         args: ["--quiet"]
       - id: pylint
         name: pylint
-        entry: poetry run pylint
+        entry: uv run pylint
         language: system
         types: [python]
         args: [
