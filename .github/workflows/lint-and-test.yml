@@ -19,7 +19,5 @@ jobs:
         run: uv sync --locked --all-extras --dev
       - name: Analyse the code with pylint
         run: uv run pylint $(git ls-files '*.py')
-      - name: Run tests
-        run: uv run pytest tests
-      - name: Generate Coverage Report
-        run: uv run coverage report -m
+      - name: Run tests with coverage
+        run: uv run pytest tests --cov=timetree_exporter --cov-report=term-missing
