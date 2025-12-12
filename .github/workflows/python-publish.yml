@@ -12,9 +12,6 @@ on:
   release:
     types: [published]
 
-permissions:
-  contents: read
-
 jobs:
   deploy:
     name: upload release to PyPI
@@ -22,18 +19,17 @@ jobs:
     environment: release
     permissions:
       id-token: write
+      contents: read
     steps:
-    - uses: actions/checkout@v5
-    - name: Install poetry
-      run: pipx install poetry
-    - name: Set up Python
-      uses: actions/setup-python@v6
-      with:
-        python-version: '3.x'
-        cache: 'poetry'
-    - name: Install Dependencies
-      run: poetry install --without dev
-    - name: Build package
-      run: SOURCE_DATE_EPOCH=$(date +%s) poetry build
-    - name: Publish package
-      uses: pypa/gh-action-pypi-publish@v1.13.0
+      - name: Checkout
+        uses: actions/checkout@v5
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+        with:
+          enable-cache: true
+      - name: Install Python 3.13
+        run: uv python install 3.13
+      - name: Build
+        run: uv build
+      - name: Publish
+        run: uv publish

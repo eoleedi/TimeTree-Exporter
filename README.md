@@ -65,6 +65,44 @@ Then, you can import the ics file to your calendar app.
 
 Alarms(Alerts) can't be imported to Google Calendar through iCal format due to Google's bug.
 
+## Development
+
+This project uses [uv](https://docs.astral.sh/uv/) for dependency management.
+
+### Setup
+
+1. Install uv:
+
+   ```bash
+   curl -LsSf https://astral.sh/uv/install.sh | sh
+   ```
+
+2. Clone the repository and install dependencies:
+
+   ```bash
+   git clone https://github.com/eoleedi/TimeTree-Exporter.git
+   cd TimeTree-Exporter
+   uv sync --all-extras --dev
+   ```
+
+3. Install pre-commit hooks:
+
+   ```bash
+   uv run pre-commit install
+   ```
+
+### Running Tests
+
+```bash
+uv run pytest tests
+```
+
+### Running Linter
+
+```bash
+uv run pylint timetree_exporter
+```
+
 ## Support
 
 If you think it's helpful, kindly support me!

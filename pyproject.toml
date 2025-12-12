@@ -20,8 +20,14 @@ classifiers = [
     # OS
     "Operating System :: OS Independent",
 ]
-requires-python = ">=3.9"
-dynamic = ["dependencies"]
+requires-python = "<4.0,>=3.9"
+dynamic = []
+dependencies = [
+    "icalendar<7.0.0,>=6.1.0",
+    "tzdata<2026.0,>=2024.2",
+    "requests<3.0.0,>=2.32.5",
+    "pwinput-eoleedi>=1.0.3.post1,<2.0.0.0 ; python_full_version < '3.14'",
+]
 
 [project.urls]
 Homepage = "https://github.com/eoleedi/TimeTree-Exporter"
@@ -32,28 +38,24 @@ Changelog = "https://github.com/eoleedi/TimeTree-exporter/blob/main/CHANGELOG.md
 [project.scripts]
 timetree-exporter = "timetree_exporter.__main__:main"
 
-[tool.poetry.dependencies]
-python = "^3.9"
-icalendar = ">=6.1.0,<7.0.0"
-tzdata = ">=2024.2,<2026.0"
-requests = "^2.32.5"
-pwinput-eoleedi = { version = "^1.0.3.post1", python = "<3.14" } # ctrl-c fix for pwinput
-
-[tool.poetry]
-packages = [{ include = "timetree_exporter" }]
-
-[tool.poetry.group.dev.dependencies]
-pylint = "^3.3.9"
-pre-commit = "^4.3.0"
-black = ">=24.10,<26.0"
-pytest = "^8.4.2"
-pytest-cov = ">=5,<8"
-
 [build-system]
-requires = ["poetry-core>=2.0.0,<3.0.0"]
-build-backend = "poetry.core.masonry.api"
+requires = ["uv_build>=0.9.17,<0.10.0"]
+build-backend = "uv_build"
+
+[tool.uv.build-backend]
+module-name = "timetree_exporter"
+module-root = ""
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 python_files = "test_*.py"
 python_functions = "test_*"
+
+[dependency-groups]
+dev = [
+    "pylint<4.0.0,>=3.3.9",
+    "pre-commit<5.0.0,>=4.3.0",
+    "black<26.0,>=24.10",
+    "pytest<9.0.0,>=8.4.2",
+    "pytest-cov<8,>=5",
+]

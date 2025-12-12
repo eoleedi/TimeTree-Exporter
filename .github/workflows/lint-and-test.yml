@@ -11,18 +11,14 @@ jobs:
         os: [ubuntu-latest, windows-latest]
     steps:
       - uses: actions/checkout@v5
-      - name: Install poetry
-        run: pipx install poetry
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v6
+      - name: Install uv and set the Python version
+        uses: astral-sh/setup-uv@v7
         with:
           python-version: ${{ matrix.python-version }}
-          cache: 'poetry'
-      - name: Install Dependencies
-        run: poetry install
-      - name: Analysing the code with pylint
-        run: poetry run pylint $(git ls-files '*.py')
-      - name: Test with pytest
-        run: poetry run coverage run -m pytest -v -s
-      - name: Generate Coverage Report
-        run: poetry run coverage report -m
+          enable-cache: true
+      - name: Install the project
+        run: uv sync --locked --all-extras --dev
+      - name: Analyse the code with pylint
+        run: uv run pylint $(git ls-files '*.py')
+      - name: Run tests with coverage
+        run: uv run pytest tests --cov=timetree_exporter --cov-report=term-missing
