@@ -82,7 +82,7 @@ This project uses [uv](https://docs.astral.sh/uv/) for dependency management.
    ```bash
    git clone https://github.com/eoleedi/TimeTree-Exporter.git
    cd TimeTree-Exporter
-   uv sync --all-extras --dev
+   uv sync
    ```
 
 3. Install pre-commit hooks:
