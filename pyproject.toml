@@ -3,7 +3,8 @@ name = "timetree-exporter"
 version = "0.6.1"
 description = "A Tool for Exporting TimeTree Calendar and Convert to iCal format(.ics)"
 authors = [{ name = "Fong-Chun Tsai", email = "eoleedimin@gmail.com" }]
-license = { text = "MIT" }
+license = "MIT"
+license-files = ["LICENSE"]
 readme = "README.md"
 keywords = ["timetree", "exporter", "icalendar", "ics"]
 classifiers = [
