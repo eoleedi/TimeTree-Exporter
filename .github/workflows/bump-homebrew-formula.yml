@@ -5,6 +5,9 @@ on:
 
 name: Bump Homebrew Formula
 
+permissions:
+  contents: read
+
 jobs:
   bump-homebrew-formula:
     name: Bump Homebrew Formula
