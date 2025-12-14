@@ -6,6 +6,13 @@
       "bump-minor-pre-major": false,
       "bump-patch-for-minor-pre-major": false,
       "draft": false,
+      "extra-files": [
+        {
+          "type": "toml",
+          "path": "uv.lock",
+          "jsonpath": "$.package[?(@.name.value=='timetree-exporter')].version"
+        }
+      ],
       "prerelease": false
     }
   },
