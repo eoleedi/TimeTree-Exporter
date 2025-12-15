@@ -1,5 +1,41 @@
 # Changelog
 
+## [0.6.2](https://github.com/eoleedi/TimeTree-Exporter/compare/v0.6.1...v0.6.2) (2025-12-15)
+
+
+### Documentation
+
+* remove deprecated sync --dev option ([3e65c7a](https://github.com/eoleedi/TimeTree-Exporter/commit/3e65c7aa25c9cf5bf6dd563f5b0390d660e69ded))
+
+
+### Miscellaneous Chores
+
+* bootstrap releases for path: . ([#139](https://github.com/eoleedi/TimeTree-Exporter/issues/139)) ([b4aef03](https://github.com/eoleedi/TimeTree-Exporter/commit/b4aef03681f7c82e59c5bf3ae2ab1968134a466b))
+
+
+### Code Refactoring
+
+* make TimeTreeEvent to dataclass ([f74217f](https://github.com/eoleedi/TimeTree-Exporter/commit/f74217f6a4be5e091ad973db89ac2ab15198817d))
+
+
+### Build System
+
+* **deps-dev:** bump black from 25.1.0 to 25.9.0 ([5b2de05](https://github.com/eoleedi/TimeTree-Exporter/commit/5b2de05f8e5a0405ac54a404b11f3fef91fca7f2))
+* **deps-dev:** bump pre-commit from 4.2.0 to 4.3.0 ([b70cfd1](https://github.com/eoleedi/TimeTree-Exporter/commit/b70cfd14cb054a340e35b5e9dbeabf8bbc4a2d29))
+* **deps-dev:** bump pylint from 3.3.7 to 3.3.8 ([#117](https://github.com/eoleedi/TimeTree-Exporter/issues/117)) ([03efbcd](https://github.com/eoleedi/TimeTree-Exporter/commit/03efbcdc0c42b018240ea78580f28ed753460d0e))
+* **deps-dev:** bump pylint from 3.3.8 to 3.3.9 ([82122f4](https://github.com/eoleedi/TimeTree-Exporter/commit/82122f4869b1c19e6354a91ca8abe4b00222612f))
+* **deps-dev:** bump pytest from 8.4.1 to 8.4.2 ([b8cbb72](https://github.com/eoleedi/TimeTree-Exporter/commit/b8cbb721328d65888a0fd128c5b8ad651c671fe4))
+* **deps-dev:** bump pytest-cov from 6.2.1 to 7.0.0 ([f4ffae1](https://github.com/eoleedi/TimeTree-Exporter/commit/f4ffae1604c2a162f455bdfba8dbd987b345df80))
+* **deps:** bump actions/checkout from 4 to 5 ([#118](https://github.com/eoleedi/TimeTree-Exporter/issues/118)) ([a2b8abc](https://github.com/eoleedi/TimeTree-Exporter/commit/a2b8abc09d05019c5aed3f88ac3b40f81ec31721))
+* **deps:** bump actions/checkout from 5 to 6 ([2947185](https://github.com/eoleedi/TimeTree-Exporter/commit/2947185ebfef6bb91d91277bd2f5a5b85c997d4e))
+* **deps:** bump actions/setup-python from 5 to 6 ([97a064a](https://github.com/eoleedi/TimeTree-Exporter/commit/97a064ab5b6ca76a21058a4e572957ec1099bc2b))
+* **deps:** bump dawidd6/action-homebrew-bump-formula from 5 to 7 ([7b574eb](https://github.com/eoleedi/TimeTree-Exporter/commit/7b574ebb4c84dd8843e1edc74aaa41fb2712b75c))
+* **deps:** bump pypa/gh-action-pypi-publish ([#121](https://github.com/eoleedi/TimeTree-Exporter/issues/121)) ([443e2bd](https://github.com/eoleedi/TimeTree-Exporter/commit/443e2bdee23d3e44ce4c16a0f238c19057c6da94))
+* **deps:** bump python testing and linting version 3.14 from beta to stable ([c293e33](https://github.com/eoleedi/TimeTree-Exporter/commit/c293e333355b975389a63c2699599a911ce2870d))
+* **deps:** bump requests from 2.32.4 to 2.32.5 ([#119](https://github.com/eoleedi/TimeTree-Exporter/issues/119)) ([ef1ecde](https://github.com/eoleedi/TimeTree-Exporter/commit/ef1ecde2a041dec95480e3eccd639324a26505ef))
+* migrate to uv as package management ([#136](https://github.com/eoleedi/TimeTree-Exporter/issues/136)) ([596c3c5](https://github.com/eoleedi/TimeTree-Exporter/commit/596c3c5cedc79dbb77242d1631f24f01ef91c906))
+* use PEP639 format for license ([1129ccf](https://github.com/eoleedi/TimeTree-Exporter/commit/1129ccff594973b8de498bd314aec87da709f12b))
+
 ## [0.6.1](https://github.com/eoleedi/TimeTree-Exporter/compare/v0.6.0...v0.6.1) (2025-07-03)
 
 
