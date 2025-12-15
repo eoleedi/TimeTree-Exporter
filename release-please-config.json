@@ -13,6 +13,20 @@
           "jsonpath": "$.package[?(@.name.value=='timetree-exporter')].version"
         }
       ],
+      "changelog-sections": [
+        {"type": "feat", "section": "Features"},
+        {"type": "feature", "section": "Features"},
+        {"type": "fix", "section": "Bug Fixes"},
+        {"type": "perf", "section": "Performance Improvements"},
+        {"type": "revert", "section": "Reverts"},
+        {"type": "docs", "section": "Documentation"},
+        {"type": "chore", "section": "Miscellaneous Chores"},
+        {"type": "refactor", "section": "Code Refactoring"},
+        {"type": "build", "section": "Build System"},
+        {"type": "style", "section": "Styles", "hidden": true},
+        {"type": "test", "section": "Tests", "hidden": true},
+        {"type": "ci", "section": "Continuous Integration", "hidden": true}
+      ],
       "prerelease": false
     }
   },
