@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.6.3](https://github.com/eoleedi/TimeTree-Exporter/compare/v0.6.2...v0.6.3) (2026-01-08)
+
+
+### Build System
+
+* **deps:** bump tzdata from 2025.2 to 2025.3 ([7a60219](https://github.com/eoleedi/TimeTree-Exporter/commit/7a602199911d53242f469c8e26f74adfc0ebd996))
+
 ## [0.6.2](https://github.com/eoleedi/TimeTree-Exporter/compare/v0.6.1...v0.6.2) (2025-12-15)
 
 
