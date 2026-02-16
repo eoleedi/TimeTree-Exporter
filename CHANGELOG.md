@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.6.3](https://github.com/eoleedi/TimeTree-Exporter/compare/v0.6.2...v0.6.3) (2026-02-16)
+
+
+### Bug Fixes
+
+* migrate to hatchling build-system ([#144](https://github.com/eoleedi/TimeTree-Exporter/issues/144)) ([e439748](https://github.com/eoleedi/TimeTree-Exporter/commit/e439748fba1b42def06fecd1bb6bcecffead7d14))
+
+
+### Build System
+
+* **deps:** bump the uv group across 1 directory with 2 updates ([#145](https://github.com/eoleedi/TimeTree-Exporter/issues/145)) ([f02e3c5](https://github.com/eoleedi/TimeTree-Exporter/commit/f02e3c505499b1a7b2ddebce5dbb0cdc6a87fcf3))
+* **deps:** bump tzdata from 2025.2 to 2025.3 ([7a60219](https://github.com/eoleedi/TimeTree-Exporter/commit/7a602199911d53242f469c8e26f74adfc0ebd996))
+
 ## [0.6.2](https://github.com/eoleedi/TimeTree-Exporter/compare/v0.6.1...v0.6.2) (2025-12-15)
 
 
