@@ -21,7 +21,7 @@ jobs:
           enable-cache: true
       - name: Install the project
         run: uv sync --locked --all-extras
-      - name: Analyse the code with pylint
-        run: uv run pylint $(git ls-files '*.py')
+      - name: Analyse the code with ruff
+        run: uv run ruff check
       - name: Run tests with coverage
         run: uv run pytest tests --cov=timetree_exporter --cov-report=term-missing
