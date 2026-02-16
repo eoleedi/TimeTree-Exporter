@@ -1,9 +1,10 @@
 """Init file for timetree_exporter package."""
 
-from importlib.metadata import version, PackageNotFoundError
 import logging
-from timetree_exporter.event import TimeTreeEvent
-from timetree_exporter.formatter import ICalEventFormatter
+from importlib.metadata import PackageNotFoundError, version
+
+from timetree_exporter.event import TimeTreeEvent as TimeTreeEvent
+from timetree_exporter.formatter import ICalEventFormatter as ICalEventFormatter
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(

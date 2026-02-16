@@ -1,14 +1,14 @@
 """Tests for the utils module."""
 
-import os
 import tempfile
 from datetime import datetime
+from pathlib import Path
 from zoneinfo import ZoneInfo
 
 from timetree_exporter.utils import (
+    convert_timestamp_to_datetime,
     get_events_from_file,
     paths_to_filelist,
-    convert_timestamp_to_datetime,
 )
 
 
@@ -63,7 +63,7 @@ def test_paths_to_filelist(temp_directory):
 
         # 檢查目錄中的文件是否包含在列表中
         for i in range(3):
-            expected_file = os.path.join(temp_directory, f"file_{i}.txt")
+            expected_file = str(Path(temp_directory) / f"file_{i}.txt")
             assert expected_file in file_list
 
         # 測試無效路徑
@@ -72,7 +72,7 @@ def test_paths_to_filelist(temp_directory):
         assert len(invalid_file_list) == 0
     finally:
         # 清理
-        os.unlink(temp_file_path)
+        Path(temp_file_path).unlink()
 
 
 def test_convert_timestamp_to_datetime():
@@ -86,28 +86,20 @@ def test_convert_timestamp_to_datetime():
     assert positive_dt.tzinfo == ZoneInfo("UTC")
 
     # 測試帶有不同時區的時間戳
-    taipei_dt = convert_timestamp_to_datetime(
-        positive_timestamp, ZoneInfo("Asia/Taipei")
-    )
+    taipei_dt = convert_timestamp_to_datetime(positive_timestamp, ZoneInfo("Asia/Taipei"))
     assert taipei_dt.tzinfo == ZoneInfo("Asia/Taipei")
 
     # 測試時區轉換是否正確（檢查時區差異）
-    new_york_dt = convert_timestamp_to_datetime(
-        positive_timestamp, ZoneInfo("America/New_York")
-    )
+    new_york_dt = convert_timestamp_to_datetime(positive_timestamp, ZoneInfo("America/New_York"))
     assert new_york_dt.tzinfo == ZoneInfo("America/New_York")
 
     # 檢查不同時區間的時間差異
     # UTC 與台北時區差 8 小時
-    utc_taipei_diff = (
-        taipei_dt.utcoffset() - positive_dt.utcoffset()
-    ).total_seconds() / 3600
+    utc_taipei_diff = (taipei_dt.utcoffset() - positive_dt.utcoffset()).total_seconds() / 3600
     assert utc_taipei_diff == 8.0
 
     # 計算 UTC 與紐約的時差（根據季節可能是 -4 或 -5 小時）
-    utc_ny_diff = (
-        new_york_dt.utcoffset() - positive_dt.utcoffset()
-    ).total_seconds() / 3600
+    utc_ny_diff = (new_york_dt.utcoffset() - positive_dt.utcoffset()).total_seconds() / 3600
     # 2024年4月是夏令時間，所以時差應該是 -4 小時
     assert utc_ny_diff == -4.0
 
@@ -122,17 +114,13 @@ def test_convert_timestamp_to_datetime():
     # 測試在特定時間戳的本地時間是否正確
     # 創建一個已知的時間戳並檢查對應的本地時間
     timestamp_2023_01_01 = 1672531200  # 2023-01-01 00:00:00 UTC
-    london_dt = convert_timestamp_to_datetime(
-        timestamp_2023_01_01, ZoneInfo("Europe/London")
-    )
+    london_dt = convert_timestamp_to_datetime(timestamp_2023_01_01, ZoneInfo("Europe/London"))
     assert london_dt.year == 2023
     assert london_dt.month == 1
     assert london_dt.day == 1
     assert london_dt.hour == 0  # 冬令時間，倫敦與UTC相同
 
-    tokyo_dt = convert_timestamp_to_datetime(
-        timestamp_2023_01_01, ZoneInfo("Asia/Tokyo")
-    )
+    tokyo_dt = convert_timestamp_to_datetime(timestamp_2023_01_01, ZoneInfo("Asia/Tokyo"))
     assert tokyo_dt.year == 2023
     assert tokyo_dt.month == 1
     assert tokyo_dt.day == 1
