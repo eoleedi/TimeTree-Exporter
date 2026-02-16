@@ -1,10 +1,12 @@
 """Test configuration for pytest."""
 
 import json
-import os
 import tempfile
+from pathlib import Path
+
 import pytest
-from timetree_exporter.event import TimeTreeEventType, TimeTreeEventCategory
+
+from timetree_exporter.event import TimeTreeEventCategory, TimeTreeEventType
 
 
 @pytest.fixture
@@ -169,7 +171,7 @@ def temp_event_file():
     yield temp_file_path
 
     # 測試後清理
-    os.unlink(temp_file_path)
+    Path(temp_file_path).unlink()
 
 
 @pytest.fixture
@@ -195,7 +197,7 @@ def temp_public_event_file():
     yield temp_file_path
 
     # 測試後清理
-    os.unlink(temp_file_path)
+    Path(temp_file_path).unlink()
 
 
 @pytest.fixture
@@ -210,7 +212,7 @@ def temp_invalid_file():
     yield temp_file_path
 
     # 測試後清理
-    os.unlink(temp_file_path)
+    Path(temp_file_path).unlink()
 
 
 @pytest.fixture
@@ -219,9 +221,7 @@ def temp_directory():
     with tempfile.TemporaryDirectory() as temp_dir:
         # 在臨時目錄中創建一些文件
         for i in range(3):
-            with open(
-                os.path.join(temp_dir, f"file_{i}.txt"), "w", encoding="utf-8"
-            ) as f:
-                f.write(f"Content of file {i}")
+            file_path = Path(temp_dir) / f"file_{i}.txt"
+            file_path.write_text(f"Content of file {i}", encoding="utf-8")
 
         yield temp_dir

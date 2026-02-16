@@ -2,8 +2,8 @@
 
 from timetree_exporter.event import (
     TimeTreeEvent,
-    TimeTreeEventType,
     TimeTreeEventCategory,
+    TimeTreeEventType,
 )
 
 
