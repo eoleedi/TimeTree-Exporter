@@ -100,7 +100,13 @@ uv run pytest tests
 ### Running Linter
 
 ```bash
-uv run pylint timetree_exporter
+uv run ruff check --fix .
+```
+
+### Running Formatter
+
+```bash
+uv run ruff format .
 ```
 
 ## Support

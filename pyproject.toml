@@ -55,11 +55,35 @@ testpaths = ["tests"]
 python_files = "test_*.py"
 python_functions = "test_*"
 
+[tool.ruff]
+line-length = 100
+target-version = "py39"
+
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # pyflakes
+    "I",   # isort
+    "N",   # pep8-naming
+    "UP",  # pyupgrade
+    "B",   # flake8-bugbear
+    "C4",  # flake8-comprehensions
+    "SIM", # flake8-simplify
+    "PIE", # flake8-pie
+    "RET", # flake8-return
+    "PTH", # flake8-use-pathlib
+]
+ignore = []
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+
 [dependency-groups]
 dev = [
-    "pylint<4.0.0,>=3.3.9",
     "pre-commit<5.0.0,>=4.3.0",
-    "black<26.0,>=24.10",
     "pytest<9.0.0,>=8.4.2",
     "pytest-cov<8,>=5",
+    "ruff>=0.15.1",
 ]

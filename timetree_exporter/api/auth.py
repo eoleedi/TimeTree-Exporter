@@ -2,10 +2,12 @@
 This module contains the User class, which is responsible for handling user-related operations.
 """
 
-import uuid
 import logging
+import uuid
 from typing import Union
+
 import requests
+
 from timetree_exporter.api.const import API_BASEURI, API_USER_AGENT
 
 logger = logging.getLogger(__name__)
@@ -33,8 +35,7 @@ def login(email, password) -> Union[str, None]:
         raise AuthenticationError("Login failed")
 
     try:
-        session_id = response.cookies["_session_id"]
-        return session_id
+        return response.cookies["_session_id"]
     except KeyError:
         return None
 

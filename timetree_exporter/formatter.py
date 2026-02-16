@@ -6,16 +6,17 @@ for formatting TimeTree events into iCalendar format.
 import logging
 from datetime import datetime, timedelta
 from zoneinfo import ZoneInfo
-from icalendar import Event, vRecur, vDate, vDatetime, vGeo, Alarm
-from icalendar.prop import vDDDLists
+
+from icalendar import Alarm, Event, vDate, vDatetime, vGeo, vRecur
 from icalendar.parser import Contentline
+from icalendar.prop import vDDDLists
+
 from timetree_exporter.event import (
     TimeTreeEvent,
-    TimeTreeEventType,
     TimeTreeEventCategory,
+    TimeTreeEventType,
 )
 from timetree_exporter.utils import convert_timestamp_to_datetime
-
 
 logger = logging.getLogger(__name__)
 
@@ -42,18 +43,14 @@ class ICalEventFormatter:
     def created(self):
         """Return the creation time of the event."""
         return vDatetime(
-            convert_timestamp_to_datetime(
-                self.time_tree_event.created_at / 1000, ZoneInfo("UTC")
-            )
+            convert_timestamp_to_datetime(self.time_tree_event.created_at / 1000, ZoneInfo("UTC"))
         )
 
     @property
     def last_modified(self):
         """Return the last modification time of the event."""
         return vDatetime(
-            convert_timestamp_to_datetime(
-                self.time_tree_event.updated_at / 1000, ZoneInfo("UTC")
-            )
+            convert_timestamp_to_datetime(self.time_tree_event.updated_at / 1000, ZoneInfo("UTC"))
         )
 
     @property
@@ -64,23 +61,14 @@ class ICalEventFormatter:
     @property
     def location(self):
         """Return the location of the event."""
-        return (
-            self.time_tree_event.location
-            if self.time_tree_event.location != ""
-            else None
-        )
+        return self.time_tree_event.location if self.time_tree_event.location != "" else None
 
     @property
     def geo(self):
         """Return the geolocation of the event."""
-        if (
-            self.time_tree_event.location_lat is None
-            or self.time_tree_event.location_lon is None
-        ):
+        if self.time_tree_event.location_lat is None or self.time_tree_event.location_lon is None:
             return None
-        return vGeo(
-            (self.time_tree_event.location_lat, self.time_tree_event.location_lon)
-        )
+        return vGeo((self.time_tree_event.location_lat, self.time_tree_event.location_lon))
 
     @property
     def url(self):
