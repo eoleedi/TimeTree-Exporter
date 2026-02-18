@@ -25,8 +25,14 @@ class ICalEventFormatter:
     Class for formatting TimeTree events into iCalendar format.
     """
 
-    def __init__(self, time_tree_event: TimeTreeEvent):
+    def __init__(self, time_tree_event: TimeTreeEvent, label_name: str = None):
         self.time_tree_event = time_tree_event
+        self.label_name = label_name
+
+    @property
+    def categories(self):
+        """Return the label name as CATEGORIES."""
+        return self.label_name
 
     @property
     def uid(self):
@@ -209,6 +215,8 @@ class ICalEventFormatter:
             event.add("description", self.description)
         if self.related_to:
             event.add("related-to", self.related_to)
+        if self.categories:
+            event.add("categories", [self.categories])
 
         for alarm in self.alarms:
             event.add_component(alarm)

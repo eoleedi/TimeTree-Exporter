@@ -93,3 +93,21 @@ def test_event_categories():
     """Test the TimeTreeEventCategory enumeration."""
     assert TimeTreeEventCategory.NORMAL == 1
     assert TimeTreeEventCategory.MEMO == 2
+
+
+def test_from_dict_with_label_id(labeled_event_data):
+    """Test creating a TimeTreeEvent with a direct label_id."""
+    event = TimeTreeEvent.from_dict(labeled_event_data)
+    assert event.label_id == 3
+
+
+def test_from_dict_with_relationship_label(relationship_label_event_data):
+    """Test creating a TimeTreeEvent with label in relationships format."""
+    event = TimeTreeEvent.from_dict(relationship_label_event_data)
+    assert event.label_id == 7
+
+
+def test_from_dict_without_label(normal_event_data):
+    """Test that label_id is None when no label data is present."""
+    event = TimeTreeEvent.from_dict(normal_event_data)
+    assert event.label_id is None

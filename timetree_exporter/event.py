@@ -28,6 +28,27 @@ class TimeTreeEvent:
     parent_id: str
     event_type: int
     category: int
+    label_id: int = None
+
+    @staticmethod
+    def _extract_label_id(event_data: dict):
+        """Extract label_id from event data, trying multiple formats."""
+        # Try direct `label_id` key
+        label_id = event_data.get("label_id")
+        if label_id is not None:
+            return label_id
+
+        # Try JSON:API relationships format
+        try:
+            rel_id = event_data["relationships"]["label"]["data"]["id"]
+            # Format may be "calendar_id,label_number" — extract the label number
+            if isinstance(rel_id, str) and "," in rel_id:
+                return int(rel_id.split(",")[-1])
+            return int(rel_id)
+        except (KeyError, TypeError, ValueError):
+            pass
+
+        return None
 
     @classmethod
     def from_dict(cls, event_data: dict):
@@ -52,6 +73,7 @@ class TimeTreeEvent:
             parent_id=event_data.get("parent_id"),
             event_type=event_data.get("type"),
             category=event_data.get("category"),
+            label_id=cls._extract_label_id(event_data),
         )
 
     def __str__(self):
