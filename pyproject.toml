@@ -10,7 +10,6 @@ keywords = ["timetree", "exporter", "icalendar", "ics"]
 classifiers = [
     # Supported Python versions
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
@@ -21,7 +20,7 @@ classifiers = [
     # OS
     "Operating System :: OS Independent",
 ]
-requires-python = "<4.0,>=3.9"
+requires-python = "<4.0,>=3.10"
 dynamic = []
 dependencies = [
     "icalendar<7.0.0,>=6.1.0",

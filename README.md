@@ -24,7 +24,7 @@ You can also install it using pip or pipx:
 pip install timetree-exporter
 ```
 
-Timetree Exporter requires Python 3.9 or later.
+Timetree Exporter requires Python 3.10 or later.
 
 ## Usage
 
