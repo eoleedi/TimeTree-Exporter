@@ -58,7 +58,7 @@ python_functions = "test_*"
 dev = [
     "pylint<4.0.0,>=3.3.9",
     "pre-commit<5.0.0,>=4.3.0",
-    "black<26.0,>=24.10",
+    "black>=24.10,<27.0",
     "pytest<9.0.0,>=8.4.2",
     "pytest-cov<8,>=5",
 ]
