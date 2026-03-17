@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.7.0](https://github.com/eoleedi/TimeTree-Exporter/compare/v0.6.3...v0.7.0) (2026-03-17)
+
+
+### ⚠ BREAKING CHANGES
+
+* drop python 3.9 support as it reaches EOL ([#147](https://github.com/eoleedi/TimeTree-Exporter/issues/147))
+
+### Build System
+
+* **deps-dev:** bump black in the uv group across 1 directory ([#149](https://github.com/eoleedi/TimeTree-Exporter/issues/149)) ([caf2beb](https://github.com/eoleedi/TimeTree-Exporter/commit/caf2beb9cce609aa64c7c0b2d7bc6a7c5d7a7e6d))
+* drop python 3.9 support as it reaches EOL ([#147](https://github.com/eoleedi/TimeTree-Exporter/issues/147)) ([793888c](https://github.com/eoleedi/TimeTree-Exporter/commit/793888c903d3c4d99ae002cf8cccf0cd7edf4e72))
+
 ## [0.6.3](https://github.com/eoleedi/TimeTree-Exporter/compare/v0.6.2...v0.6.3) (2026-02-16)
 
 
