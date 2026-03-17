@@ -86,6 +86,67 @@ def memo_event_data():
 
 
 @pytest.fixture
+def labeled_event_data():
+    """Fixture for event data with a label_id."""
+    return {
+        "uuid": "test-uuid-labeled",
+        "title": "測試有標籤活動",
+        "created_at": 1713110000000,
+        "updated_at": 1713110100000,
+        "note": "",
+        "location": "",
+        "location_lat": None,
+        "location_lon": None,
+        "url": "",
+        "start_at": 1713120000000,
+        "start_timezone": "Asia/Taipei",
+        "end_at": 1713123600000,
+        "end_timezone": "Asia/Taipei",
+        "all_day": False,
+        "alerts": None,
+        "recurrences": None,
+        "parent_id": "",
+        "type": TimeTreeEventType.NORMAL,
+        "category": TimeTreeEventCategory.NORMAL,
+        "label_id": 3,
+    }
+
+
+@pytest.fixture
+def relationship_label_event_data():
+    """Fixture for event data with label in relationships format."""
+    return {
+        "uuid": "test-uuid-rel-label",
+        "title": "測試關係標籤活動",
+        "created_at": 1713110000000,
+        "updated_at": 1713110100000,
+        "note": "",
+        "location": "",
+        "location_lat": None,
+        "location_lon": None,
+        "url": "",
+        "start_at": 1713120000000,
+        "start_timezone": "Asia/Taipei",
+        "end_at": 1713123600000,
+        "end_timezone": "Asia/Taipei",
+        "all_day": False,
+        "alerts": None,
+        "recurrences": None,
+        "parent_id": "",
+        "type": TimeTreeEventType.NORMAL,
+        "category": TimeTreeEventCategory.NORMAL,
+        "relationships": {
+            "label": {
+                "data": {
+                    "id": "12345,7",
+                    "type": "label",
+                }
+            }
+        },
+    }
+
+
+@pytest.fixture
 def temp_event_file():
     """Create a temporary file with event data for testing."""
     event_data = {

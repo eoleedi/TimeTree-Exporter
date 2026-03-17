@@ -163,6 +163,27 @@ def test_no_alarms_location_url(normal_event_data):
     assert len(components) == 0
 
 
+def test_categories_with_label_name(normal_event_data):
+    """Test that CATEGORIES is set when label_name is provided."""
+    event = TimeTreeEvent.from_dict(normal_event_data)
+    formatter = ICalEventFormatter(event, label_name="Work")
+    assert formatter.categories == "Work"
+
+    ical_event = formatter.to_ical()
+    assert "CATEGORIES" in ical_event
+    assert ical_event["CATEGORIES"].cats == ["Work"]
+
+
+def test_categories_without_label_name(normal_event_data):
+    """Test that CATEGORIES is not set when label_name is None."""
+    event = TimeTreeEvent.from_dict(normal_event_data)
+    formatter = ICalEventFormatter(event)
+    assert formatter.categories is None
+
+    ical_event = formatter.to_ical()
+    assert "CATEGORIES" not in ical_event
+
+
 def test_different_timezones(normal_event_data):
     """Test event with different start and end timezones."""
     # Create an event with different start and end timezones
