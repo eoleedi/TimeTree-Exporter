@@ -56,7 +56,7 @@ python_functions = "test_*"
 
 [dependency-groups]
 dev = [
-    "pylint<4.0.0,>=3.3.9",
+    "pylint>=3.3.9,<5.0.0",
     "pre-commit<5.0.0,>=4.3.0",
     "black>=24.10,<27.0",
     "pytest<9.0.0,>=8.4.2",
