@@ -42,9 +42,6 @@ class TimeTreeCalendar:
     def get_labels(self, calendar_id: int):
         """
         Get labels for a calendar.
-
-        Tries multiple endpoint patterns since the internal API format
-        may differ from the official JSON:API.
         """
         headers = {
             "Content-Type": "application/json",
