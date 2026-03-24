@@ -79,10 +79,9 @@ class TimeTreeCalendar:
 
     @staticmethod
     def _parse_labels(r_json):
-        """Parse labels from various API response formats."""
+        """Parse labels from API response."""
         labels = {}
 
-        # Internal API format: `calendar_labels` array
         if "calendar_labels" in r_json:
             for label in r_json["calendar_labels"]:
                 label_id = label.get("id")
@@ -90,34 +89,6 @@ class TimeTreeCalendar:
                     "name": label.get("name", ""),
                     "color": TimeTreeCalendar._format_color(label.get("color", "")),
                 }
-            if labels:
-                return labels
-
-        # JSON:API `included` array format (official API)
-        if "included" in r_json:
-            for item in r_json["included"]:
-                if item.get("type") == "label":
-                    label_id = item.get("id")
-                    attrs = item.get("attributes", {})
-                    labels[label_id] = {
-                        "name": attrs.get("name", ""),
-                        "color": TimeTreeCalendar._format_color(
-                            attrs.get("color", "")
-                        ),
-                    }
-            if labels:
-                return labels
-
-        # Direct `labels` array at top level
-        if "labels" in r_json:
-            for label in r_json["labels"]:
-                label_id = label.get("id")
-                labels[label_id] = {
-                    "name": label.get("name", ""),
-                    "color": TimeTreeCalendar._format_color(label.get("color", "")),
-                }
-            if labels:
-                return labels
 
         return labels
 
