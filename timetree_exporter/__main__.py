@@ -192,9 +192,8 @@ def main():
 
     # Fetch labels if splitting by label
     labels = {}
-    if args.split_by_label:
-        labels = calendar_api.get_labels(calendar_id)
-        logger.info("Found %d labels", len(labels))
+    labels = calendar_api.get_labels(calendar_id)
+    logger.info("Found %d labels", len(labels))
 
     if args.split_by_label:
         # Group events by label_id
