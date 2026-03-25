@@ -17,6 +17,9 @@ This script works by scraping the TimeTree web app and converting the data to iC
 
 ## Installation
 
+> [!Note]
+> Timetree Exporter requires Python 3.10 or later.
+
 If you are on mac, you can install it using brew:
 
 ```bash
@@ -28,8 +31,6 @@ You can also install it using uvx, pip, or pipx:
 ```bash
 pip install timetree-exporter
 ```
-
-Timetree Exporter requires Python 3.10 or later.
 
 ## Usage
 
