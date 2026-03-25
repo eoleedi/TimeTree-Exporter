@@ -39,6 +39,56 @@ class TimeTreeCalendar:
             raise HTTPError("Failed to get calendar metadata")
         return response.json()["calendars"]
 
+    def get_labels(self, calendar_id: int):
+        """
+        Get labels for a calendar.
+        """
+        headers = {
+            "Content-Type": "application/json",
+            "X-Timetreea": API_USER_AGENT,
+        }
+
+        # Call dedicated labels endpoint (internal API pattern)
+        url = f"{API_BASEURI}/calendar/{calendar_id}/labels"
+        response = self.session.get(url, headers=headers)
+        logger.debug(
+            "GET %s -> %d\n%s",
+            url, response.status_code,
+            json.dumps(response.json(), indent=2, ensure_ascii=False)
+            if response.status_code == 200 else response.text,
+        )
+
+        labels = {}
+
+        if response.status_code == 200:
+            r_json = response.json()
+            labels = self._parse_labels(r_json)
+
+        logger.debug("Parsed %d labels: %s", len(labels), labels)
+        return labels
+
+    @staticmethod
+    def _format_color(color):
+        """Convert a color value to hex string if it's an integer."""
+        if isinstance(color, int):
+            return f"#{color:06x}"
+        return color
+
+    @staticmethod
+    def _parse_labels(r_json):
+        """Parse labels from API response."""
+        labels = {}
+
+        if "calendar_labels" in r_json:
+            for label in r_json["calendar_labels"]:
+                label_id = label.get("id")
+                labels[label_id] = {
+                    "name": label.get("name", ""),
+                    "color": TimeTreeCalendar._format_color(label.get("color", "")),
+                }
+
+        return labels
+
     def get_events_recur(self, calendar_id: int, since: int):
         """
         Get events from the calendar.(Recursively)
