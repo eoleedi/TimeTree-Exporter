@@ -3,9 +3,9 @@
 from datetime import datetime, timedelta
 from zoneinfo import ZoneInfo
 
-
 from icalendar import Event
 from icalendar.prop import vDuration
+
 from timetree_exporter.event import (
     TimeTreeEvent,
     TimeTreeEventType,

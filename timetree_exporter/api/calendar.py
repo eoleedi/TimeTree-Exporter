@@ -53,9 +53,11 @@ class TimeTreeCalendar:
         response = self.session.get(url, headers=headers)
         logger.debug(
             "GET %s -> %d\n%s",
-            url, response.status_code,
+            url,
+            response.status_code,
             json.dumps(response.json(), indent=2, ensure_ascii=False)
-            if response.status_code == 200 else response.text,
+            if response.status_code == 200
+            else response.text,
         )
 
         labels = {}
