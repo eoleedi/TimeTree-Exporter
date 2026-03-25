@@ -237,19 +237,21 @@ def label_suffix_for_group(group_key, labels):
 
 def write_split_calendars(grouped_events, labels, output, event_count):
     """Write grouped events into separate calendar files."""
-    output_stem, output_ext = Path(output).stem, Path(output).suffix
-    if not output_ext:
-        output_ext = ".ics"
+    output_path = Path(output)
 
     for group_key, ical_events in grouped_events.items():
         label_suffix = label_suffix_for_group(group_key, labels)
         cal = create_calendar()
         for ical_event in ical_events:
             cal.add_component(ical_event)
-
-        output_path = f"{output_stem}_{label_suffix}{output_ext}"
+        if output_path.suffix:
+            split_path = output_path.with_name(
+                f"{output_path.stem}_{label_suffix}{output_path.suffix}"
+            )
+        else:
+            split_path = output_path.with_name(f"{output_path.name}_{label_suffix}.ics")
         logger.info("%d events for label '%s'", len(ical_events), label_suffix)
-        write_calendar(cal, output_path)
+        write_calendar(cal, split_path)
 
     total = sum(len(evts) for evts in grouped_events.values())
     logger.info(
