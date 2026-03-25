@@ -10,6 +10,11 @@ A Tool for Exporting TimeTree Calendar and Convert to iCal format(.ics) \
 This script works by scraping the TimeTree web app and converting the data to iCal format.
 (The .ics file can then be imported into other calendar apps such as Google Calendar, Apple Calendar, Outlook Calendar, etc.)
 
+> [!Warning]
+> This is an independent, community-built project and is not affiliated with or endorsed by TimeTree, Inc.
+> It uses unofficial, reverse-engineered TimeTree web APIs, which may change or stop working at any time without notice. As a result, the tool could break unexpectedly.
+> Please use it responsibly—sending too many requests in a short period may lead to rate limiting, temporary blocks, or other restrictions from TimeTree.
+
 ## Installation
 
 If you are on mac, you can install it using brew:
@@ -18,7 +23,7 @@ If you are on mac, you can install it using brew:
 brew install eoleedi/tap/timetree-exporter
 ```
 
-You can also install it using pip or pipx:
+You can also install it using uvx, pip, or pipx:
 
 ```bash
 pip install timetree-exporter
@@ -40,13 +45,13 @@ Then, you can import the ics file to your calendar app.
 
 ### Advanced Usage
 
-- You can specify your email address using the `-e` option.
+- Specify your email address using the `-e` option.
 
     ```bash
     timetree-exporter -e email@example.com
     ```
 
-- You can specify the calendar code using the `-c` or `--calendar_code` option.
+- Specify the calendar code using the `-c` or `--calendar_code` option.
 
     ```bash
     timetree-exporter -c calendar_code
@@ -60,6 +65,14 @@ Then, you can import the ics file to your calendar app.
   export TIMETREE_EMAIL=email@example.com
   export TIMETREE_PASSWORD=password
   ```
+
+- Create separate ICS files for each label with a custom output directory.
+
+   ```bash
+   timetree-exporter --split-by-label
+   ```
+
+   This creates individual ICS files for each label (e.g., `timetree_work.ics`, `timetree_personal.ics`).
 
 ## Limitations
 
@@ -91,19 +104,19 @@ This project uses [uv](https://docs.astral.sh/uv/) for dependency management.
    uv run pre-commit install
    ```
 
-### Running Tests
+### Run Tests
 
 ```bash
 uv run pytest tests
 ```
 
-### Running Linter
+### Run Linter
 
 ```bash
 uv run ruff check --fix .
 ```
 
-### Running Formatter
+### Run Formatter
 
 ```bash
 uv run ruff format .
