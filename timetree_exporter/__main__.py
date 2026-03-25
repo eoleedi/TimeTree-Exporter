@@ -106,9 +106,8 @@ def sanitize_filename(name):
     return re.sub(r"[^\w\-]", "_", name).strip("_")
 
 
-def main():
-    """Main function for the Timetree Exporter."""
-    # Parse arguments
+def parse_args():
+    """Parse CLI arguments."""
     parser = argparse.ArgumentParser(
         description="Convert Timetree events to iCal format",
         prog="timetree_exporter",
@@ -155,117 +154,150 @@ def main():
         help="Export events into separate .ics files grouped by label",
         action="store_true",
     )
-    args = parser.parse_args()
+    return parser.parse_args()
 
-    if args.email:
-        email = args.email
-    elif os.environ.get("TIMETREE_EMAIL"):
-        email = os.environ.get("TIMETREE_EMAIL")
-    else:
-        email = input("Enter your email address: ")
 
-    if os.environ.get("TIMETREE_PASSWORD"):
-        password = os.environ.get("TIMETREE_PASSWORD")
-    else:
-        password = safe_getpass(prompt="Enter your password: ", echo_char="*")
+def resolve_email(cli_email):
+    """Resolve email from CLI arg, env var, or prompt."""
+    if cli_email:
+        return cli_email
+    env_email = os.environ.get("TIMETREE_EMAIL")
+    if env_email:
+        return env_email
+    return input("Enter your email address: ")
 
-    # Set logging level
-    if args.verbose:
+
+def resolve_password():
+    """Resolve password from env var or prompt."""
+    env_password = os.environ.get("TIMETREE_PASSWORD")
+    if env_password:
+        return env_password
+    return safe_getpass(prompt="Enter your password: ", echo_char="*")
+
+
+def configure_logging(verbose):
+    """Configure package logging level based on CLI flags."""
+    if verbose:
         package_logger.setLevel(logging.DEBUG)
 
+
+def list_labels_and_exit(calendar_api, calendar_id):
+    """Print labels for a calendar and return."""
+    labels = calendar_api.get_labels(calendar_id)
+    if not labels:
+        print("No labels found (the API response format may differ — use -v to debug)")
+        return
+
+    for i, (_label_id, label_info) in enumerate(labels.items(), 1):
+        print(f"{i}. {label_info['name']} ({label_info['color']})")
+
+
+def fetch_labels(calendar_api, calendar_id):
+    """Fetch labels and log count."""
+    labels = calendar_api.get_labels(calendar_id)
+    logger.info("Found %d labels", len(labels))
+    return labels
+
+
+def build_single_calendar(events, labels):
+    """Build single output calendar from events."""
+    cal = create_calendar()
+    label_lookup = {lid: info["name"] for lid, info in labels.items()} if labels else {}
+
+    for event in events:
+        time_tree_event = TimeTreeEvent.from_dict(event)
+        label_name = label_lookup.get(time_tree_event.label_id)
+        formatter = ICalEventFormatter(time_tree_event, label_name=label_name)
+        ical_event = formatter.to_ical()
+        if ical_event is not None:
+            cal.add_component(ical_event)
+
+    return cal
+
+
+def group_events_by_label(events, labels):
+    """Group converted iCal events by label id (or None for unlabeled)."""
+    grouped = defaultdict(list)
+
+    for event in events:
+        time_tree_event = TimeTreeEvent.from_dict(event)
+        label_info = labels.get(time_tree_event.label_id)
+        label_name = label_info["name"] if label_info is not None else None
+        formatter = ICalEventFormatter(time_tree_event, label_name=label_name)
+        ical_event = formatter.to_ical()
+
+        if ical_event is None:
+            continue
+
+        group_key = time_tree_event.label_id if label_info is not None else None
+        grouped[group_key].append(ical_event)
+
+    return grouped
+
+
+def label_suffix_for_group(group_key, labels):
+    """Return output filename suffix for a label group."""
+    if group_key is None:
+        return "unlabeled"
+    return sanitize_filename(labels[group_key]["name"])
+
+
+def write_split_calendars(grouped_events, labels, output, event_count):
+    """Write grouped events into separate calendar files."""
+    output_stem, output_ext = os.path.splitext(output)
+    if not output_ext:
+        output_ext = ".ics"
+
+    for group_key, ical_events in grouped_events.items():
+        label_suffix = label_suffix_for_group(group_key, labels)
+        cal = create_calendar()
+        for ical_event in ical_events:
+            cal.add_component(ical_event)
+
+        output_path = f"{output_stem}_{label_suffix}{output_ext}"
+        logger.info("%d events for label '%s'", len(ical_events), label_suffix)
+        write_calendar(cal, output_path)
+
+    total = sum(len(evts) for evts in grouped_events.values())
+    logger.info(
+        "A total of %d/%d events split into %d files",
+        total,
+        event_count,
+        len(grouped_events),
+    )
+
+
+def main():
+    """Main function for the Timetree Exporter."""
+    args = parse_args()
+    configure_logging(args.verbose)
+
+    email = resolve_email(args.email)
+    password = resolve_password()
     calendar_api, calendar_id, calendar_name = select_calendar(
         email, password, args.calendar_code
     )
 
-    # --list-labels: print labels and exit
     if args.list_labels:
-        labels = calendar_api.get_labels(calendar_id)
-        if not labels:
-            print("No labels found (the API response format may differ — use -v to debug)")
-        else:
-            for i, (_label_id, label_info) in enumerate(labels.items(), 1):
-                print(f"{i}. {label_info['name']} ({label_info['color']})")
+        list_labels_and_exit(calendar_api, calendar_id)
         return
 
     events = calendar_api.get_events(calendar_id, calendar_name)
     logger.info("Found %d events", len(events))
-
-    # Fetch labels if splitting by label
-    labels = {}
-    labels = calendar_api.get_labels(calendar_id)
-    logger.info("Found %d labels", len(labels))
+    labels = fetch_labels(calendar_api, calendar_id)
 
     if args.split_by_label:
-        # Group events by label_id
-        grouped = defaultdict(list)
-        for event in events:
-            time_tree_event = TimeTreeEvent.from_dict(event)
-            formatter_label_name = None
-            group_key = None
+        grouped_events = group_events_by_label(events, labels)
+        write_split_calendars(grouped_events, labels, args.output, len(events))
+        return
 
-            if time_tree_event.label_id is not None and time_tree_event.label_id in labels:
-                label_info = labels[time_tree_event.label_id]
-                formatter_label_name = label_info["name"]
-                group_key = time_tree_event.label_id
-            else:
-                group_key = None  # unlabeled
-
-            formatter = ICalEventFormatter(time_tree_event, label_name=formatter_label_name)
-            ical_event = formatter.to_ical()
-            if ical_event is not None:
-                grouped[group_key].append(ical_event)
-
-        # Write each group to a separate file
-        output_stem, output_ext = os.path.splitext(args.output)
-        if not output_ext:
-            output_ext = ".ics"
-
-        for group_key, ical_events in grouped.items():
-            if group_key is None:
-                label_suffix = "unlabeled"
-            else:
-                label_suffix = sanitize_filename(labels[group_key]["name"])
-
-            cal = create_calendar()
-            for ical_event in ical_events:
-                cal.add_component(ical_event)
-
-            output_path = f"{output_stem}_{label_suffix}{output_ext}"
-            logger.info(
-                "%d events for label '%s'", len(ical_events), label_suffix
-            )
-            write_calendar(cal, output_path)
-
-        total = sum(len(evts) for evts in grouped.values())
-        logger.info(
-            "A total of %d/%d events split into %d files",
-            total, len(events), len(grouped),
-        )
-    else:
-        # Standard single-file export
-        cal = create_calendar()
-
-        # Build label lookup for CATEGORIES
-        label_lookup = {}
-        if labels:
-            label_lookup = {lid: info["name"] for lid, info in labels.items()}
-
-        for event in events:
-            time_tree_event = TimeTreeEvent.from_dict(event)
-            label_name = label_lookup.get(time_tree_event.label_id)
-            formatter = ICalEventFormatter(time_tree_event, label_name=label_name)
-            ical_event = formatter.to_ical()
-            if ical_event is None:
-                continue
-            cal.add_component(ical_event)
-
-        logger.info(
-            "A total of %d/%d events are added to the calendar",
-            len(cal.subcomponents),
-            len(events),
-        )
-
-        write_calendar(cal, args.output)
+    cal = build_single_calendar(events, labels)
+    logger.info(
+        "A total of %d/%d events are added to the calendar",
+        len(cal.subcomponents),
+        len(events),
+    )
+    write_calendar(cal, args.output)
 
 
 if __name__ == "__main__":
