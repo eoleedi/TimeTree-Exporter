@@ -42,7 +42,8 @@ This will prompt you to enter your TimeTree email and password and select the ca
 
 Then, you can import the ics file to your calendar app.
 
-💡 Note: You are advised to import the ICS file into a separate calendar (e.g., Google Calendar) so that if anything goes wrong, you can simply delete the calendar and reimport it.
+> [!Note]
+>  💡 You are advised to import the ICS file into a separate calendar (e.g., Google Calendar) so that if anything goes wrong, you can simply delete the calendar and reimport it.
 
 ### Advanced Usage
 
