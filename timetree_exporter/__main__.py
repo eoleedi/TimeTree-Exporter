@@ -185,11 +185,18 @@ def list_labels_and_exit(calendar_api, calendar_id):
         return
 
     for i, (_label_id, label_info) in enumerate(labels.items(), 1):
-        color_hex = label_info["color"]
-        r = int(color_hex[1:3], 16)
-        g = int(color_hex[3:5], 16)
-        b = int(color_hex[5:7], 16)
-        print(f"{i:>2}. \033[38;2;{r};{g};{b}m●\033[0m {label_info['name']}")
+        color_hex = (label_info.get("color") or "").strip()
+        normalized = color_hex.lstrip("#")
+
+        if len(normalized) == 6 and re.fullmatch(r"[0-9A-Fa-f]{6}", normalized):
+            r = int(normalized[0:2], 16)
+            g = int(normalized[2:4], 16)
+            b = int(normalized[4:6], 16)
+            dot = f"\033[38;2;{r};{g};{b}m●\033[0m"
+        else:
+            dot = "●"
+
+        print(f"{i:>2}. {dot} {label_info['name']}")
 
 
 def fetch_labels(calendar_api, calendar_id):
