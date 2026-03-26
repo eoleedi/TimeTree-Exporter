@@ -1,5 +1,43 @@
 # Changelog
 
+## [0.7.0](https://github.com/eoleedi/TimeTree-Exporter/compare/v0.6.3...v0.7.0) (2026-03-26)
+
+
+### ⚠ BREAKING CHANGES
+
+* drop python 3.9 support as it reaches EOL ([#147](https://github.com/eoleedi/TimeTree-Exporter/issues/147))
+
+### Features
+
+* more transparent auth error type ([34d42e7](https://github.com/eoleedi/TimeTree-Exporter/commit/34d42e767bc2ffd0cef2fc28e81075849d3ccf71))
+* support label's color ([#158](https://github.com/eoleedi/TimeTree-Exporter/issues/158)) ([847c3ad](https://github.com/eoleedi/TimeTree-Exporter/commit/847c3ad2e6f184dc483b7c56abc291924647a968))
+* support labels ([#146](https://github.com/eoleedi/TimeTree-Exporter/issues/146)) ([ee6af78](https://github.com/eoleedi/TimeTree-Exporter/commit/ee6af78cdd283d669fea430688cb53685a62c100))
+
+
+### Bug Fixes
+
+* incorrect testing format ([78d6641](https://github.com/eoleedi/TimeTree-Exporter/commit/78d6641242fa7a337c0401de55c2f786f2f28e45))
+* keep the original path parent in output path ([d3df6cc](https://github.com/eoleedi/TimeTree-Exporter/commit/d3df6cc4a6e3fa7fae192da81bf7c38386843fc3))
+* unknown bug when google calendar process long timezone blocks ([cdbf416](https://github.com/eoleedi/TimeTree-Exporter/commit/cdbf416e181c0afec3e706ecafdf5307d081c48d))
+
+
+### Documentation
+
+* mark label ID as done ([dbc7578](https://github.com/eoleedi/TimeTree-Exporter/commit/dbc7578bd7d4c38e112a942ec7d210d052db3346))
+* update README.md ([1f7e207](https://github.com/eoleedi/TimeTree-Exporter/commit/1f7e20749d529d8abe137ec2228c49f57b2efc26))
+* update README.md ([360cfec](https://github.com/eoleedi/TimeTree-Exporter/commit/360cfecfe7520f03a9119e255b8cfbd85ffa6be6))
+* use note notation ([70f97a0](https://github.com/eoleedi/TimeTree-Exporter/commit/70f97a00a6b6789583633b5ac3b4e7899d366aba))
+
+
+### Build System
+
+* **deps-dev:** bump black in the uv group across 1 directory ([#149](https://github.com/eoleedi/TimeTree-Exporter/issues/149)) ([caf2beb](https://github.com/eoleedi/TimeTree-Exporter/commit/caf2beb9cce609aa64c7c0b2d7bc6a7c5d7a7e6d))
+* **deps-dev:** bump pre-commit from 4.5.0 to 4.5.1 ([#150](https://github.com/eoleedi/TimeTree-Exporter/issues/150)) ([598feb1](https://github.com/eoleedi/TimeTree-Exporter/commit/598feb146c1f7c716dccdb5d6680ac5c5b550a31))
+* **deps-dev:** bump pylint from 3.3.9 to 4.0.5 ([#153](https://github.com/eoleedi/TimeTree-Exporter/issues/153)) ([1b5a3d3](https://github.com/eoleedi/TimeTree-Exporter/commit/1b5a3d3df42632be730a6b972cc7b7cd786dc689))
+* **deps-dev:** bump pytest from 8.4.2 to 9.0.2 ([#151](https://github.com/eoleedi/TimeTree-Exporter/issues/151)) ([ce6573f](https://github.com/eoleedi/TimeTree-Exporter/commit/ce6573fb3383bcc980149a3874da16aa9d050028))
+* **deps:** bump icalendar from 6.3.2 to 7.0.3 ([#152](https://github.com/eoleedi/TimeTree-Exporter/issues/152)) ([5739ea1](https://github.com/eoleedi/TimeTree-Exporter/commit/5739ea1cec20d9d5d7138cc7e75c77e456279028))
+* drop python 3.9 support as it reaches EOL ([#147](https://github.com/eoleedi/TimeTree-Exporter/issues/147)) ([793888c](https://github.com/eoleedi/TimeTree-Exporter/commit/793888c903d3c4d99ae002cf8cccf0cd7edf4e72))
+
 ## [0.6.3](https://github.com/eoleedi/TimeTree-Exporter/compare/v0.6.2...v0.6.3) (2026-02-16)
 
 
