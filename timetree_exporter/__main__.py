@@ -199,11 +199,13 @@ def build_single_calendar(events, labels):
     """Build single output calendar from events."""
     cal = create_calendar()
     label_lookup = {lid: info["name"] for lid, info in labels.items()} if labels else {}
+    color_lookup = {lid: info["color"] for lid, info in labels.items()} if labels else {}
 
     for event in events:
         time_tree_event = TimeTreeEvent.from_dict(event)
         label_name = label_lookup.get(time_tree_event.label_id)
-        formatter = ICalEventFormatter(time_tree_event, label_name=label_name)
+        color = color_lookup.get(time_tree_event.label_id)
+        formatter = ICalEventFormatter(time_tree_event, label_name=label_name, color=color)
         ical_event = formatter.to_ical()
         if ical_event is not None:
             cal.add_component(ical_event)
@@ -219,7 +221,8 @@ def group_events_by_label(events, labels):
         time_tree_event = TimeTreeEvent.from_dict(event)
         label_info = labels.get(time_tree_event.label_id)
         label_name = label_info["name"] if label_info is not None else None
-        formatter = ICalEventFormatter(time_tree_event, label_name=label_name)
+        color = label_info["color"] if label_info is not None else None
+        formatter = ICalEventFormatter(time_tree_event, label_name=label_name, color=color)
         ical_event = formatter.to_ical()
 
         if ical_event is None:
