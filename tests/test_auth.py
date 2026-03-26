@@ -31,8 +31,8 @@ def test_login_invalid_credentials_raises_specific_error(monkeypatch):
     def _mock_put(*args, **kwargs):
         return MockResponse(
             status_code=401,
-            json_body={"meta": {"code": -702}},
-            text='{"meta":{"code":-702}}',
+            json_body={"error": {"code": -702}},
+            text='{"error":{"code":-702}}',
         )
 
     monkeypatch.setattr("timetree_exporter.api.auth.requests.put", _mock_put)
@@ -47,8 +47,8 @@ def test_login_rate_limited_raises_specific_error(monkeypatch):
     def _mock_put(*args, **kwargs):
         return MockResponse(
             status_code=429,
-            json_body={"meta": {"code": -495}},
-            text='{"meta":{"code":-495}}',
+            json_body={"error": {"code": -495}},
+            text='{"error":{"code":-495}}',
         )
 
     monkeypatch.setattr("timetree_exporter.api.auth.requests.put", _mock_put)
@@ -63,8 +63,8 @@ def test_login_unknown_error_code_raises_base_error(monkeypatch):
     def _mock_put(*args, **kwargs):
         return MockResponse(
             status_code=401,
-            json_body={"meta": {"code": -999}},
-            text='{"meta":{"code":-999}}',
+            json_body={"error": {"code": -999}},
+            text='{"error":{"code":-999}}',
         )
 
     monkeypatch.setattr("timetree_exporter.api.auth.requests.put", _mock_put)
