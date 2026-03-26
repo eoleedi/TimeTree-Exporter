@@ -185,7 +185,18 @@ def list_labels_and_exit(calendar_api, calendar_id):
         return
 
     for i, (_label_id, label_info) in enumerate(labels.items(), 1):
-        print(f"{i}. {label_info['name']} ({label_info['color']})")
+        color_hex = (label_info.get("color") or "").strip()
+        normalized = color_hex.lstrip("#")
+
+        if len(normalized) == 6 and re.fullmatch(r"[0-9A-Fa-f]{6}", normalized):
+            r = int(normalized[0:2], 16)
+            g = int(normalized[2:4], 16)
+            b = int(normalized[4:6], 16)
+            dot = f"\033[38;2;{r};{g};{b}m●\033[0m"
+        else:
+            dot = "●"
+
+        print(f"{i:>2}. {dot} {label_info['name']}")
 
 
 def fetch_labels(calendar_api, calendar_id):
@@ -199,11 +210,13 @@ def build_single_calendar(events, labels):
     """Build single output calendar from events."""
     cal = create_calendar()
     label_lookup = {lid: info["name"] for lid, info in labels.items()} if labels else {}
+    color_lookup = {lid: info["color"] for lid, info in labels.items()} if labels else {}
 
     for event in events:
         time_tree_event = TimeTreeEvent.from_dict(event)
         label_name = label_lookup.get(time_tree_event.label_id)
-        formatter = ICalEventFormatter(time_tree_event, label_name=label_name)
+        color = color_lookup.get(time_tree_event.label_id)
+        formatter = ICalEventFormatter(time_tree_event, label_name=label_name, color=color)
         ical_event = formatter.to_ical()
         if ical_event is not None:
             cal.add_component(ical_event)
@@ -219,7 +232,8 @@ def group_events_by_label(events, labels):
         time_tree_event = TimeTreeEvent.from_dict(event)
         label_info = labels.get(time_tree_event.label_id)
         label_name = label_info["name"] if label_info is not None else None
-        formatter = ICalEventFormatter(time_tree_event, label_name=label_name)
+        color = label_info["color"] if label_info is not None else None
+        formatter = ICalEventFormatter(time_tree_event, label_name=label_name, color=color)
         ical_event = formatter.to_ical()
 
         if ical_event is None:

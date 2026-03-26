@@ -26,9 +26,36 @@ class ICalEventFormatter:
     Class for formatting TimeTree events into iCalendar format.
     """
 
-    def __init__(self, time_tree_event: TimeTreeEvent, label_name: str = None):
+    def __init__(self, time_tree_event: TimeTreeEvent, label_name: str = None, color: str = None):
         self.time_tree_event = time_tree_event
         self.label_name = label_name
+        self._color = color
+
+    @property
+    def color(self):
+        """Return the validated color value."""
+        if self._color is None:
+            return None
+        if self._is_valid_hex_color(self._color):
+            return self._color
+        logger.warning("Invalid color format: %s. Expected hex color (e.g., #RRGGBB)", self._color)
+        return None
+
+    @staticmethod
+    def _is_valid_hex_color(color: str) -> bool:
+        logger.debug(f"Validating color: {color}")
+        """Validate hex color format."""
+        if not isinstance(color, str):
+            return False
+        color = color.strip()
+        # Check for hex color format: #RRGGBB or #RRGGBBAA
+        if color.startswith("#") and len(color) in (7, 9):
+            try:
+                int(color[1:], 16)
+                return True
+            except ValueError:
+                return False
+        return False
 
     @property
     def categories(self):
@@ -205,6 +232,8 @@ class ICalEventFormatter:
             event.add("related-to", self.related_to)
         if self.categories:
             event.add("categories", [self.categories])
+        if self.color:
+            event.add("color", self.color)
 
         for alarm in self.alarms:
             event.add_component(alarm)
