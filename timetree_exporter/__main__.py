@@ -85,7 +85,10 @@ def create_calendar():
 
 def write_calendar(cal, output_path: str):
     """Write a calendar to an .ics file."""
-    cal.add_missing_timezones()
+    # Disable add missing timezones for since it causes issues with Google Calendar. See Issue #157
+    # TODO: Revisit this after bug fixed in Google Calendar
+    # cal.add_missing_timezones()
+
     # Transform the output path to a Path object for better handling
     path = Path(output_path)
     with path.open("wb") as f:
