@@ -24,7 +24,7 @@ requires-python = "<4.0,>=3.10"
 dynamic = []
 dependencies = [
     "icalendar>=6.1.0,<8.0.0",
-    "tzdata<2026.0,>=2024.2",
+    "tzdata>=2024.2,<2027.0",
     "requests<3.0.0,>=2.32.5",
     "pwinput-eoleedi>=1.0.3.post1,<2.0.0.0 ; python_full_version < '3.14'",
 ]
