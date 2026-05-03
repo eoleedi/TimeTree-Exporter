@@ -1,6 +1,6 @@
 """Tests for CLI entry helpers in __main__."""
 
-from timetree_exporter.__main__ import list_labels_and_exit
+from timetree_exporter.__main__ import label_suffix_for_group, list_labels_and_exit
 
 
 class _FakeCalendarApi:
@@ -22,3 +22,17 @@ def test_list_labels_and_exit_handles_invalid_or_missing_color(capsys):
     assert "Empty" in output
     assert "Malformed" in output
     assert "\033[38;2;255;0;170m●\033[0m" in output
+
+
+def test_label_suffix_for_group_uses_label_id_when_name_is_empty():
+    """Unnamed color-only labels should still produce unique output filenames."""
+    labels = {3: {"name": "", "color": "#ff00aa"}}
+
+    assert label_suffix_for_group(3, labels) == "label_3"
+
+
+def test_label_suffix_for_group_sanitizes_label_name():
+    """Named labels should keep their name while remaining filename safe."""
+    labels = {3: {"name": "Work / Home", "color": "#ff00aa"}}
+
+    assert label_suffix_for_group(3, labels) == "Work___Home"

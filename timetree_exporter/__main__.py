@@ -249,7 +249,10 @@ def label_suffix_for_group(group_key, labels):
     """Return output filename suffix for a label group."""
     if group_key is None:
         return "unlabeled"
-    return sanitize_filename(labels[group_key]["name"])
+    name = sanitize_filename(labels[group_key]["name"])
+    if name:
+        return name
+    return sanitize_filename(f"label_{group_key}")
 
 
 def write_split_calendars(grouped_events, labels, output, event_count):
