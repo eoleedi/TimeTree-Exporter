@@ -1,5 +1,33 @@
 # Changelog
 
+## [0.7.1](https://github.com/eoleedi/TimeTree-Exporter/compare/v0.7.0...v0.7.1) (2026-05-06)
+
+
+### Bug Fixes
+
+* correct all-day multi-day event end dates ([23ea414](https://github.com/eoleedi/TimeTree-Exporter/commit/23ea41475e3a944aa0399ad99afec9bfd3f07b31))
+* handle unnamed labels when splitting exports ([cc823a2](https://github.com/eoleedi/TimeTree-Exporter/commit/cc823a25ee01c8a02b4df8b26e2bd56ea19cafa3))
+
+
+### Documentation
+
+* clarify label color limitations ([257c5aa](https://github.com/eoleedi/TimeTree-Exporter/commit/257c5aa7c8324cbe2136bdc29f3f83fa16b30488))
+
+
+### Build System
+
+* **deps-dev:** bump pre-commit from 4.5.1 to 4.6.0 ([5e336ac](https://github.com/eoleedi/TimeTree-Exporter/commit/5e336ac1b6724cfbdc8bb2d8d6838568c5033209))
+* **deps-dev:** bump pre-commit-hooks from v5.0.0 to v6.0.0 ([4ec6b33](https://github.com/eoleedi/TimeTree-Exporter/commit/4ec6b3390c540073ec5edf3e2886a98d8aa92a52))
+* **deps-dev:** bump pytest from 9.0.2 to 9.0.3 ([99df3f9](https://github.com/eoleedi/TimeTree-Exporter/commit/99df3f96a94506e50f560f60501fb542b24123cf))
+* **deps-dev:** bump ruff from 0.15.7 to 0.15.9 ([ff43230](https://github.com/eoleedi/TimeTree-Exporter/commit/ff432307b0e9569c6d22a311be52f7f3291d4fb2))
+* **deps-dev:** bump ruff from 0.15.9 to 0.15.12 ([d01a14e](https://github.com/eoleedi/TimeTree-Exporter/commit/d01a14eb78fa576dbbf5ba71f200cd568386d4f4))
+* **deps:** bump googleapis/release-please-action from 4 to 5 ([db7b519](https://github.com/eoleedi/TimeTree-Exporter/commit/db7b5198683b1cdc6e96708513a58f38f979933d))
+* **deps:** bump icalendar from 7.0.3 to 7.1.0 ([ed2d28b](https://github.com/eoleedi/TimeTree-Exporter/commit/ed2d28bfbf51895ecf6f70217939165eb22c57d1))
+* **deps:** bump requests from 2.32.5 to 2.33.1 ([be808e9](https://github.com/eoleedi/TimeTree-Exporter/commit/be808e9b4e82e82729d7e2aab75c4ec4420245da))
+* **deps:** bump tzdata from 2025.3 to 2026.1 ([7c86656](https://github.com/eoleedi/TimeTree-Exporter/commit/7c86656106d46a46c6e050462210d79e55673c88))
+* **deps:** bump tzdata from 2026.1 to 2026.2 ([1b0fbee](https://github.com/eoleedi/TimeTree-Exporter/commit/1b0fbee875dbbff2083851e2d16cfc1ecd2036a8))
+* **deps:** update uv lock ([36cb1a6](https://github.com/eoleedi/TimeTree-Exporter/commit/36cb1a6b6accf380a83561ae56bed13e3abb36bf))
+
 ## [0.7.0](https://github.com/eoleedi/TimeTree-Exporter/compare/v0.6.3...v0.7.0) (2026-03-26)
 
 
