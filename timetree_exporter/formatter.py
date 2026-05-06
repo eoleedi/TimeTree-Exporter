@@ -123,12 +123,14 @@ class ICalEventFormatter:
             timezone = self.time_tree_event.end_timezone
 
         if self.time_tree_event.all_day:
-            return vDate(
-                convert_timestamp_to_datetime(
-                    time / 1000,
-                    ZoneInfo(timezone),
-                )
+            datetime_value = convert_timestamp_to_datetime(
+                time / 1000,
+                ZoneInfo(timezone),
             )
+            if not is_start_time:
+                # RFC 5545 all-day DTEND is exclusive.
+                datetime_value += timedelta(days=1)
+            return vDate(datetime_value)
         return vDatetime(
             convert_timestamp_to_datetime(
                 time / 1000,

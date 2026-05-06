@@ -1,6 +1,6 @@
 """Tests for the formatter module."""
 
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
 from zoneinfo import ZoneInfo
 
 from icalendar import Event
@@ -132,6 +132,29 @@ def test_all_day_event(birthday_event_data):
     ical_event = formatter.to_ical()
     assert isinstance(ical_event, Event)
     assert ical_event["summary"] == all_day_data["title"]
+
+
+def test_multi_day_all_day_event_dtend_is_exclusive(normal_event_data):
+    """Test all-day multi-day events export with exclusive iCal DTEND."""
+    data = normal_event_data.copy()
+    data.update(
+        {
+            "start_at": int(
+                datetime(2024, 8, 14, tzinfo=ZoneInfo("Asia/Taipei")).timestamp() * 1000
+            ),
+            "end_at": int(datetime(2024, 8, 16, tzinfo=ZoneInfo("Asia/Taipei")).timestamp() * 1000),
+            "all_day": True,
+            "alerts": None,
+            "recurrences": None,
+        }
+    )
+
+    event = TimeTreeEvent.from_dict(data)
+    formatter = ICalEventFormatter(event)
+    ical_event = formatter.to_ical()
+
+    assert ical_event["dtstart"].dt.date() == date(2024, 8, 14)
+    assert ical_event["dtend"].dt.date() == date(2024, 8, 17)
 
 
 def test_no_alarms_location_url(normal_event_data):
