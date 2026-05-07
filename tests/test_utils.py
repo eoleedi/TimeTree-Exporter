@@ -1,13 +1,18 @@
 """Tests for the utils module."""
 
 import tempfile
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
+from timetree_exporter.__main__ import create_calendar
+from timetree_exporter.event import TimeTreeEvent
+from timetree_exporter.formatter import ICalEventFormatter
 from timetree_exporter.utils import (
+    add_bounded_timezones_before_events,
     convert_timestamp_to_datetime,
     get_events_from_file,
+    get_timezone_date_ranges,
     paths_to_filelist,
 )
 
@@ -125,3 +130,48 @@ def test_convert_timestamp_to_datetime():
     assert tokyo_dt.month == 1
     assert tokyo_dt.day == 1
     assert tokyo_dt.hour == 9  # 東京比UTC快9小時
+
+
+def test_get_timezone_date_ranges(normal_event_data):
+    """Test collecting bounded date ranges for each referenced TZID."""
+    data = normal_event_data.copy()
+    taipei_time = datetime(2024, 8, 14, 9, 30, tzinfo=ZoneInfo("Asia/Taipei"))
+    data["start_at"] = int(taipei_time.timestamp() * 1000)
+    data["end_at"] = int((taipei_time + timedelta(hours=1)).timestamp() * 1000)
+
+    cal = create_calendar()
+    cal.add_component(ICalEventFormatter(TimeTreeEvent.from_dict(data)).to_ical())
+
+    assert get_timezone_date_ranges(cal) == {
+        "Asia/Taipei": (taipei_time.date(), taipei_time.date())
+    }
+
+
+def test_add_bounded_timezones_warns_when_blocks_exceed_200_lines(
+    monkeypatch, caplog, normal_event_data
+):
+    """Warn when generated VTIMEZONE blocks may trigger Google Calendar parsing bugs."""
+    data = normal_event_data.copy()
+    data["start_timezone"] = "America/New_York"
+    data["end_timezone"] = "America/New_York"
+    new_york_time = datetime(2024, 8, 14, 9, 30, tzinfo=ZoneInfo("America/New_York"))
+    data["start_at"] = int(new_york_time.timestamp() * 1000)
+    data["end_at"] = int((new_york_time + timedelta(hours=1)).timestamp() * 1000)
+
+    cal = create_calendar()
+    cal.add_component(ICalEventFormatter(TimeTreeEvent.from_dict(data)).to_ical())
+
+    class _LargeTimezone:
+        name = "VTIMEZONE"
+
+        def to_ical(self):
+            return ("BEGIN:VTIMEZONE\n" + "X-LINE:1\n" * 201 + "END:VTIMEZONE\n").encode()
+
+    monkeypatch.setattr(
+        "timetree_exporter.utils.Timezone.from_tzid",
+        lambda *_args, **_kwargs: _LargeTimezone(),
+    )
+
+    add_bounded_timezones_before_events(cal)
+
+    assert "Generated VTIMEZONE blocks contain 203 lines" in caplog.text

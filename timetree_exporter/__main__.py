@@ -15,7 +15,7 @@ from icalendar import Calendar
 from timetree_exporter import ICalEventFormatter, TimeTreeEvent, __version__
 from timetree_exporter.api.auth import login
 from timetree_exporter.api.calendar import TimeTreeCalendar
-from timetree_exporter.utils import safe_getpass
+from timetree_exporter.utils import add_bounded_timezones_before_events, safe_getpass
 
 logger = logging.getLogger(__name__)
 package_logger = logging.getLogger(__package__)
@@ -85,9 +85,7 @@ def create_calendar():
 
 def write_calendar(cal, output_path: str):
     """Write a calendar to an .ics file."""
-    # Disable add missing timezones for since it causes issues with Google Calendar. See Issue #157
-    # TODO: Revisit this after bug fixed in Google Calendar
-    # cal.add_missing_timezones()
+    add_bounded_timezones_before_events(cal)
 
     # Transform the output path to a Path object for better handling
     path = Path(output_path)

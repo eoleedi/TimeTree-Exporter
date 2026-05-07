@@ -4,9 +4,11 @@ import getpass
 import inspect
 import json
 import logging
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
 from pathlib import Path
 from zoneinfo import ZoneInfo
+
+from icalendar import Timezone
 
 logger = logging.getLogger(__name__)
 
@@ -53,6 +55,69 @@ def convert_timestamp_to_datetime(timestamp, tzinfo=None):
     if timestamp >= 0:
         return datetime.fromtimestamp(timestamp, tzinfo)
     return datetime.fromtimestamp(0, tzinfo) + timedelta(seconds=int(timestamp))
+
+
+def get_timezone_date_ranges(cal):
+    """Return the exported event date range for each referenced TZID."""
+    ranges = {}
+
+    for component in cal.subcomponents:
+        if component.name != "VEVENT":
+            continue
+
+        for property_name in ("dtstart", "dtend"):
+            property_value = component.get(property_name)
+            if property_value is None:
+                continue
+
+            tzid = property_value.params.get("TZID")
+            if not tzid:
+                continue
+
+            datetime_value = property_value.dt
+            event_date = (
+                datetime_value.date() if isinstance(datetime_value, datetime) else datetime_value
+            )
+            if not isinstance(event_date, date):
+                continue
+
+            first_date, last_date = ranges.get(tzid, (event_date, event_date))
+            ranges[tzid] = (min(first_date, event_date), max(last_date, event_date))
+
+    return ranges
+
+
+def add_bounded_timezones_before_events(cal):
+    """Add VTIMEZONE components bounded to the exported event date ranges."""
+    timezone_components = []
+
+    for tzid, (first_date, last_date) in sorted(get_timezone_date_ranges(cal).items()):
+        logger.debug(
+            "Adding VTIMEZONE for TZID=%s with date range %s to %s", tzid, first_date, last_date
+        )
+        try:
+            timezone = Timezone.from_tzid(
+                tzid,
+                first_date=first_date - timedelta(days=1),
+                last_date=last_date + timedelta(days=1),
+            )
+        except ValueError:
+            logger.warning("Skipping unknown timezone: %s", tzid)
+            continue
+
+        timezone_components.append(timezone)
+
+    if timezone_components:
+        timezone_line_count = sum(
+            len(timezone.to_ical().decode("utf-8").splitlines()) for timezone in timezone_components
+        )
+        if timezone_line_count > 200:
+            logger.warning(
+                "Generated VTIMEZONE blocks contain %d lines; Google Calendar may fail to "
+                "import the file correctly or corrupt non-ASCII text",
+                timezone_line_count,
+            )
+        cal.subcomponents = timezone_components + cal.subcomponents
 
 
 def safe_getpass(prompt="Password: ", echo_char=None):

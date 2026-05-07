@@ -1,6 +1,16 @@
 """Tests for CLI entry helpers in __main__."""
 
-from timetree_exporter.__main__ import label_suffix_for_group, list_labels_and_exit
+from datetime import datetime, timedelta
+from zoneinfo import ZoneInfo
+
+from timetree_exporter.__main__ import (
+    create_calendar,
+    label_suffix_for_group,
+    list_labels_and_exit,
+    write_calendar,
+)
+from timetree_exporter.event import TimeTreeEvent
+from timetree_exporter.formatter import ICalEventFormatter
 
 
 class _FakeCalendarApi:
@@ -36,3 +46,24 @@ def test_label_suffix_for_group_sanitizes_label_name():
     labels = {3: {"name": "Work / Home", "color": "#ff00aa"}}
 
     assert label_suffix_for_group(3, labels) == "Work___Home"
+
+
+def test_write_calendar_adds_bounded_vtimezone_before_events(tmp_path, normal_event_data):
+    """Bounded VTIMEZONE components should be written before VEVENT blocks."""
+    data = normal_event_data.copy()
+    taipei_time = datetime(2024, 8, 14, 9, 30, tzinfo=ZoneInfo("Asia/Taipei"))
+    data["start_at"] = int(taipei_time.timestamp() * 1000)
+    data["end_at"] = int((taipei_time + timedelta(hours=1)).timestamp() * 1000)
+
+    cal = create_calendar()
+    cal.add_component(ICalEventFormatter(TimeTreeEvent.from_dict(data)).to_ical())
+    output_path = tmp_path / "calendar.ics"
+
+    write_calendar(cal, output_path)
+    serialized = output_path.read_text(encoding="utf-8")
+
+    assert "DTSTART;TZID=Asia/Taipei:20240814T093000" in serialized
+    assert "BEGIN:VTIMEZONE" in serialized
+    assert "TZID:Asia/Taipei" in serialized
+    assert "TZOFFSETTO:+0800" in serialized
+    assert serialized.index("BEGIN:VTIMEZONE") < serialized.index("BEGIN:VEVENT")
