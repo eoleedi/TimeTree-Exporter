@@ -4,7 +4,7 @@ for formatting TimeTree events into iCalendar format.
 """
 
 import logging
-from datetime import datetime, timedelta
+from datetime import date, datetime, time, timedelta
 from zoneinfo import ZoneInfo
 
 from icalendar import Alarm, Event, vDate, vDatetime, vGeo, vRecur
@@ -170,7 +170,14 @@ class ICalEventFormatter:
             contentline = Contentline(recurrence)
             name, parameters, value = contentline.parts()
             if name.lower() == "rrule":
-                event.add(name, vRecur.from_ical(value), parameters)
+                recurrence_rule = vRecur.from_ical(value)
+                until = recurrence_rule.get("UNTIL")
+                if until and isinstance(until[0], date) and not isinstance(until[0], datetime):
+                    local_until = datetime.combine(
+                        until[0], time(23, 59, 59), ZoneInfo(self.time_tree_event.end_timezone)
+                    )
+                    recurrence_rule["UNTIL"] = [local_until.astimezone(ZoneInfo("UTC"))]
+                event.add(name, recurrence_rule, parameters)
             elif name.lower() == "exdate" or name.lower() == "rdate":
                 event.add(name, vDDDLists.from_ical(value), parameters)
             else:
