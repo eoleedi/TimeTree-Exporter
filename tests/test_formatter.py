@@ -177,8 +177,8 @@ def test_rrule_until_date_for_timed_event_is_converted_to_utc(normal_event_data)
     ]
 
 
-def test_rrule_until_date_for_all_day_event_is_converted_to_utc(normal_event_data):
-    """Test all-day date-only RRULE UNTIL uses local end-of-day converted to UTC."""
+def test_rrule_until_date_for_all_day_event_stays_date(normal_event_data):
+    """Test all-day date-only RRULE UNTIL remains a date."""
     data = normal_event_data.copy()
     data.update(
         {
@@ -192,9 +192,7 @@ def test_rrule_until_date_for_all_day_event_is_converted_to_utc(normal_event_dat
     formatter = ICalEventFormatter(event)
     ical_event = formatter.to_ical()
 
-    assert ical_event["RRULE"]["UNTIL"] == [
-        datetime(2022, 5, 24, 15, 59, 59, tzinfo=ZoneInfo("UTC"))
-    ]
+    assert ical_event["RRULE"]["UNTIL"] == [date(2022, 5, 24)]
 
 
 def test_no_alarms_location_url(normal_event_data):

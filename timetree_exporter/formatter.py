@@ -172,7 +172,12 @@ class ICalEventFormatter:
             if name.lower() == "rrule":
                 recurrence_rule = vRecur.from_ical(value)
                 until = recurrence_rule.get("UNTIL")
-                if until and isinstance(until[0], date) and not isinstance(until[0], datetime):
+                if (
+                    until
+                    and not self.time_tree_event.all_day
+                    and isinstance(until[0], date)
+                    and not isinstance(until[0], datetime)
+                ):
                     local_until = datetime.combine(
                         until[0], time(23, 59, 59), ZoneInfo(self.time_tree_event.end_timezone)
                     )
