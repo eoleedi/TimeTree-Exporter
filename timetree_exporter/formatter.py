@@ -179,7 +179,9 @@ class ICalEventFormatter:
                     and not isinstance(until[0], datetime)
                 ):
                     local_until = datetime.combine(
-                        until[0], time(23, 59, 59), ZoneInfo(self.time_tree_event.end_timezone)
+                        until[0],
+                        time(23, 59, 59),
+                        ZoneInfo(self.time_tree_event.start_timezone),
                     )
                     recurrence_rule["UNTIL"] = [local_until.astimezone(ZoneInfo("UTC"))]
                 event.add(name, recurrence_rule, parameters)

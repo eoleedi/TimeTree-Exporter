@@ -177,6 +177,27 @@ def test_rrule_until_date_for_timed_event_is_converted_to_utc(normal_event_data)
     ]
 
 
+def test_rrule_until_date_uses_start_timezone(normal_event_data):
+    """Test date-only RRULE UNTIL is interpreted in DTSTART timezone."""
+    data = normal_event_data.copy()
+    data.update(
+        {
+            "recurrences": ["RRULE:FREQ=WEEKLY;UNTIL=20220524"],
+            "start_timezone": "Asia/Tokyo",
+            "end_timezone": "Asia/Taipei",
+            "all_day": False,
+        }
+    )
+
+    event = TimeTreeEvent.from_dict(data)
+    formatter = ICalEventFormatter(event)
+    ical_event = formatter.to_ical()
+
+    assert ical_event["RRULE"]["UNTIL"] == [
+        datetime(2022, 5, 24, 14, 59, 59, tzinfo=ZoneInfo("UTC"))
+    ]
+
+
 def test_rrule_until_date_for_all_day_event_stays_date(normal_event_data):
     """Test all-day date-only RRULE UNTIL remains a date."""
     data = normal_event_data.copy()
