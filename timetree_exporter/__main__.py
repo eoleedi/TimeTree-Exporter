@@ -19,13 +19,20 @@ from timetree_exporter.utils import add_bounded_timezones_before_events, safe_ge
 
 logger = logging.getLogger(__name__)
 package_logger = logging.getLogger(__package__)
+DEVELOPER_MODE_ENV = "TIMETREE_EXPORTER_DEVELOPER"
+RAW_OUTPUT_DIR = "raw-timetree"
 
 
-def select_calendar(email: str, password: str, calendar_code: str):
+def select_calendar(
+    email: str,
+    password: str,
+    calendar_code: str,
+    capture_raw_responses: bool = False,
+):
     """Authenticate and select a calendar. Returns (calendar_api, calendar_id, calendar_name)."""
     use_code = bool(calendar_code)
     session_id = login(email, password)
-    calendar = TimeTreeCalendar(session_id)
+    calendar = TimeTreeCalendar(session_id, capture_raw_responses=capture_raw_responses)
     metadatas = calendar.get_metadata()
 
     # Filter out deactivated calendars
@@ -100,6 +107,15 @@ def sanitize_filename(name):
     return re.sub(r"[^\w\-]", "_", name).strip("_")
 
 
+def raw_output_dir(args):
+    """Return the raw response output directory when developer mode is enabled."""
+    if args.raw_output_dir:
+        return args.raw_output_dir
+    if args.developer_mode or os.environ.get(DEVELOPER_MODE_ENV) == "1":
+        return RAW_OUTPUT_DIR
+    return None
+
+
 def parse_args():
     """Parse CLI arguments."""
     parser = argparse.ArgumentParser(
@@ -147,6 +163,20 @@ def parse_args():
         "--split-by-label",
         help="Export events into separate .ics files grouped by label",
         action="store_true",
+    )
+    parser.add_argument(
+        "--developer-mode",
+        help=(
+            "Enable developer diagnostics, including raw TimeTree API response output "
+            f"(or set {DEVELOPER_MODE_ENV}=1)"
+        ),
+        action="store_true",
+    )
+    parser.add_argument(
+        "--raw-output-dir",
+        type=str,
+        help="Directory for developer-mode raw TimeTree API JSON responses",
+        default=None,
     )
     return parser.parse_args()
 
@@ -284,18 +314,31 @@ def main():
     """Main function for the Timetree Exporter."""
     args = parse_args()
     configure_logging(args.verbose)
+    raw_dir = raw_output_dir(args)
 
     email = resolve_email(args.email)
     password = resolve_password()
-    calendar_api, calendar_id, calendar_name = select_calendar(email, password, args.calendar_code)
+    calendar_api, calendar_id, calendar_name = select_calendar(
+        email,
+        password,
+        args.calendar_code,
+        capture_raw_responses=raw_dir is not None,
+    )
 
     if args.list_labels:
         list_labels_and_exit(calendar_api, calendar_id)
+        if raw_dir:
+            written = calendar_api.write_raw_responses(raw_dir)
+            logger.info("Wrote %d raw TimeTree response(s) to %s", len(written), raw_dir)
         return
 
     events = calendar_api.get_events(calendar_id, calendar_name)
     logger.info("Found %d events", len(events))
     labels = fetch_labels(calendar_api, calendar_id)
+
+    if raw_dir:
+        written = calendar_api.write_raw_responses(raw_dir)
+        logger.info("Wrote %d raw TimeTree response(s) to %s", len(written), raw_dir)
 
     if args.split_by_label:
         grouped_events = group_events_by_label(events, labels)

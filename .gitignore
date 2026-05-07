@@ -16,3 +16,8 @@ dist
 
 # TimeTree
 timetree.ics
+
+# Raw TimeTree API responses (developer mode)
+raw-timetree*/
+
+.env

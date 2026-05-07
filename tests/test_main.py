@@ -4,9 +4,12 @@ from datetime import datetime, timedelta
 from zoneinfo import ZoneInfo
 
 from timetree_exporter.__main__ import (
+    DEVELOPER_MODE_ENV,
+    RAW_OUTPUT_DIR,
     create_calendar,
     label_suffix_for_group,
     list_labels_and_exit,
+    raw_output_dir,
     write_calendar,
 )
 from timetree_exporter.event import TimeTreeEvent
@@ -20,6 +23,12 @@ class _FakeCalendarApi:
             "2": {"name": "Empty", "color": ""},
             "3": {"name": "Malformed", "color": "#zzzzzz"},
         }
+
+
+class _Args:
+    def __init__(self, developer_mode=False, raw_output_dir=None):
+        self.developer_mode = developer_mode
+        self.raw_output_dir = raw_output_dir
 
 
 def test_list_labels_and_exit_handles_invalid_or_missing_color(capsys):
@@ -46,6 +55,37 @@ def test_label_suffix_for_group_sanitizes_label_name():
     labels = {3: {"name": "Work / Home", "color": "#ff00aa"}}
 
     assert label_suffix_for_group(3, labels) == "Work___Home"
+
+
+def test_developer_raw_output_dir_is_disabled_by_default(monkeypatch):
+    """Raw API output should stay off unless developer mode is enabled."""
+    monkeypatch.delenv(DEVELOPER_MODE_ENV, raising=False)
+
+    assert raw_output_dir(_Args()) is None
+
+
+def test_developer_mode_enabled_uses_environment_variable(monkeypatch):
+    """Developer mode should follow the Homebrew-style environment opt-in."""
+    monkeypatch.setenv(DEVELOPER_MODE_ENV, "1")
+
+    assert raw_output_dir(_Args()) == RAW_OUTPUT_DIR
+
+
+def test_developer_mode_enabled_ignores_non_opt_in_values(monkeypatch):
+    """Only an explicit 1 should enable developer mode from the environment."""
+    monkeypatch.setenv(DEVELOPER_MODE_ENV, "0")
+
+    assert raw_output_dir(_Args()) is None
+
+
+def test_developer_raw_output_dir_uses_default_for_developer_mode():
+    """Developer mode should dump raw responses to an ignored default directory."""
+    assert raw_output_dir(_Args(developer_mode=True)) == RAW_OUTPUT_DIR
+
+
+def test_developer_raw_output_dir_allows_explicit_override():
+    """The raw output directory option should control where debug payloads are written."""
+    assert raw_output_dir(_Args(raw_output_dir="tmp/raw")) == "tmp/raw"
 
 
 def test_write_calendar_adds_bounded_vtimezone_before_events(tmp_path, normal_event_data):

@@ -4,6 +4,8 @@ Timetree calendar API
 
 import json
 import logging
+import re
+from pathlib import Path
 
 import requests
 from requests.exceptions import HTTPError
@@ -18,9 +20,39 @@ class TimeTreeCalendar:
     Timetree calendar API
     """
 
-    def __init__(self, session_id: str):
+    def __init__(self, session_id: str, capture_raw_responses: bool = False):
         self.session = requests.Session()
         self.session.cookies.set("_session_id", session_id)
+        self.capture_raw_responses = capture_raw_responses
+        self.raw_responses = []
+
+    def _record_raw_response(self, name, payload):
+        """Keep raw API payloads available for debug output."""
+        if not self.capture_raw_responses:
+            return
+        self.raw_responses.append((name, payload))
+
+    @staticmethod
+    def _sanitize_filename(name):
+        """Sanitize a string for use as a filename component."""
+        return re.sub(r"[^\w\-]", "_", name).strip("_")
+
+    def write_raw_responses(self, output_dir):
+        """Write captured TimeTree API JSON payloads to a directory."""
+        path = Path(output_dir)
+        path.mkdir(parents=True, exist_ok=True)
+        written = []
+
+        for index, (name, payload) in enumerate(self.raw_responses, 1):
+            filename = f"{index:02d}_{self._sanitize_filename(name) or 'response'}.json"
+            file_path = path / filename
+            file_path.write_text(
+                json.dumps(payload, indent=2, ensure_ascii=False, sort_keys=True),
+                encoding="utf-8",
+            )
+            written.append(file_path)
+
+        return written
 
     def get_metadata(self):
         """
@@ -37,7 +69,9 @@ class TimeTreeCalendar:
         if response.status_code != 200:
             logger.error(response.text)
             raise HTTPError("Failed to get calendar metadata")
-        return response.json()["calendars"]
+        r_json = response.json()
+        self._record_raw_response("calendars", r_json)
+        return r_json["calendars"]
 
     def get_labels(self, calendar_id: int):
         """
@@ -64,6 +98,7 @@ class TimeTreeCalendar:
 
         if response.status_code == 200:
             r_json = response.json()
+            self._record_raw_response("labels", r_json)
             labels = self._parse_labels(r_json)
 
         logger.debug("Parsed %d labels: %s", len(labels), labels)
@@ -105,6 +140,7 @@ class TimeTreeCalendar:
         )
 
         r_json = response.json()
+        self._record_raw_response(f"events_sync_since_{since}", r_json)
 
         events = r_json["events"]
         logger.info("Fetched %d events", len(events))
@@ -129,6 +165,7 @@ class TimeTreeCalendar:
             logger.error(response.text)
 
         r_json = response.json()
+        self._record_raw_response("events_sync", r_json)
         events = r_json["events"]
         logger.info("Fetched %d events", len(events))
         if r_json["chunk"] is True:
