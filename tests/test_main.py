@@ -9,6 +9,7 @@ from timetree_exporter.cli import (
     list_labels_and_exit,
     raw_output_dir,
 )
+from timetree_exporter.config import configure_developer_mode, get_raw_output_dir
 from timetree_exporter.event import TimeTreeEvent
 from timetree_exporter.exporter import (
     Exporter,
@@ -133,7 +134,7 @@ def test_exporter_fetches_labels_and_writes_single_calendar(tmp_path, normal_eve
     api = _FakeExportCalendarApi([normal_event_data], {})
     output_path = tmp_path / "calendar.ics"
 
-    Exporter(api, "calendar-id", "Calendar Name", output_path).export()
+    Exporter(output_path).export(api, "calendar-id", "Calendar Name")
 
     serialized = output_path.read_text(encoding="utf-8")
     assert api.fetched_events_for == ("calendar-id", "Calendar Name")
@@ -149,9 +150,19 @@ def test_exporter_writes_split_calendars_by_label(tmp_path, labeled_event_data):
     )
     output_path = tmp_path / "calendar.ics"
 
-    Exporter(api, "calendar-id", "Calendar Name", output_path, split_by_label=True).export()
+    Exporter(output_path, split_by_label=True).export(api, "calendar-id", "Calendar Name")
 
     split_path = tmp_path / "calendar_Work___Home.ics"
     serialized = split_path.read_text(encoding="utf-8")
     assert not output_path.exists()
     assert "SUMMARY:測試有標籤活動" in serialized
+
+
+def test_developer_mode_globally_enables_raw_output():
+    """Developer mode should be readable globally by modules."""
+    configure_developer_mode(enabled=True)
+
+    try:
+        assert get_raw_output_dir() == RAW_OUTPUT_DIR
+    finally:
+        configure_developer_mode()

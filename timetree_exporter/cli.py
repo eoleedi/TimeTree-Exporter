@@ -7,11 +7,26 @@ import re
 from pathlib import Path
 
 from timetree_exporter import __version__
+from timetree_exporter.config import (
+    DEVELOPER_MODE_ENV,
+    RAW_OUTPUT_DIR,
+    resolve_raw_output_dir,
+)
 from timetree_exporter.utils import safe_getpass
 
 package_logger = logging.getLogger(__package__)
-DEVELOPER_MODE_ENV = "TIMETREE_EXPORTER_DEVELOPER"
-RAW_OUTPUT_DIR = "raw-timetree"
+
+__all__ = [
+    "DEVELOPER_MODE_ENV",
+    "RAW_OUTPUT_DIR",
+    "configure_logging",
+    "list_labels_and_exit",
+    "parse_args",
+    "raw_output_dir",
+    "resolve_email",
+    "resolve_password",
+    "sanitize_filename",
+]
 
 
 def parse_args():
@@ -104,12 +119,8 @@ def configure_logging(verbose):
 
 
 def raw_output_dir(args):
-    """Return the raw response output directory when developer mode is enabled."""
-    if args.raw_output_dir:
-        return args.raw_output_dir
-    if args.developer_mode or os.environ.get(DEVELOPER_MODE_ENV) == "1":
-        return RAW_OUTPUT_DIR
-    return None
+    """Return the raw response output directory for parsed CLI args."""
+    return resolve_raw_output_dir(args.developer_mode, args.raw_output_dir)
 
 
 def sanitize_filename(name):

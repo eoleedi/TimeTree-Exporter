@@ -17,19 +17,16 @@ logger = logging.getLogger(__name__)
 class Exporter:
     """Export a selected TimeTree calendar to one or more iCalendar files."""
 
-    def __init__(self, calendar_api, calendar_id, calendar_name, output, split_by_label=False):
-        self.calendar_api = calendar_api
-        self.calendar_id = calendar_id
-        self.calendar_name = calendar_name
+    def __init__(self, output, split_by_label=False):
         self.output = output
         self.split_by_label = split_by_label
 
-    def export(self):
+    def export(self, calendar_api, calendar_id, calendar_name):
         """Fetch labels and events, then write the configured iCalendar output."""
-        events = self.calendar_api.get_events(self.calendar_id, self.calendar_name)
+        events = calendar_api.get_events(calendar_id, calendar_name)
         logger.info("Found %d events", len(events))
 
-        labels = self.calendar_api.get_labels(self.calendar_id)
+        labels = calendar_api.get_labels(calendar_id)
         logger.info("Found %d labels", len(labels))
 
         if self.split_by_label:

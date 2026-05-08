@@ -10,10 +10,10 @@ from timetree_exporter.cli import (
     configure_logging,
     list_labels_and_exit,
     parse_args,
-    raw_output_dir,
     resolve_email,
     resolve_password,
 )
+from timetree_exporter.config import configure_developer_mode
 from timetree_exporter.exporter import Exporter
 
 logger = logging.getLogger(__name__)
@@ -23,12 +23,11 @@ def select_calendar(
     email: str,
     password: str,
     calendar_code: str,
-    capture_raw_responses: bool = False,
 ):
     """Authenticate and select a calendar. Returns (calendar_api, calendar_id, calendar_name)."""
     use_code = bool(calendar_code)
     session_id = login(email, password)
-    calendar = TimeTreeCalendar(session_id, capture_raw_responses=capture_raw_responses)
+    calendar = TimeTreeCalendar(session_id)
     metadatas = calendar.get_metadata()
 
     # Filter out deactivated calendars
@@ -76,7 +75,8 @@ def main():
     """Main function for the Timetree Exporter."""
     args = parse_args()
     configure_logging(args.verbose)
-    raw_dir = raw_output_dir(args)
+    configure_developer_mode(args.developer_mode, args.raw_output_dir)
+    exporter = Exporter(args.output, split_by_label=args.split_by_label)
 
     email = resolve_email(args.email)
     password = resolve_password()
@@ -84,28 +84,13 @@ def main():
         email,
         password,
         args.calendar_code,
-        capture_raw_responses=raw_dir is not None,
     )
 
     if args.list_labels:
         list_labels_and_exit(calendar_api, calendar_id)
-        if raw_dir:
-            written = calendar_api.write_raw_responses(raw_dir)
-            logger.info("Wrote %d raw TimeTree response(s) to %s", len(written), raw_dir)
         return
 
-    exporter = Exporter(
-        calendar_api,
-        calendar_id,
-        calendar_name,
-        args.output,
-        split_by_label=args.split_by_label,
-    )
-    exporter.export()
-
-    if raw_dir:
-        written = calendar_api.write_raw_responses(raw_dir)
-        logger.info("Wrote %d raw TimeTree response(s) to %s", len(written), raw_dir)
+    exporter.export(calendar_api, calendar_id, calendar_name)
 
 
 if __name__ == "__main__":
