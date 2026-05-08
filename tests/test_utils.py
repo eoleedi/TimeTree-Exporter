@@ -5,8 +5,8 @@ from datetime import datetime, timedelta
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
-from timetree_exporter.__main__ import create_calendar
 from timetree_exporter.event import TimeTreeEvent
+from timetree_exporter.exporter import create_calendar
 from timetree_exporter.formatter import ICalEventFormatter
 from timetree_exporter.utils import (
     add_bounded_timezones_before_events,

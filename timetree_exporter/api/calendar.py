@@ -11,6 +11,7 @@ import requests
 from requests.exceptions import HTTPError
 
 from timetree_exporter.api.const import API_BASEURI, API_USER_AGENT
+from timetree_exporter.config import get_raw_output_dir
 
 logger = logging.getLogger(__name__)
 
@@ -20,10 +21,14 @@ class TimeTreeCalendar:
     Timetree calendar API
     """
 
-    def __init__(self, session_id: str, capture_raw_responses: bool = False):
+    def __init__(self, session_id: str, capture_raw_responses: bool | None = None):
         self.session = requests.Session()
         self.session.cookies.set("_session_id", session_id)
-        self.capture_raw_responses = capture_raw_responses
+        self.capture_raw_responses = (
+            get_raw_output_dir() is not None
+            if capture_raw_responses is None
+            else capture_raw_responses
+        )
         self.raw_responses = []
 
     def _record_raw_response(self, name, payload):
@@ -31,30 +36,29 @@ class TimeTreeCalendar:
         if not self.capture_raw_responses:
             return
         self.raw_responses.append((name, payload))
+        raw_output_dir = get_raw_output_dir()
+        if raw_output_dir:
+            self._write_raw_response(raw_output_dir, len(self.raw_responses), name, payload)
 
     @staticmethod
     def _sanitize_path_part(name):
         """Sanitize a string for use as a path component."""
         return re.sub(r"[^\w\-]", "_", name).strip("_")
 
-    def write_raw_responses(self, output_dir):
-        """Write captured TimeTree API JSON payloads to a directory."""
+    def _write_raw_response(self, output_dir, index, name, payload):
+        """Write one raw TimeTree API JSON payload to a directory."""
         path = Path(output_dir)
         path.mkdir(parents=True, exist_ok=True)
-        written = []
-
-        for index, (name, payload) in enumerate(self.raw_responses, 1):
-            *dirs, filename = [self._sanitize_path_part(part) for part in name.split("/")]
-            filename = f"{index:02d}_{filename or 'response'}.json"
-            file_path = path.joinpath(*dirs, filename)
-            file_path.parent.mkdir(parents=True, exist_ok=True)
-            file_path.write_text(
-                json.dumps(payload, indent=2, ensure_ascii=False, sort_keys=True),
-                encoding="utf-8",
-            )
-            written.append(file_path)
-
-        return written
+        *dirs, filename = [self._sanitize_path_part(part) for part in name.split("/")]
+        filename = f"{index:02d}_{filename or 'response'}.json"
+        file_path = path.joinpath(*dirs, filename)
+        file_path.parent.mkdir(parents=True, exist_ok=True)
+        file_path.write_text(
+            json.dumps(payload, indent=2, ensure_ascii=False, sort_keys=True),
+            encoding="utf-8",
+        )
+        logger.info("Wrote raw TimeTree response to %s", file_path)
+        return file_path
 
     def get_metadata(self):
         """
