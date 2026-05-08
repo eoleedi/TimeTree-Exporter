@@ -14,6 +14,38 @@ from timetree_exporter.utils import add_bounded_timezones_before_events
 logger = logging.getLogger(__name__)
 
 
+class Exporter:
+    """Export a selected TimeTree calendar to one or more iCalendar files."""
+
+    def __init__(self, calendar_api, calendar_id, calendar_name, output, split_by_label=False):
+        self.calendar_api = calendar_api
+        self.calendar_id = calendar_id
+        self.calendar_name = calendar_name
+        self.output = output
+        self.split_by_label = split_by_label
+
+    def export(self):
+        """Fetch labels and events, then write the configured iCalendar output."""
+        events = self.calendar_api.get_events(self.calendar_id, self.calendar_name)
+        logger.info("Found %d events", len(events))
+
+        labels = self.calendar_api.get_labels(self.calendar_id)
+        logger.info("Found %d labels", len(labels))
+
+        if self.split_by_label:
+            grouped_events = group_events_by_label(events, labels)
+            write_split_calendars(grouped_events, labels, self.output, len(events))
+            return
+
+        cal = build_single_calendar(events, labels)
+        logger.info(
+            "A total of %d/%d events are added to the calendar",
+            len(cal.subcomponents),
+            len(events),
+        )
+        write_calendar(cal, self.output)
+
+
 def create_calendar():
     """Create a new iCalendar object with standard properties."""
     cal = Calendar()

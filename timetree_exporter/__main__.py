@@ -14,12 +14,7 @@ from timetree_exporter.cli import (
     resolve_email,
     resolve_password,
 )
-from timetree_exporter.exporter import (
-    build_single_calendar,
-    group_events_by_label,
-    write_calendar,
-    write_split_calendars,
-)
+from timetree_exporter.exporter import Exporter
 
 logger = logging.getLogger(__name__)
 
@@ -77,13 +72,6 @@ def select_calendar(
     return calendar, metadata["id"], metadata["name"]
 
 
-def fetch_labels(calendar_api, calendar_id):
-    """Fetch labels and log count."""
-    labels = calendar_api.get_labels(calendar_id)
-    logger.info("Found %d labels", len(labels))
-    return labels
-
-
 def main():
     """Main function for the Timetree Exporter."""
     args = parse_args()
@@ -106,27 +94,18 @@ def main():
             logger.info("Wrote %d raw TimeTree response(s) to %s", len(written), raw_dir)
         return
 
-    events = calendar_api.get_events(calendar_id, calendar_name)
-    logger.info("Found %d events", len(events))
-    labels = fetch_labels(calendar_api, calendar_id)
+    exporter = Exporter(
+        calendar_api,
+        calendar_id,
+        calendar_name,
+        args.output,
+        split_by_label=args.split_by_label,
+    )
+    exporter.export()
 
     if raw_dir:
         written = calendar_api.write_raw_responses(raw_dir)
         logger.info("Wrote %d raw TimeTree response(s) to %s", len(written), raw_dir)
-
-    if args.split_by_label:
-        grouped_events = group_events_by_label(events, labels)
-        write_split_calendars(grouped_events, labels, args.output, len(events))
-        return
-
-    cal = build_single_calendar(events, labels)
-    logger.info(
-        "A total of %d/%d events are added to the calendar",
-        len(cal.subcomponents),
-        len(events),
-    )
-
-    write_calendar(cal, args.output)
 
 
 if __name__ == "__main__":

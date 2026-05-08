@@ -10,7 +10,12 @@ from timetree_exporter.cli import (
     raw_output_dir,
 )
 from timetree_exporter.event import TimeTreeEvent
-from timetree_exporter.exporter import create_calendar, label_suffix_for_group, write_calendar
+from timetree_exporter.exporter import (
+    Exporter,
+    create_calendar,
+    label_suffix_for_group,
+    write_calendar,
+)
 from timetree_exporter.formatter import ICalEventFormatter
 
 
@@ -21,6 +26,22 @@ class _FakeCalendarApi:
             "2": {"name": "Empty", "color": ""},
             "3": {"name": "Malformed", "color": "#zzzzzz"},
         }
+
+
+class _FakeExportCalendarApi:
+    def __init__(self, events, labels):
+        self.events = events
+        self.labels = labels
+        self.fetched_events_for = None
+        self.fetched_labels_for = None
+
+    def get_events(self, calendar_id, calendar_name):
+        self.fetched_events_for = (calendar_id, calendar_name)
+        return self.events
+
+    def get_labels(self, calendar_id):
+        self.fetched_labels_for = calendar_id
+        return self.labels
 
 
 class _Args:
@@ -105,3 +126,32 @@ def test_write_calendar_adds_bounded_vtimezone_before_events(tmp_path, normal_ev
     assert "TZID:Asia/Taipei" in serialized
     assert "TZOFFSETTO:+0800" in serialized
     assert serialized.index("BEGIN:VTIMEZONE") < serialized.index("BEGIN:VEVENT")
+
+
+def test_exporter_fetches_labels_and_writes_single_calendar(tmp_path, normal_event_data):
+    """Exporter should own fetching labels, fetching events, and writing output."""
+    api = _FakeExportCalendarApi([normal_event_data], {})
+    output_path = tmp_path / "calendar.ics"
+
+    Exporter(api, "calendar-id", "Calendar Name", output_path).export()
+
+    serialized = output_path.read_text(encoding="utf-8")
+    assert api.fetched_events_for == ("calendar-id", "Calendar Name")
+    assert api.fetched_labels_for == "calendar-id"
+    assert "SUMMARY:測試一般活動" in serialized
+
+
+def test_exporter_writes_split_calendars_by_label(tmp_path, labeled_event_data):
+    """Exporter should write split files when configured to split by label."""
+    api = _FakeExportCalendarApi(
+        [labeled_event_data],
+        {3: {"name": "Work / Home", "color": "#ff00aa"}},
+    )
+    output_path = tmp_path / "calendar.ics"
+
+    Exporter(api, "calendar-id", "Calendar Name", output_path, split_by_label=True).export()
+
+    split_path = tmp_path / "calendar_Work___Home.ics"
+    serialized = split_path.read_text(encoding="utf-8")
+    assert not output_path.exists()
+    assert "SUMMARY:測試有標籤活動" in serialized
