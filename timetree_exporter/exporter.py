@@ -5,7 +5,7 @@ from collections import defaultdict
 from importlib.metadata import version
 from pathlib import Path
 
-from icalendar import Calendar
+from icalendar import Calendar as ICalendar
 
 from timetree_exporter import ICalEventFormatter, TimeTreeEvent
 from timetree_exporter.cli import sanitize_filename
@@ -17,16 +17,17 @@ logger = logging.getLogger(__name__)
 class Exporter:
     """Export a selected TimeTree calendar to one or more iCalendar files."""
 
-    def __init__(self, output, split_by_label=False):
+    def __init__(self, calendar, output, split_by_label=False):
+        self.calendar = calendar
         self.output = output
         self.split_by_label = split_by_label
 
-    def export(self, calendar_api, calendar_id, calendar_name):
+    def export(self):
         """Fetch labels and events, then write the configured iCalendar output."""
-        events = calendar_api.get_events(calendar_id, calendar_name)
+        events = self.calendar.get_events()
         logger.info("Found %d events", len(events))
 
-        labels = calendar_api.get_labels(calendar_id)
+        labels = self.calendar.get_labels()
         logger.info("Found %d labels", len(labels))
 
         if self.split_by_label:
@@ -45,7 +46,7 @@ class Exporter:
 
 def create_calendar():
     """Create a new iCalendar object with standard properties."""
-    cal = Calendar()
+    cal = ICalendar()
     cal.add("prodid", f"-//TimeTree Exporter {version('timetree_exporter')}//EN")
     cal.add("version", "2.0")
     return cal

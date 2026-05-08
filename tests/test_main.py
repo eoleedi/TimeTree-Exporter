@@ -3,6 +3,7 @@
 from datetime import datetime, timedelta
 from zoneinfo import ZoneInfo
 
+from timetree_exporter.calendar import Calendar
 from timetree_exporter.cli import (
     DEVELOPER_MODE_ENV,
     RAW_OUTPUT_DIR,
@@ -53,7 +54,12 @@ class _Args:
 
 def test_list_labels_and_exit_handles_invalid_or_missing_color(capsys):
     """Listing labels should not fail when color is empty or malformed."""
-    list_labels_and_exit(_FakeCalendarApi(), "dummy-calendar-id")
+    calendar = Calendar(
+        _FakeCalendarApi(),
+        {"id": "dummy-calendar-id", "name": "Calendar", "alias_code": "code"},
+    )
+
+    list_labels_and_exit(calendar)
 
     output = capsys.readouterr().out
 
@@ -133,8 +139,9 @@ def test_exporter_fetches_labels_and_writes_single_calendar(tmp_path, normal_eve
     """Exporter should own fetching labels, fetching events, and writing output."""
     api = _FakeExportCalendarApi([normal_event_data], {})
     output_path = tmp_path / "calendar.ics"
+    calendar = Calendar(api, {"id": "calendar-id", "name": "Calendar Name", "alias_code": "code"})
 
-    Exporter(output_path).export(api, "calendar-id", "Calendar Name")
+    Exporter(calendar, output_path).export()
 
     serialized = output_path.read_text(encoding="utf-8")
     assert api.fetched_events_for == ("calendar-id", "Calendar Name")
@@ -149,8 +156,9 @@ def test_exporter_writes_split_calendars_by_label(tmp_path, labeled_event_data):
         {3: {"name": "Work / Home", "color": "#ff00aa"}},
     )
     output_path = tmp_path / "calendar.ics"
+    calendar = Calendar(api, {"id": "calendar-id", "name": "Calendar Name", "alias_code": "code"})
 
-    Exporter(output_path, split_by_label=True).export(api, "calendar-id", "Calendar Name")
+    Exporter(calendar, output_path, split_by_label=True).export()
 
     split_path = tmp_path / "calendar_Work___Home.ics"
     serialized = split_path.read_text(encoding="utf-8")

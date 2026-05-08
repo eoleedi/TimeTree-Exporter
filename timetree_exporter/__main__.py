@@ -6,6 +6,7 @@ import logging
 
 from timetree_exporter.api.auth import login
 from timetree_exporter.api.calendar import TimeTreeCalendar
+from timetree_exporter.calendar import Calendar
 from timetree_exporter.cli import (
     configure_logging,
     list_labels_and_exit,
@@ -19,12 +20,8 @@ from timetree_exporter.exporter import Exporter
 logger = logging.getLogger(__name__)
 
 
-def select_calendar(
-    email: str,
-    password: str,
-    calendar_code: str,
-):
-    """Authenticate and select a calendar. Returns (calendar_api, calendar_id, calendar_name)."""
+def select_calendar(email: str, password: str, calendar_code: str):
+    """Authenticate and select a calendar."""
     use_code = bool(calendar_code)
     session_id = login(email, password)
     calendar = TimeTreeCalendar(session_id)
@@ -68,7 +65,7 @@ def select_calendar(
         idx = int(calendar_num) - 1
         metadata = metadatas[idx]
 
-    return calendar, metadata["id"], metadata["name"]
+    return Calendar(calendar, metadata)
 
 
 def main():
@@ -76,21 +73,17 @@ def main():
     args = parse_args()
     configure_logging(args.verbose)
     configure_developer_mode(args.developer_mode, args.raw_output_dir)
-    exporter = Exporter(args.output, split_by_label=args.split_by_label)
 
     email = resolve_email(args.email)
     password = resolve_password()
-    calendar_api, calendar_id, calendar_name = select_calendar(
-        email,
-        password,
-        args.calendar_code,
-    )
+    calendar = select_calendar(email, password, args.calendar_code)
+    exporter = Exporter(calendar, args.output, split_by_label=args.split_by_label)
 
     if args.list_labels:
-        list_labels_and_exit(calendar_api, calendar_id)
+        list_labels_and_exit(calendar)
         return
 
-    exporter.export(calendar_api, calendar_id, calendar_name)
+    exporter.export()
 
 
 if __name__ == "__main__":

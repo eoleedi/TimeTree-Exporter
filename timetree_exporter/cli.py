@@ -128,9 +128,9 @@ def sanitize_filename(name):
     return re.sub(r"[^\w\-]", "_", name).strip("_")
 
 
-def list_labels_and_exit(calendar_api, calendar_id):
+def list_labels_and_exit(calendar):
     """Print labels for a calendar and return."""
-    labels = calendar_api.get_labels(calendar_id)
+    labels = calendar.get_labels()
     if not labels:
         print("No labels found (the API response format may differ — use -v to debug)")
         return
