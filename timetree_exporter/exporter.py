@@ -57,7 +57,7 @@ def sanitize_filename(name):
     return re.sub(r"[^\w\-]", "_", name).strip("_")
 
 
-def write_calendar(cal, output_path: str):
+def write_calendar(cal, output_path: str | Path):
     """Write a calendar to an .ics file."""
     add_bounded_timezones_before_events(cal)
 
