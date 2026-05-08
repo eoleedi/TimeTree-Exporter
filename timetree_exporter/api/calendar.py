@@ -45,15 +45,6 @@ class TimeTreeCalendar:
         """Sanitize a string for use as a path component."""
         return re.sub(r"[^\w\-]", "_", name).strip("_")
 
-    def write_raw_responses(self, output_dir):
-        """Write captured TimeTree API JSON payloads to a directory."""
-        written = []
-
-        for index, (name, payload) in enumerate(self.raw_responses, 1):
-            written.append(self._write_raw_response(output_dir, index, name, payload))
-
-        return written
-
     def _write_raw_response(self, output_dir, index, name, payload):
         """Write one raw TimeTree API JSON payload to a directory."""
         path = Path(output_dir)

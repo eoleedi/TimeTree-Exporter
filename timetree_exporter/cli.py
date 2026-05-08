@@ -25,7 +25,6 @@ __all__ = [
     "raw_output_dir",
     "resolve_email",
     "resolve_password",
-    "sanitize_filename",
 ]
 
 
@@ -121,11 +120,6 @@ def configure_logging(verbose):
 def raw_output_dir(args):
     """Return the raw response output directory for parsed CLI args."""
     return resolve_raw_output_dir(args.developer_mode, args.raw_output_dir)
-
-
-def sanitize_filename(name):
-    """Sanitize a string for use as a filename component."""
-    return re.sub(r"[^\w\-]", "_", name).strip("_")
 
 
 def list_labels_and_exit(calendar):

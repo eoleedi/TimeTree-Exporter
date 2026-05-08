@@ -1,6 +1,7 @@
 """Build and write iCalendar exports from TimeTree events."""
 
 import logging
+import re
 from collections import defaultdict
 from importlib.metadata import version
 from pathlib import Path
@@ -8,7 +9,6 @@ from pathlib import Path
 from icalendar import Calendar as ICalendar
 
 from timetree_exporter import ICalEventFormatter, TimeTreeEvent
-from timetree_exporter.cli import sanitize_filename
 from timetree_exporter.utils import add_bounded_timezones_before_events
 
 logger = logging.getLogger(__name__)
@@ -50,6 +50,11 @@ def create_calendar():
     cal.add("prodid", f"-//TimeTree Exporter {version('timetree_exporter')}//EN")
     cal.add("version", "2.0")
     return cal
+
+
+def sanitize_filename(name):
+    """Sanitize a string for use as an export filename component."""
+    return re.sub(r"[^\w\-]", "_", name).strip("_")
 
 
 def write_calendar(cal, output_path: str):
