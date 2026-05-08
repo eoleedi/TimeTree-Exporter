@@ -33,8 +33,8 @@ class TimeTreeCalendar:
         self.raw_responses.append((name, payload))
 
     @staticmethod
-    def _sanitize_filename(name):
-        """Sanitize a string for use as a filename component."""
+    def _sanitize_path_part(name):
+        """Sanitize a string for use as a path component."""
         return re.sub(r"[^\w\-]", "_", name).strip("_")
 
     def write_raw_responses(self, output_dir):
@@ -44,8 +44,10 @@ class TimeTreeCalendar:
         written = []
 
         for index, (name, payload) in enumerate(self.raw_responses, 1):
-            filename = f"{index:02d}_{self._sanitize_filename(name) or 'response'}.json"
-            file_path = path / filename
+            *dirs, filename = [self._sanitize_path_part(part) for part in name.split("/")]
+            filename = f"{index:02d}_{filename or 'response'}.json"
+            file_path = path.joinpath(*dirs, filename)
+            file_path.parent.mkdir(parents=True, exist_ok=True)
             file_path.write_text(
                 json.dumps(payload, indent=2, ensure_ascii=False, sort_keys=True),
                 encoding="utf-8",
@@ -98,7 +100,7 @@ class TimeTreeCalendar:
 
         if response.status_code == 200:
             r_json = response.json()
-            self._record_raw_response("labels", r_json)
+            self._record_raw_response(f"calendar_{calendar_id}/labels", r_json)
             labels = self._parse_labels(r_json)
 
         logger.debug("Parsed %d labels: %s", len(labels), labels)
@@ -140,7 +142,7 @@ class TimeTreeCalendar:
         )
 
         r_json = response.json()
-        self._record_raw_response(f"events_sync_since_{since}", r_json)
+        self._record_raw_response(f"calendar_{calendar_id}/events_sync_since_{since}", r_json)
 
         events = r_json["events"]
         logger.info("Fetched %d events", len(events))
@@ -165,7 +167,7 @@ class TimeTreeCalendar:
             logger.error(response.text)
 
         r_json = response.json()
-        self._record_raw_response("events_sync", r_json)
+        self._record_raw_response(f"calendar_{calendar_id}/events_sync", r_json)
         events = r_json["events"]
         logger.info("Fetched %d events", len(events))
         if r_json["chunk"] is True:
