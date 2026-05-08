@@ -3,16 +3,14 @@
 from datetime import datetime, timedelta
 from zoneinfo import ZoneInfo
 
-from timetree_exporter.__main__ import (
+from timetree_exporter.cli import (
     DEVELOPER_MODE_ENV,
     RAW_OUTPUT_DIR,
-    create_calendar,
-    label_suffix_for_group,
     list_labels_and_exit,
     raw_output_dir,
-    write_calendar,
 )
 from timetree_exporter.event import TimeTreeEvent
+from timetree_exporter.exporter import create_calendar, label_suffix_for_group, write_calendar
 from timetree_exporter.formatter import ICalEventFormatter
 
 
