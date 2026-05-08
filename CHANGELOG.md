@@ -1,5 +1,25 @@
 # Changelog
 
+## [0.7.2](https://github.com/eoleedi/TimeTree-Exporter/compare/v0.7.1...v0.7.2) (2026-05-08)
+
+
+### Bug Fixes
+
+* bound exported timezone definitions ([bd743f4](https://github.com/eoleedi/TimeTree-Exporter/commit/bd743f4875a177d9ae624c2506a6b1f172b66329))
+* preserve final occurrence for date-only RRULE UNTIL ([#177](https://github.com/eoleedi/TimeTree-Exporter/issues/177)) ([62b27a0](https://github.com/eoleedi/TimeTree-Exporter/commit/62b27a06ae9ded5b640f6590ec0308bc93e1cdfd))
+* reduce color validation debug logging ([3905e85](https://github.com/eoleedi/TimeTree-Exporter/commit/3905e85e80a19128814fb8e0ac5831002dac6b51))
+
+
+### Documentation
+
+* remove outdated alarm limitation ([1fafd84](https://github.com/eoleedi/TimeTree-Exporter/commit/1fafd84072ab0d200117ef92337652ac9d9d8076))
+
+
+### Code Refactoring
+
+* add concise developer raw response diagnostics and development.md ([#178](https://github.com/eoleedi/TimeTree-Exporter/issues/178)) ([4246b17](https://github.com/eoleedi/TimeTree-Exporter/commit/4246b17470eacaa2de0dac0c68cd94d6e2f1a597))
+* exporter CLI modules ([#179](https://github.com/eoleedi/TimeTree-Exporter/issues/179)) ([d93ec98](https://github.com/eoleedi/TimeTree-Exporter/commit/d93ec9827a2d10b9c5b6956f91c614d588c8ce3d))
+
 ## [0.7.1](https://github.com/eoleedi/TimeTree-Exporter/compare/v0.7.0...v0.7.1) (2026-05-06)
 
 
