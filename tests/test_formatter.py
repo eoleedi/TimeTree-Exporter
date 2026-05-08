@@ -157,6 +157,65 @@ def test_multi_day_all_day_event_dtend_is_exclusive(normal_event_data):
     assert ical_event["dtend"].dt.date() == date(2024, 8, 17)
 
 
+def test_rrule_until_date_for_timed_event_is_converted_to_utc(normal_event_data):
+    """Test date-only RRULE UNTIL uses local end-of-day converted to UTC."""
+    data = normal_event_data.copy()
+    data.update(
+        {
+            "recurrences": ["RRULE:FREQ=WEEKLY;UNTIL=20220524"],
+            "end_timezone": "Asia/Taipei",
+            "all_day": False,
+        }
+    )
+
+    event = TimeTreeEvent.from_dict(data)
+    formatter = ICalEventFormatter(event)
+    ical_event = formatter.to_ical()
+
+    assert ical_event["RRULE"]["UNTIL"] == [
+        datetime(2022, 5, 24, 15, 59, 59, tzinfo=ZoneInfo("UTC"))
+    ]
+
+
+def test_rrule_until_date_uses_start_timezone(normal_event_data):
+    """Test date-only RRULE UNTIL is interpreted in DTSTART timezone."""
+    data = normal_event_data.copy()
+    data.update(
+        {
+            "recurrences": ["RRULE:FREQ=WEEKLY;UNTIL=20220524"],
+            "start_timezone": "Asia/Tokyo",
+            "end_timezone": "Asia/Taipei",
+            "all_day": False,
+        }
+    )
+
+    event = TimeTreeEvent.from_dict(data)
+    formatter = ICalEventFormatter(event)
+    ical_event = formatter.to_ical()
+
+    assert ical_event["RRULE"]["UNTIL"] == [
+        datetime(2022, 5, 24, 14, 59, 59, tzinfo=ZoneInfo("UTC"))
+    ]
+
+
+def test_rrule_until_date_for_all_day_event_stays_date(normal_event_data):
+    """Test all-day date-only RRULE UNTIL remains a date."""
+    data = normal_event_data.copy()
+    data.update(
+        {
+            "recurrences": ["RRULE:FREQ=YEARLY;UNTIL=20220524"],
+            "end_timezone": "Asia/Taipei",
+            "all_day": True,
+        }
+    )
+
+    event = TimeTreeEvent.from_dict(data)
+    formatter = ICalEventFormatter(event)
+    ical_event = formatter.to_ical()
+
+    assert ical_event["RRULE"]["UNTIL"] == [date(2022, 5, 24)]
+
+
 def test_no_alarms_location_url(normal_event_data):
     """Test event formatting without optional fields."""
     # Create an event without alarms, location, and URL
