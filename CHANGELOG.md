@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.7.3](https://github.com/eoleedi/TimeTree-Exporter/compare/v0.7.2...v0.7.3) (2026-05-10)
+
+
+### Documentation
+
+* show it's RFC 5545 compatible ([48fbc1a](https://github.com/eoleedi/TimeTree-Exporter/commit/48fbc1afbd7e15626c446c68fd763bdc60cf13b0))
+
 ## [0.7.2](https://github.com/eoleedi/TimeTree-Exporter/compare/v0.7.1...v0.7.2) (2026-05-08)
 
 
