@@ -9,6 +9,7 @@ from icalendar.prop import vDuration
 from timetree_exporter.event import (
     TimeTreeEvent,
     TimeTreeEventType,
+    TimeTreePublicEvent,
 )
 from timetree_exporter.formatter import ICalEventFormatter
 from timetree_exporter.utils import convert_timestamp_to_datetime
@@ -214,6 +215,25 @@ def test_rrule_until_date_for_all_day_event_stays_date(normal_event_data):
     ical_event = formatter.to_ical()
 
     assert ical_event["RRULE"]["UNTIL"] == [date(2022, 5, 24)]
+
+
+def test_public_recurrence_uses_until_at_when_rrule_has_no_until(normal_event_data):
+    """Public recurring events should use until_at to avoid unbounded recurrence."""
+    data = normal_event_data.copy()
+    data.pop("uuid")
+    data.update(
+        {
+            "id": "public-event-id",
+            "recurrences": ["RRULE:FREQ=MONTHLY"],
+            "until_at": int(datetime(2024, 9, 1, tzinfo=ZoneInfo("UTC")).timestamp() * 1000),
+        }
+    )
+
+    event = TimeTreePublicEvent.from_dict(data)
+    formatter = ICalEventFormatter(event)
+    ical_event = formatter.to_ical()
+
+    assert ical_event["RRULE"]["UNTIL"] == [datetime(2024, 9, 1, tzinfo=ZoneInfo("UTC"))]
 
 
 def test_no_alarms_location_url(normal_event_data):

@@ -74,6 +74,7 @@ Implementation notes:
 - Public API pagination uses `paging.next` and `paging.next_cursor`; when `next` is true, fetch the next page with `cursor=<next_cursor>`.
 - Public events are normalized by `TimeTreePublicEvent`, which extends `TimeTreeEvent`.
 - Public events may omit `uuid`, `type`, `category`, `alerts`, and `recurrences`.
+- Public recurring events may provide a separate `until_at`; use it as RRULE `UNTIL` when the recurrence itself has no `UNTIL`.
 - Public labels are synthesized from `public_calendar_label` because the private labels endpoint is not used.
 
 Useful public calendar checks:
@@ -167,7 +168,7 @@ Public TimeTree event fields:
 - [ ] **Campaign**
 - [ ] **Interest Count**
 - [ ] **Publish At**
-- [ ] **Until At**
+- [x] **Until At** → recurrence `UNTIL` fallback
 - [ ] **Status**
 - [ ] **Region Timezone**
 - [ ] **Location Access**

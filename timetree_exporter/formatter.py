@@ -195,12 +195,26 @@ class ICalEventFormatter:
                         ZoneInfo(self.time_tree_event.start_timezone),
                     )
                     recurrence_rule["UNTIL"] = [local_until.astimezone(ZoneInfo("UTC"))]
+                elif not until and getattr(self.time_tree_event, "until_at", None):
+                    recurrence_rule["UNTIL"] = [self.recurrence_until]
                 event.add(name, recurrence_rule, parameters)
             elif name.lower() == "exdate" or name.lower() == "rdate":
                 event.add(name, vDDDLists.from_ical(value), parameters)
             else:
                 logger.error("Unknown recurrence type: %s", name)
                 raise ValueError(f"Unknown recurrence type: {name}")
+
+    @property
+    def recurrence_until(self):
+        """Return public recurrence end from until_at."""
+        until = convert_timestamp_to_datetime(
+            self.time_tree_event.until_at / 1000,
+            ZoneInfo("UTC"),
+        )
+        if self.time_tree_event.all_day:
+            timezone = self.time_tree_event.end_timezone or self.time_tree_event.start_timezone
+            return until.astimezone(ZoneInfo(timezone)).date()
+        return until
 
     def to_ical(self) -> Event:
         """Return the iCal event."""

@@ -95,6 +95,7 @@ class TimeTreePublicEvent(TimeTreeEvent):
     category_names: list = None
     image_urls: list = None
     video_urls: list = None
+    until_at: int = None
 
     @staticmethod
     def _extract_cover_image_urls(event_data):
@@ -208,6 +209,7 @@ class TimeTreePublicEvent(TimeTreeEvent):
             category_names=category_names,
             image_urls=image_urls,
             video_urls=video_urls,
+            until_at=event_data.get("until_at"),
         )
 
     @staticmethod
