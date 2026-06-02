@@ -112,6 +112,38 @@ class TimeTreeCalendar:
         logger.debug("Parsed %d labels: %s", len(labels), labels)
         return labels
 
+    def get_public_labels(self, calendar_id: int):
+        """
+        Get labels for a public calendar.
+        """
+        url = f"{API_V2_BASEURI}/public_calendars/{calendar_id}"
+        response = self.session.get(
+            url,
+            headers={"Content-Type": "application/json", "X-Timetreea": API_USER_AGENT},
+        )
+        if response.status_code != 200:
+            logger.error(response.text)
+            raise HTTPError("Failed to get public calendar labels")
+
+        r_json = response.json()
+        self._record_raw_response(f"public_calendar_{calendar_id}/metadata", r_json)
+        labels = self._parse_public_labels(r_json)
+        logger.debug("Parsed %d public labels: %s", len(labels), labels)
+        return labels
+
+    @staticmethod
+    def _parse_public_labels(r_json):
+        """Parse labels from a public calendar metadata response."""
+        labels = {}
+        public_calendar = r_json.get("public_calendar") or {}
+        for label in public_calendar.get("public_calendar_labels", []):
+            label_id = label.get("label_id")
+            labels[label_id] = {
+                "name": label.get("name", ""),
+                "color": TimeTreeCalendar._format_color(label.get("color", "")),
+            }
+        return labels
+
     @staticmethod
     def _format_color(color):
         """Convert a color value to hex string if it's an integer."""

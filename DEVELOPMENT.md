@@ -75,7 +75,9 @@ Implementation notes:
 - Public events are normalized by `TimeTreePublicEvent`, which extends `TimeTreeEvent`.
 - Public events may omit `uuid`, `type`, `category`, `alerts`, and `recurrences`.
 - Public recurring events may provide a separate `until_at`; use it as RRULE `UNTIL` when the recurrence itself has no `UNTIL`.
-- Public labels are synthesized from `public_calendar_label` because the private labels endpoint is not used.
+- Public labels are read from public calendar metadata at `/api/v2/public_calendars/{calendar_id}`.
+- Public event payloads still provide `public_calendar_label`, which is used as a fallback during export if metadata labels are unavailable.
+- `--public-calendar --list-labels` reads metadata labels without fetching public events.
 
 Useful public calendar checks:
 

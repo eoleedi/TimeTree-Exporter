@@ -80,6 +80,27 @@ def test_raw_label_response_filename_includes_calendar_id(tmp_path):
     assert (tmp_path / "calendar_1/01_labels.json").exists()
 
 
+def test_get_public_labels_uses_public_calendar_metadata_endpoint():
+    """Public calendar labels should come from metadata, not event payloads."""
+    calendar = TimeTreeCalendar("dummy-session-id")
+    session = _RecordingSession(
+        {
+            "public_calendar": {
+                "public_calendar_labels": [
+                    {"label_id": 4, "name": "Public Campaign", "color": 9732216}
+                ]
+            }
+        }
+    )
+    calendar.session = session
+
+    labels = calendar.get_public_labels("public-calendar-id")
+
+    assert session.requested_url.endswith("/api/v2/public_calendars/public-calendar-id")
+    assert session.requested_params is None
+    assert labels == {4: {"name": "Public Campaign", "color": "#948078"}}
+
+
 def test_raw_responses_are_not_recorded_by_default():
     """Raw payloads should only be retained when developer mode enables capture."""
     calendar = _calendar_with_metadata_response({"calendars": []}, capture_raw_responses=False)

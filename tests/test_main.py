@@ -48,9 +48,17 @@ class _FakeExportCalendarApi:
 
 
 class _FakePublicCalendarApi(_FakeExportCalendarApi):
+    def __init__(self, events, labels):
+        super().__init__(events, labels)
+        self.fetched_public_labels_for = None
+
     def get_public_events(self, calendar_id, calendar_name):
         self.fetched_events_for = (calendar_id, calendar_name)
         return self.events
+
+    def get_public_labels(self, calendar_id):
+        self.fetched_public_labels_for = calendar_id
+        return self.labels
 
 
 class _Args:
@@ -74,6 +82,26 @@ def test_list_labels_and_exit_handles_invalid_or_missing_color(capsys):
     assert "Empty" in output
     assert "Malformed" in output
     assert "\033[38;2;255;0;170m●\033[0m" in output
+
+
+def test_list_labels_and_exit_uses_public_labels_without_fetching_events(capsys):
+    """Public calendar label listing should not fetch public events."""
+    api = _FakePublicCalendarApi(
+        [{"id": "public-event-id"}],
+        {4: {"name": "Public Campaign", "color": "#948078"}},
+    )
+    calendar = Calendar(
+        api,
+        {"id": "public-calendar-id", "name": "Public Calendar", "public": True},
+    )
+
+    list_labels_and_exit(calendar)
+
+    output = capsys.readouterr().out
+    assert api.fetched_events_for is None
+    assert api.fetched_public_labels_for == "public-calendar-id"
+    assert "Public Campaign" in output
+    assert "No labels found" not in output
 
 
 def test_label_suffix_for_group_uses_label_id_when_name_is_empty():
@@ -201,6 +229,7 @@ def test_public_calendar_fetches_public_events_and_skips_labels(tmp_path, normal
     serialized = output_path.read_text(encoding="utf-8")
     assert api.fetched_events_for == ("public-calendar-id", "Public Calendar")
     assert api.fetched_labels_for is None
+    assert api.fetched_public_labels_for == "public-calendar-id"
     assert "SUMMARY:測試一般活動" in serialized
     assert "UID:public-event-id" in serialized
     assert "CATEGORIES:Public Campaign,Shopping" in serialized

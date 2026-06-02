@@ -13,6 +13,9 @@ class CalendarApi(Protocol):
     def get_public_events(self, calendar_id, calendar_name):
         """Return events for a public calendar."""
 
+    def get_public_labels(self, calendar_id):
+        """Return labels for a public calendar."""
+
     def get_labels(self, calendar_id):
         """Return labels for a calendar."""
 
@@ -53,5 +56,5 @@ class Calendar:
     def get_labels(self):
         """Return labels for this calendar."""
         if self.is_public:
-            return {}
+            return self.api.get_public_labels(self.id)
         return self.api.get_labels(self.id)
