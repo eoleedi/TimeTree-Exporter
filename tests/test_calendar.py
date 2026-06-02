@@ -35,6 +35,16 @@ class _RecordingSession(_FakeSession):
         return _FakeResponse(self._payload)
 
 
+class _PagingSession:
+    def __init__(self, payloads):
+        self._payloads = list(payloads)
+        self.requested_params = []
+
+    def get(self, _url, **kwargs):
+        self.requested_params.append(kwargs.get("params"))
+        return _FakeResponse(self._payloads.pop(0))
+
+
 def _calendar_with_metadata_response(payload, capture_raw_responses=True):
     calendar = TimeTreeCalendar("dummy-session-id", capture_raw_responses=capture_raw_responses)
     calendar.session = _FakeSession(payload)
@@ -119,6 +129,32 @@ def test_get_public_events_uses_public_calendar_endpoint():
     )
     assert session.requested_params == {"from": 0}
     assert events == [{"id": "public-event-id"}]
+
+
+def test_get_public_events_follows_pagination_cursor():
+    """Public calendar exports should follow the public_events paging envelope."""
+    calendar = TimeTreeCalendar("dummy-session-id")
+    session = _PagingSession(
+        [
+            {
+                "public_events": [{"id": "first-event"}],
+                "paging": {"next": True, "next_cursor": "next-page"},
+            },
+            {
+                "public_events": [{"id": "second-event"}],
+                "paging": {"next": False},
+            },
+        ]
+    )
+    calendar.session = session
+
+    events = calendar.get_public_events("public-calendar-id", "Public Calendar")
+
+    assert session.requested_params == [
+        {"from": 0},
+        {"from": 0, "cursor": "next-page"},
+    ]
+    assert events == [{"id": "first-event"}, {"id": "second-event"}]
 
 
 def test_raw_public_event_response_filename_includes_calendar_id(tmp_path):

@@ -71,6 +71,7 @@ Implementation notes:
 - Public events are fetched from `/api/v2/public_calendars/{calendar_id}/public_events`.
 - The request includes `from=0`; without it, TimeTree may return only a short default window.
 - Public API responses use `public_events`, not `events`.
+- Public API pagination uses `paging.next` and `paging.next_cursor`; when `next` is true, fetch the next page with `cursor=<next_cursor>`.
 - Public events are normalized by `TimeTreePublicEvent`, which extends `TimeTreeEvent`.
 - Public events may omit `uuid`, `type`, `category`, `alerts`, and `recurrences`.
 - Public labels are synthesized from `public_calendar_label` because the private labels endpoint is not used.

@@ -191,22 +191,39 @@ class TimeTreeCalendar:
         Get events from a public calendar.
         """
         url = f"{API_V2_BASEURI}/public_calendars/{calendar_id}/public_events"
-        response = self.session.get(
-            url,
-            headers={"Content-Type": "application/json", "X-Timetreea": API_USER_AGENT},
-            params={"from": PUBLIC_EVENTS_FROM},
-        )
-        if response.status_code != 200:
-            if calendar_name is not None:
-                logger.error("Failed to get events of the public calendar '%s'", calendar_name)
-            else:
-                logger.error("Failed to get events of the public calendar")
-            logger.error(response.text)
-            raise HTTPError("Failed to get public calendar events")
+        events = []
+        cursor = None
+        while True:
+            params = {"from": PUBLIC_EVENTS_FROM}
+            if cursor:
+                params["cursor"] = cursor
+            response = self.session.get(
+                url,
+                headers={"Content-Type": "application/json", "X-Timetreea": API_USER_AGENT},
+                params=params,
+            )
+            if response.status_code != 200:
+                if calendar_name is not None:
+                    logger.error("Failed to get events of the public calendar '%s'", calendar_name)
+                else:
+                    logger.error("Failed to get events of the public calendar")
+                logger.error(response.text)
+                raise HTTPError("Failed to get public calendar events")
 
-        r_json = response.json()
-        self._record_raw_response(f"public_calendar_{calendar_id}/public_events", r_json)
-        events = r_json["public_events"]
+            r_json = response.json()
+            response_name = f"public_calendar_{calendar_id}/public_events"
+            if cursor:
+                response_name = f"{response_name}_cursor_{cursor}"
+            self._record_raw_response(response_name, r_json)
+            events.extend(r_json["public_events"])
+            paging = r_json.get("paging") or {}
+            if not paging.get("next"):
+                break
+            cursor = paging.get("next_cursor")
+            if not cursor:
+                logger.error("Public events response has paging.next but no next_cursor")
+                raise HTTPError("Failed to get public calendar events")
+
         logger.info("Fetched %d public events", len(events))
         logger.debug(
             "Top 5 fetched public events: \n %s",
