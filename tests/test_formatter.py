@@ -249,7 +249,7 @@ def test_categories_with_label_name(normal_event_data):
     """Test that CATEGORIES is set when label_name is provided."""
     event = TimeTreeEvent.from_dict(normal_event_data)
     formatter = ICalEventFormatter(event, label_name="Work")
-    assert formatter.categories == "Work"
+    assert formatter.categories == ["Work"]
 
     ical_event = formatter.to_ical()
     assert "CATEGORIES" in ical_event
@@ -264,6 +264,17 @@ def test_categories_without_label_name(normal_event_data):
 
     ical_event = formatter.to_ical()
     assert "CATEGORIES" not in ical_event
+
+
+def test_categories_with_additional_category_names(normal_event_data):
+    """Test that additional public category names are included in CATEGORIES."""
+    event = TimeTreeEvent.from_dict(normal_event_data)
+    formatter = ICalEventFormatter(event, label_name="Work", category_names=["Sale", "Food"])
+
+    assert formatter.categories == ["Work", "Sale", "Food"]
+
+    ical_event = formatter.to_ical()
+    assert ical_event["CATEGORIES"].cats == ["Work", "Sale", "Food"]
 
 
 def test_different_timezones(normal_event_data):

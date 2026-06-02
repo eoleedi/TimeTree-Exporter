@@ -61,6 +61,14 @@ Then, you can import the ics file to your calendar app.
 
     Note: Find the calendar code in the URL of the calendar page or when running the script without the `-c` option.
 
+- Export a public calendar by id without signing in.
+
+    ```bash
+    timetree-exporter --public-calendar -c public_calendar_id
+    ```
+
+    Note: Public calendar events use TimeTree's public API and may not include labels, alerts, recurrences, or UUIDs.
+
 - You can pass your email address and password with environment variables. (usually for automation purposes)
 
   ```bash

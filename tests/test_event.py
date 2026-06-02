@@ -4,6 +4,7 @@ from timetree_exporter.event import (
     TimeTreeEvent,
     TimeTreeEventCategory,
     TimeTreeEventType,
+    TimeTreePublicEvent,
 )
 
 
@@ -111,3 +112,57 @@ def test_from_dict_without_label(normal_event_data):
     """Test that label_id is None when no label data is present."""
     event = TimeTreeEvent.from_dict(normal_event_data)
     assert event.label_id is None
+
+
+def test_public_event_from_dict_maps_public_api_fields(normal_event_data):
+    """Public calendar events should normalize API v2 fields to TimeTreeEvent fields."""
+    public_event_data = normal_event_data.copy()
+    public_event_data.pop("uuid")
+    public_event_data.pop("type")
+    public_event_data.pop("category")
+    public_event_data.pop("location")
+    public_event_data["id"] = "public-event-id"
+    public_event_data["location_name"] = "Public Venue"
+    public_event_data["location_address"] = "1 Public Street"
+    public_event_data["headline"] = "Public headline"
+    public_event_data["overview"] = "Public overview"
+    public_event_data["link_url"] = "https://example.com/campaign"
+    public_event_data["location_url"] = "https://example.com/location"
+    public_event_data["attachment"] = {
+        "ogp": {
+            "title": "OGP title",
+            "description": "OGP description",
+            "url": "https://example.com/ogp",
+        }
+    }
+    public_event_data["images"] = {"cover": [{"url": "https://example.com/image.jpg"}]}
+    public_event_data["videos"] = [{"url": "https://example.com/video.mp4"}]
+    public_event_data["public_calendar_hashtags"] = [
+        {"name": "Shopping"},
+        {"hashtag": "Sale"},
+        "Rakuten",
+    ]
+    public_event_data["public_calendar_label"] = {
+        "label_id": 9,
+        "name": "Campaign",
+    }
+    public_event_data["color"] = 9732216
+
+    event = TimeTreePublicEvent.from_dict(public_event_data)
+
+    assert event.uuid == "public-event-id"
+    assert event.location == "Public Venue 1 Public Street"
+    assert event.event_type == TimeTreeEventType.NORMAL
+    assert event.category == TimeTreeEventCategory.NORMAL
+    assert event.label_id == 9
+    assert event.label_name == "Campaign"
+    assert event.label_color == "#948078"
+    assert event.category_names == ["Shopping", "Sale", "Rakuten"]
+    assert event.link_url == "https://example.com/campaign"
+    assert event.location_url == "https://example.com/location"
+    assert event.image_urls == ["https://example.com/image.jpg"]
+    assert event.video_urls == ["https://example.com/video.mp4"]
+    assert "Public headline" in event.note
+    assert "Public overview" in event.note
+    assert "Link title: OGP title" in event.note
+    assert "Link: https://example.com/campaign" in event.note

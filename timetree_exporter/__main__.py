@@ -68,15 +68,36 @@ def select_calendar(email: str, password: str, calendar_code: str):
     return Calendar(calendar, metadata)
 
 
+def select_public_calendar(calendar_id: str):
+    """Select a public calendar by id."""
+    if not calendar_id:
+        raise ValueError(
+            "--public-calendar requires -c/--calendar_code with the public calendar id"
+        )
+    calendar = TimeTreeCalendar("")
+    return Calendar(
+        calendar,
+        {
+            "id": calendar_id,
+            "name": f"Public Calendar {calendar_id}",
+            "alias_code": calendar_id,
+            "public": True,
+        },
+    )
+
+
 def main():
     """Main function for the Timetree Exporter."""
     args = parse_args()
     configure_logging(args.verbose)
     configure_developer_mode(args.developer_mode, args.raw_output_dir)
 
-    email = resolve_email(args.email)
-    password = resolve_password()
-    calendar = select_calendar(email, password, args.calendar_code)
+    if args.public_calendar:
+        calendar = select_public_calendar(args.calendar_code)
+    else:
+        email = resolve_email(args.email)
+        password = resolve_password()
+        calendar = select_calendar(email, password, args.calendar_code)
     exporter = Exporter(calendar, args.output, split_by_label=args.split_by_label)
 
     if args.list_labels:

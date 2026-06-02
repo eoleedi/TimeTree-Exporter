@@ -10,10 +10,12 @@ from pathlib import Path
 import requests
 from requests.exceptions import HTTPError
 
-from timetree_exporter.api.const import API_BASEURI, API_USER_AGENT
+from timetree_exporter.api.const import API_BASEURI, API_USER_AGENT, API_V2_BASEURI
 from timetree_exporter.config import get_raw_output_dir
 
 logger = logging.getLogger(__name__)
+
+PUBLIC_EVENTS_FROM = 0
 
 
 class TimeTreeCalendar:
@@ -179,6 +181,35 @@ class TimeTreeCalendar:
 
         logger.debug(
             "Top 5 fetched events: \n %s",
+            json.dumps(events[:5], indent=2, ensure_ascii=False),
+        )
+
+        return events
+
+    def get_public_events(self, calendar_id: int, calendar_name: str = None):
+        """
+        Get events from a public calendar.
+        """
+        url = f"{API_V2_BASEURI}/public_calendars/{calendar_id}/public_events"
+        response = self.session.get(
+            url,
+            headers={"Content-Type": "application/json", "X-Timetreea": API_USER_AGENT},
+            params={"from": PUBLIC_EVENTS_FROM},
+        )
+        if response.status_code != 200:
+            if calendar_name is not None:
+                logger.error("Failed to get events of the public calendar '%s'", calendar_name)
+            else:
+                logger.error("Failed to get events of the public calendar")
+            logger.error(response.text)
+            raise HTTPError("Failed to get public calendar events")
+
+        r_json = response.json()
+        self._record_raw_response(f"public_calendar_{calendar_id}/public_events", r_json)
+        events = r_json["public_events"]
+        logger.info("Fetched %d public events", len(events))
+        logger.debug(
+            "Top 5 fetched public events: \n %s",
             json.dumps(events[:5], indent=2, ensure_ascii=False),
         )
 

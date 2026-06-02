@@ -58,8 +58,13 @@ def parse_args():
         "-c",
         "--calendar_code",
         type=str,
-        help="The Calendar Code you want to export",
+        help="The Calendar Code you want to export, or public calendar id with --public-calendar",
         default=None,
+    )
+    parser.add_argument(
+        "--public-calendar",
+        help="Export a public calendar by id without signing in",
+        action="store_true",
     )
     parser.add_argument(
         "--version",

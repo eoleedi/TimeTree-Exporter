@@ -23,6 +23,18 @@ class _FakeSession:
         return _FakeResponse(self._payload)
 
 
+class _RecordingSession(_FakeSession):
+    def __init__(self, payload):
+        super().__init__(payload)
+        self.requested_url = None
+        self.requested_params = None
+
+    def get(self, url, **kwargs):
+        self.requested_url = url
+        self.requested_params = kwargs.get("params")
+        return _FakeResponse(self._payload)
+
+
 def _calendar_with_metadata_response(payload, capture_raw_responses=True):
     calendar = TimeTreeCalendar("dummy-session-id", capture_raw_responses=capture_raw_responses)
     calendar.session = _FakeSession(payload)
@@ -92,3 +104,32 @@ def test_api_calls_write_raw_responses_when_developer_output_is_configured(tmp_p
     assert (tmp_path / "01_calendars.json").exists()
     assert (tmp_path / "calendar_1/02_labels.json").exists()
     assert not (tmp_path / "calendar_1/03_events_sync.json").exists()
+
+
+def test_get_public_events_uses_public_calendar_endpoint():
+    """Public calendar exports should use the API v2 public_events endpoint."""
+    calendar = TimeTreeCalendar("dummy-session-id")
+    session = _RecordingSession({"public_events": [{"id": "public-event-id"}]})
+    calendar.session = session
+
+    events = calendar.get_public_events("public-calendar-id", "Public Calendar")
+
+    assert session.requested_url.endswith(
+        "/api/v2/public_calendars/public-calendar-id/public_events"
+    )
+    assert session.requested_params == {"from": 0}
+    assert events == [{"id": "public-event-id"}]
+
+
+def test_raw_public_event_response_filename_includes_calendar_id(tmp_path):
+    """Raw public event response filenames should identify the selected public calendar."""
+    configure_developer_mode(raw_output_dir=tmp_path)
+
+    try:
+        calendar = TimeTreeCalendar("dummy-session-id")
+        calendar.session = _FakeSession({"public_events": []})
+        calendar.get_public_events("public-calendar-id", "Public Calendar")
+    finally:
+        configure_developer_mode()
+
+    assert (tmp_path / "public_calendar_public-calendar-id/01_public_events.json").exists()
