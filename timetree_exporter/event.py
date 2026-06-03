@@ -173,7 +173,13 @@ class TimeTreePublicEvent(TimeTreeEvent):
     def from_dict(cls, event_data: dict):
         """Create TimeTreePublicEvent object from public calendar JSON data."""
         label = event_data.get("public_calendar_label") or {}
-        label_color = cls._format_color(label.get("color") or event_data.get("color"))
+        color = label.get("color")
+        if color is None:
+            color = event_data.get("color")
+        label_color = cls._format_color(color)
+        label_id = label.get("label_id")
+        if label_id is None:
+            label_id = cls._extract_label_id(event_data)
         image_urls = cls._extract_cover_image_urls(event_data)
         video_urls = cls._extract_video_urls(event_data)
         category_names = cls._extract_category_names(event_data)
@@ -197,7 +203,7 @@ class TimeTreePublicEvent(TimeTreeEvent):
             parent_id=event_data.get("parent_id"),
             event_type=event_data.get("type", TimeTreeEventType.NORMAL),
             category=event_data.get("category", TimeTreeEventCategory.NORMAL),
-            label_id=label.get("label_id") or cls._extract_label_id(event_data),
+            label_id=label_id,
             headline=event_data.get("headline"),
             overview=event_data.get("overview"),
             link_url=event_data.get("link_url"),

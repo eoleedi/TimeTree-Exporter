@@ -138,8 +138,10 @@ class TimeTreeCalendar:
         public_calendar = r_json.get("public_calendar") or {}
         for label in public_calendar.get("public_calendar_labels", []):
             label_id = label.get("label_id")
+            if label_id is None:
+                continue
             labels[label_id] = {
-                "name": label.get("name", ""),
+                "name": str(label.get("name") or ""),
                 "color": TimeTreeCalendar._format_color(label.get("color", "")),
             }
         return labels

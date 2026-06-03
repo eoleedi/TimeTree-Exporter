@@ -250,6 +250,20 @@ def test_public_labels_use_event_color_when_label_color_is_missing():
     assert labels == {4: {"name": "Public Campaign", "color": "#948078"}}
 
 
+def test_public_labels_preserve_zero_label_color():
+    """Public label color 0 should stay black instead of falling back to event color."""
+    labels = public_labels_from_events(
+        [
+            {
+                "color": 9732216,
+                "public_calendar_label": {"label_id": 4, "name": "Black", "color": 0},
+            }
+        ]
+    )
+
+    assert labels == {4: {"name": "Black", "color": "#000000"}}
+
+
 def test_developer_mode_globally_enables_raw_output():
     """Developer mode should be readable globally by modules."""
     configure_developer_mode(enabled=True)

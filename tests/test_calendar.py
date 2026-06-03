@@ -101,6 +101,22 @@ def test_get_public_labels_uses_public_calendar_metadata_endpoint():
     assert labels == {4: {"name": "Public Campaign", "color": "#948078"}}
 
 
+def test_parse_public_labels_skips_missing_id_and_coerces_name():
+    """Malformed public labels should not create None keys, and names should be strings."""
+    labels = TimeTreeCalendar._parse_public_labels(
+        {
+            "public_calendar": {
+                "public_calendar_labels": [
+                    {"name": "Missing ID", "color": 0},
+                    {"label_id": 0, "name": None, "color": 0},
+                ]
+            }
+        }
+    )
+
+    assert labels == {0: {"name": "", "color": "#000000"}}
+
+
 def test_raw_responses_are_not_recorded_by_default():
     """Raw payloads should only be retained when developer mode enables capture."""
     calendar = _calendar_with_metadata_response({"calendars": []}, capture_raw_responses=False)

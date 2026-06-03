@@ -79,8 +79,8 @@ def public_labels_from_events(events):
         label_id = label.get("label_id")
         if label_id is None:
             continue
-        color = label.get("color", "")
-        if not color:
+        color = label.get("color")
+        if color is None:
             color = event.get("color", "")
         labels[label_id] = {
             "name": label.get("name", ""),

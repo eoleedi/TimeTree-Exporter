@@ -166,3 +166,21 @@ def test_public_event_from_dict_maps_public_api_fields(normal_event_data):
     assert "Public overview" in event.note
     assert "Link title: OGP title" in event.note
     assert "Link: https://example.com/campaign" in event.note
+
+
+def test_public_event_from_dict_preserves_zero_label_values(normal_event_data):
+    """Public event parsing should treat zero color and label id as real values."""
+    public_event_data = normal_event_data.copy()
+    public_event_data.pop("uuid")
+    public_event_data["id"] = "public-event-id"
+    public_event_data["color"] = 9732216
+    public_event_data["public_calendar_label"] = {
+        "label_id": 0,
+        "name": "Black",
+        "color": 0,
+    }
+
+    event = TimeTreePublicEvent.from_dict(public_event_data)
+
+    assert event.label_id == 0
+    assert event.label_color == "#000000"
