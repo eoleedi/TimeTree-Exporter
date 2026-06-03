@@ -126,6 +126,7 @@ def test_public_event_from_dict_maps_public_api_fields(normal_event_data):
     public_event_data["location_address"] = "1 Public Street"
     public_event_data["headline"] = "Public headline"
     public_event_data["overview"] = "Public overview"
+    public_event_data["url"] = "https://timetr.ee/p/public-event-id"
     public_event_data["link_url"] = "https://example.com/campaign"
     public_event_data["location_url"] = "https://example.com/location"
     public_event_data["attachment"] = {
@@ -135,7 +136,14 @@ def test_public_event_from_dict_maps_public_api_fields(normal_event_data):
             "url": "https://example.com/ogp",
         }
     }
-    public_event_data["images"] = {"cover": [{"url": "https://example.com/image.jpg"}]}
+    public_event_data["images"] = {
+        "cover": [
+            {
+                "url": "https://example.com/image.jpg",
+                "thumbnail_url": "https://example.com/thumb.jpg",
+            }
+        ]
+    }
     public_event_data["videos"] = [{"url": "https://example.com/video.mp4"}]
     public_event_data["public_calendar_hashtags"] = [
         {"name": "Shopping"},
@@ -158,14 +166,21 @@ def test_public_event_from_dict_maps_public_api_fields(normal_event_data):
     assert event.label_name == "Campaign"
     assert event.label_color == "#948078"
     assert event.category_names == ["Shopping", "Sale", "Rakuten"]
+    assert event.url == "https://example.com/campaign"
+    assert event.source_url == "https://timetr.ee/p/public-event-id"
     assert event.link_url == "https://example.com/campaign"
     assert event.location_url == "https://example.com/location"
     assert event.image_urls == ["https://example.com/image.jpg"]
+    assert event.thumbnail_image_urls == ["https://example.com/thumb.jpg"]
     assert event.video_urls == ["https://example.com/video.mp4"]
-    assert "Public headline" in event.note
-    assert "Public overview" in event.note
-    assert "Link title: OGP title" in event.note
-    assert "Link: https://example.com/campaign" in event.note
+    assert "Public headline" not in event.note
+    assert "Public overview" not in event.note
+    assert "OGP title" not in event.note
+    assert "OGP description" not in event.note
+    assert "https://example.com/ogp" not in event.note
+    assert "https://timetr.ee/p/public-event-id" not in event.note
+    assert "https://example.com/image.jpg" not in event.note
+    assert "https://example.com/location" not in event.note
 
 
 def test_public_event_from_dict_preserves_zero_label_values(normal_event_data):

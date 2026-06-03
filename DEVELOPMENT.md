@@ -147,33 +147,36 @@ Public TimeTree event fields:
 - [x] **End Timezone** → `DTEND` timezone
 - [x] **Created At** → `CREATED`
 - [x] **Updated At** → `LAST-MODIFIED`
-- [x] **URL** → `URL`
+- [x] **URL** → `SOURCE`
 - [x] **Note** → `DESCRIPTION`
-- [x] **Headline** → `DESCRIPTION`
-- [x] **Overview** → `DESCRIPTION`
-- [x] **Link URL** → `DESCRIPTION`
-- [x] **Attachment OGP Title** → `DESCRIPTION`
-- [x] **Attachment OGP Description** → `DESCRIPTION`
-- [x] **Attachment OGP URL** → `DESCRIPTION`
+- [ ] ~~**Headline**~~ (Not mapped; observed public calendars leave it empty, and `SUMMARY` already uses `title`)
+- [ ] ~~**Overview**~~ (Not mapped; observed public calendars leave it empty, and `DESCRIPTION` uses `note`)
+- [x] **Link URL** → `URL`
+- [ ] ~~**Attachment OGP Title**~~ (Not mapped; no clear iCalendar property beyond duplicating `SUMMARY`/`DESCRIPTION`)
+- [ ] ~~**Attachment OGP Description**~~ (Not mapped; no clear iCalendar property beyond duplicating `DESCRIPTION`)
+- [ ] ~~**Attachment OGP URL**~~ (Not mapped; `link_url` already maps to `URL`)
 - [x] **Location Name** → `LOCATION`
 - [x] **Location Address** → `LOCATION`
 - [x] **Location Latitude** → `GEO`
 - [x] **Location Longitude** → `GEO`
-- [x] **Location URL** → `DESCRIPTION`
+- [x] **Location URL** → `LOCATION;ALTREP`
 - [x] **Public Calendar Label ID** → internal label grouping
 - [x] **Public Calendar Label Name** → `CATEGORIES`
 - [x] **Public Calendar Label Color** → `COLOR`
 - [x] **Top-Level Color** → `COLOR` fallback
 - [x] **Public Calendar Hashtags** → `CATEGORIES`
-- [x] **Cover Image URLs** → `DESCRIPTION`
+- [x] **Cover Image URLs** → `IMAGE;DISPLAY=FULLSIZE`
+- [x] **Cover Thumbnail Image URLs** → `IMAGE;DISPLAY=THUMBNAIL`
 - [x] **Video URLs** → `DESCRIPTION`
-- [ ] **Campaign**
-- [ ] **Interest Count**
-- [ ] **Publish At**
+- [ ] ~~**Campaign**~~ (Not mapped; TimeTree campaign metadata has no clear iCalendar equivalent)
+- [ ] ~~**Interest Count**~~ (Not mapped; social metric has no iCalendar equivalent)
+- [ ] ~~**Publish At**~~ (Not mapped; publication metadata is not the event schedule)
 - [x] **Until At** → recurrence `UNTIL` fallback
-- [ ] **Status**
-- [ ] **Region Timezone**
-- [ ] **Location Access**
-- [ ] **Location Note**
-- [ ] **Period Closed**
-- [ ] **Period Note**
+- [ ] ~~**Status**~~ (Not mapped; TimeTree-specific publication/status metadata)
+- [ ] ~~**Region Timezone**~~ (Not mapped; event times use `start_timezone` and `end_timezone`)
+- [ ] ~~**Location Access**~~ (Not mapped; no clear iCalendar property or parameter)
+- [ ] ~~**Location Note**~~ (Not mapped; no clear iCalendar property without mixing it into `DESCRIPTION`)
+- [ ] ~~**Period Closed**~~ (Not mapped; no clear iCalendar property or parameter)
+- [ ] ~~**Period Note**~~ (Not mapped; no clear iCalendar property without mixing it into `DESCRIPTION`)
+
+Observed public calendars such as `rakuten_official` and `niigatacity` usually leave `headline` and `overview` empty and put event details in `note`. Public event `DESCRIPTION` is therefore sourced from `note` only, with video URLs appended when present.

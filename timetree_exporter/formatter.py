@@ -107,6 +107,11 @@ class ICalEventFormatter:
         return self.time_tree_event.location if self.time_tree_event.location != "" else None
 
     @property
+    def location_altrep(self):
+        """Return an alternate representation URI for the location."""
+        return getattr(self.time_tree_event, "location_url", None)
+
+    @property
     def geo(self):
         """Return the geolocation of the event."""
         if self.time_tree_event.location_lat is None or self.time_tree_event.location_lon is None:
@@ -117,6 +122,21 @@ class ICalEventFormatter:
     def url(self):
         """Return the URL of the event."""
         return self.time_tree_event.url if self.time_tree_event.url != "" else None
+
+    @property
+    def source(self):
+        """Return the source URL of the event."""
+        return getattr(self.time_tree_event, "source_url", None)
+
+    @property
+    def images(self):
+        """Return image URLs for the event."""
+        return getattr(self.time_tree_event, "image_urls", None) or []
+
+    @property
+    def thumbnail_images(self):
+        """Return thumbnail image URLs for the event."""
+        return getattr(self.time_tree_event, "thumbnail_image_urls", None) or []
 
     @property
     def related_to(self):
@@ -261,11 +281,18 @@ class ICalEventFormatter:
         event.add("dtend", self.dtend)
 
         if self.location:
-            event.add("location", self.location)
+            params = {"ALTREP": self.location_altrep} if self.location_altrep else {}
+            event.add("location", self.location, parameters=params)
         if self.geo:
             event.add("geo", self.geo)
         if self.url:
             event.add("url", self.url)
+        if self.source:
+            event.add("source", self.source, parameters={"VALUE": "URI"})
+        for image_url in self.images:
+            event.add("image", image_url, parameters={"VALUE": "URI", "DISPLAY": "FULLSIZE"})
+        for image_url in self.thumbnail_images:
+            event.add("image", image_url, parameters={"VALUE": "URI", "DISPLAY": "THUMBNAIL"})
         if self.description:
             event.add("description", self.description)
         if self.related_to:

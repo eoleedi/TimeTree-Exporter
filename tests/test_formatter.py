@@ -297,6 +297,78 @@ def test_categories_with_additional_category_names(normal_event_data):
     assert ical_event["CATEGORIES"].cats == ["Work", "Sale", "Food"]
 
 
+def test_public_images_are_exported_as_image_properties(normal_event_data):
+    """Public cover images should be exported as RFC 7986 IMAGE properties."""
+    data = normal_event_data.copy()
+    data.pop("uuid")
+    data["id"] = "public-event-id"
+    data["images"] = {
+        "cover": [
+            {
+                "url": "https://example.com/image.jpg",
+                "thumbnail_url": "https://example.com/thumb.jpg",
+            }
+        ]
+    }
+
+    event = TimeTreePublicEvent.from_dict(data)
+    formatter = ICalEventFormatter(event)
+    ical_event = formatter.to_ical()
+    serialized = ical_event.to_ical().decode()
+
+    assert "IMAGE;DISPLAY=FULLSIZE;VALUE=URI:https://example.com/image.jpg" in serialized
+    assert "IMAGE;DISPLAY=THUMBNAIL;VALUE=URI:https://example.com/thumb.jpg" in serialized
+
+
+def test_public_location_url_is_exported_as_location_altrep(normal_event_data):
+    """Public location URLs should be exported as LOCATION ALTREP."""
+    data = normal_event_data.copy()
+    data.pop("uuid")
+    data["id"] = "public-event-id"
+    data["location"] = "Public Venue"
+    data["location_url"] = "https://example.com/location"
+
+    event = TimeTreePublicEvent.from_dict(data)
+    formatter = ICalEventFormatter(event)
+    ical_event = formatter.to_ical()
+
+    assert ical_event["LOCATION"] == "Public Venue"
+    assert ical_event["LOCATION"].params["ALTREP"] == "https://example.com/location"
+
+
+def test_public_event_uses_link_url_as_ical_url_and_timetree_url_as_source(normal_event_data):
+    """Public campaign links should be URL, while TimeTree permalinks are SOURCE."""
+    data = normal_event_data.copy()
+    data.pop("uuid")
+    data["id"] = "public-event-id"
+    data["url"] = "https://timetr.ee/p/public-event-id"
+    data["link_url"] = "https://example.com/campaign"
+
+    event = TimeTreePublicEvent.from_dict(data)
+    formatter = ICalEventFormatter(event)
+    ical_event = formatter.to_ical()
+
+    assert ical_event["URL"] == "https://example.com/campaign"
+    assert ical_event["SOURCE"] == "https://timetr.ee/p/public-event-id"
+    assert ical_event["SOURCE"].params["VALUE"] == "URI"
+
+
+def test_public_event_without_link_url_has_source_but_no_ical_url(normal_event_data):
+    """Public TimeTree permalinks should not become URL when link_url is absent."""
+    data = normal_event_data.copy()
+    data.pop("uuid")
+    data.pop("url")
+    data["id"] = "public-event-id"
+    data["url"] = "https://timetr.ee/p/public-event-id"
+
+    event = TimeTreePublicEvent.from_dict(data)
+    formatter = ICalEventFormatter(event)
+    ical_event = formatter.to_ical()
+
+    assert "URL" not in ical_event
+    assert ical_event["SOURCE"] == "https://timetr.ee/p/public-event-id"
+
+
 def test_different_timezones(normal_event_data):
     """Test event with different start and end timezones."""
     # Create an event with different start and end timezones

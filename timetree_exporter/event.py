@@ -94,8 +94,10 @@ class TimeTreePublicEvent(TimeTreeEvent):
     label_color: str = None
     category_names: list = None
     image_urls: list = None
+    thumbnail_image_urls: list = None
     video_urls: list = None
     until_at: int = None
+    source_url: str = None
 
     @staticmethod
     def _extract_cover_image_urls(event_data):
@@ -107,6 +109,15 @@ class TimeTreePublicEvent(TimeTreeEvent):
         ]
 
     @staticmethod
+    def _extract_thumbnail_image_urls(event_data):
+        """Return public event thumbnail image URLs."""
+        return [
+            image["thumbnail_url"]
+            for image in event_data.get("images", {}).get("cover", [])
+            if image.get("thumbnail_url")
+        ]
+
+    @staticmethod
     def _extract_video_urls(event_data):
         """Return public event video URLs."""
         return [video["url"] for video in event_data.get("videos", []) if video.get("url")]
@@ -115,31 +126,9 @@ class TimeTreePublicEvent(TimeTreeEvent):
     def _build_note(event_data):
         """Build an ICS description from public event text and links."""
         parts = []
-        for value in (
-            event_data.get("headline"),
-            event_data.get("overview"),
-            event_data.get("note"),
-        ):
+        for value in (event_data.get("note"),):
             if value:
                 parts.append(value)
-
-        ogp = (event_data.get("attachment") or {}).get("ogp") or {}
-        if ogp.get("title"):
-            parts.append(f"Link title: {ogp['title']}")
-        if ogp.get("description"):
-            parts.append(f"Link description: {ogp['description']}")
-
-        for label, value in (
-            ("Link", event_data.get("link_url")),
-            ("Location URL", event_data.get("location_url")),
-            ("OGP URL", ogp.get("url")),
-        ):
-            if value:
-                parts.append(f"{label}: {value}")
-
-        image_urls = TimeTreePublicEvent._extract_cover_image_urls(event_data)
-        if image_urls:
-            parts.append("Images:\n" + "\n".join(image_urls))
 
         video_urls = TimeTreePublicEvent._extract_video_urls(event_data)
         if video_urls:
@@ -181,6 +170,7 @@ class TimeTreePublicEvent(TimeTreeEvent):
         if label_id is None:
             label_id = cls._extract_label_id(event_data)
         image_urls = cls._extract_cover_image_urls(event_data)
+        thumbnail_image_urls = cls._extract_thumbnail_image_urls(event_data)
         video_urls = cls._extract_video_urls(event_data)
         category_names = cls._extract_category_names(event_data)
         return cls(
@@ -192,7 +182,7 @@ class TimeTreePublicEvent(TimeTreeEvent):
             location=event_data.get("location") or cls._build_location(event_data),
             location_lat=event_data.get("location_lat"),
             location_lon=event_data.get("location_lon"),
-            url=event_data.get("url"),
+            url=event_data.get("link_url"),
             start_at=event_data.get("start_at"),
             start_timezone=event_data.get("start_timezone"),
             end_at=event_data.get("end_at"),
@@ -214,8 +204,10 @@ class TimeTreePublicEvent(TimeTreeEvent):
             label_color=label_color,
             category_names=category_names,
             image_urls=image_urls,
+            thumbnail_image_urls=thumbnail_image_urls,
             video_urls=video_urls,
             until_at=event_data.get("until_at"),
+            source_url=event_data.get("url"),
         )
 
     @staticmethod
