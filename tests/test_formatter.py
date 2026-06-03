@@ -236,6 +236,25 @@ def test_public_recurrence_uses_until_at_when_rrule_has_no_until(normal_event_da
     assert ical_event["RRULE"]["UNTIL"] == [datetime(2024, 9, 1, tzinfo=ZoneInfo("UTC"))]
 
 
+def test_public_recurrence_preserves_zero_until_at(normal_event_data):
+    """Public until_at=0 should be treated as a valid recurrence bound."""
+    data = normal_event_data.copy()
+    data.pop("uuid")
+    data.update(
+        {
+            "id": "public-event-id",
+            "recurrences": ["RRULE:FREQ=MONTHLY"],
+            "until_at": 0,
+        }
+    )
+
+    event = TimeTreePublicEvent.from_dict(data)
+    formatter = ICalEventFormatter(event)
+    ical_event = formatter.to_ical()
+
+    assert ical_event["RRULE"]["UNTIL"] == [datetime(1970, 1, 1, tzinfo=ZoneInfo("UTC"))]
+
+
 def test_no_alarms_location_url(normal_event_data):
     """Test event formatting without optional fields."""
     # Create an event without alarms, location, and URL

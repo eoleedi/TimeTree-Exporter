@@ -83,7 +83,7 @@ def public_labels_from_events(events):
         if color is None:
             color = event.get("color", "")
         labels[label_id] = {
-            "name": label.get("name", ""),
+            "name": str(label.get("name") or ""),
             "color": f"#{color:06x}" if isinstance(color, int) else color,
         }
     return labels

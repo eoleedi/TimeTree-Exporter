@@ -264,6 +264,21 @@ def test_public_labels_preserve_zero_label_color():
     assert labels == {4: {"name": "Black", "color": "#000000"}}
 
 
+def test_public_labels_from_events_coerces_label_names():
+    """Fallback public labels should always use string names."""
+    labels = public_labels_from_events(
+        [
+            {"public_calendar_label": {"label_id": 4, "name": None, "color": 0}},
+            {"public_calendar_label": {"label_id": 5, "name": 123, "color": 0}},
+        ]
+    )
+
+    assert labels == {
+        4: {"name": "", "color": "#000000"},
+        5: {"name": "123", "color": "#000000"},
+    }
+
+
 def test_developer_mode_globally_enables_raw_output():
     """Developer mode should be readable globally by modules."""
     configure_developer_mode(enabled=True)

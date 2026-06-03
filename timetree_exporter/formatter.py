@@ -215,7 +215,7 @@ class ICalEventFormatter:
                         ZoneInfo(self.time_tree_event.start_timezone),
                     )
                     recurrence_rule["UNTIL"] = [local_until.astimezone(ZoneInfo("UTC"))]
-                elif not until and getattr(self.time_tree_event, "until_at", None):
+                elif not until and getattr(self.time_tree_event, "until_at", None) is not None:
                     recurrence_rule["UNTIL"] = [self.recurrence_until]
                 event.add(name, recurrence_rule, parameters)
             elif name.lower() == "exdate" or name.lower() == "rdate":
