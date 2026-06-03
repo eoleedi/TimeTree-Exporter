@@ -99,42 +99,42 @@ uv run pre-commit run --all-files
 
 Private TimeTree event fields:
 
-- [ ] **ID**
-- [ ] **Primary ID**
-- [ ] **Calendar ID**
-- [x] **UUID**
-- [x] **Category**
-- [x] **Type**
-- [ ] **Author ID**
-- [ ] **Author Type**
-- [x] **Title**
-- [x] **All Day**
-- [x] **Start At**
-- [x] **Start Timezone**
-- [x] **End At**
-- [x] **End Timezone**
-- [x] **Label ID**
-- [x] **Location**
-- [x] **Location Latitude**
-- [x] **Location Longitude**
-- [x] **URL**
-- [x] **Note**
-- [ ] **Lunar**
-- [ ] **Attendees**
-- [x] **Recurrences**
-- [ ] **Recurring UUID**
-- [x] **Alerts**
-- [x] **Parent ID**
-- [ ] **Link Object ID**
-- [ ] **Link Object ID String**
+- [ ] ~~**ID**~~ (Not mapped; `uuid` is used as the iCalendar stable identifier)
+- [ ] ~~**Primary ID**~~ (Not mapped; no clear iCalendar equivalent)
+- [ ] ~~**Calendar ID**~~ (Not mapped on each `VEVENT`; the selected calendar becomes the exported `VCALENDAR`)
+- [x] **UUID** -> `UID`
+- [x] **Category** -> export behavior; memo events are skipped, normal events are exported
+- [x] **Type** -> export behavior; birthday events are skipped, normal events are exported
+- [ ] ~~**Author ID**~~ (Not mapped; `ORGANIZER` and RFC 9073 `PARTICIPANT` require a calendar address or contact metadata, not only an internal TimeTree ID)
+- [ ] ~~**Author Type**~~ (Not mapped; no clear iCalendar equivalent without author contact metadata)
+- [x] **Title** -> `SUMMARY`
+- [x] **All Day** -> all-day `DTSTART;VALUE=DATE` / `DTEND;VALUE=DATE`; all-day `DTEND` is exclusive
+- [x] **Start At** -> `DTSTART`
+- [x] **Start Timezone** -> `DTSTART;TZID=...` for non-UTC timed events
+- [x] **End At** -> `DTEND`
+- [x] **End Timezone** -> `DTEND;TZID=...` for non-UTC timed events
+- [x] **Label ID** -> label metadata lookup for `CATEGORIES` and `COLOR`
+- [x] **Location** -> `LOCATION`
+- [x] **Location Latitude** -> `GEO`
+- [x] **Location Longitude** -> `GEO`
+- [x] **URL** -> `URL`
+- [x] **Note** -> `DESCRIPTION`
+- [ ] **Lunar** -> possible RFC 7529 `RRULE` `RSCALE=...` / `SKIP=...` for lunar or other non-Gregorian recurrence rules; requires confirming TimeTree lunar recurrence semantics
+- [ ] **Attendees** -> possible `ATTENDEE` with params such as `CN`, `CUTYPE`, `ROLE`, `PARTSTAT`, `RSVP`, and RFC 7986 `EMAIL`; requires usable calendar-user addresses
+- [x] **Recurrences** -> `RRULE`, `RDATE`, or `EXDATE`; recurrence parameters are preserved, and date-only timed-event `RRULE` `UNTIL` values are converted to UTC end-of-day
+- [ ] **Recurring UUID** -> recurring master event `uuid` for detached recurrence instances; possible future `RECURRENCE-ID` support when paired with the master's `EXDATE`/original occurrence timestamp
+- [x] **Alerts** -> `VALARM` with `ACTION:DISPLAY`, `DESCRIPTION:Reminder`, and relative `TRIGGER`
+- [x] **Parent ID** -> `RELATED-TO`; for detached recurrence instances this is the recurring master event `id`, while `recurring_uuid` is the master `uuid`
+- [ ] ~~**Link Object ID**~~ (Not mapped; currently observed as `null`; frontend stores it as `link_object_id` but does not appear to use it for event relationships)
+- [ ] ~~**Link Object ID String**~~ (Not mapped; frontend field is `link_object_id_string`; no observed non-empty payloads or current frontend relationship behavior)
 - [ ] ~~**Row Order**~~ (Ignore since it's a property for timetree notes)
-- [ ] **Attachment**
-- [ ] **Like Count**
-- [ ] **Files**
-- [ ] **Deactivated At**
-- [ ] **Pinned At**
-- [x] **Updated At**
-- [x] **Created At**
+- [ ] **Attachment** -> possible `ATTACH;VALUE=URI`, `ATTACH;FMTTYPE=...;ENCODING=BASE64;VALUE=BINARY`, or RFC 9073 `STRUCTURED-DATA` with `VALUE`, `FMTTYPE`, and `SCHEMA` params
+- [ ] ~~**Like Count**~~ (Not mapped; social metric has no iCalendar equivalent)
+- [ ] **Files** -> possible repeated `ATTACH;VALUE=URI` or binary `ATTACH` with `FMTTYPE`, `ENCODING=BASE64`, and `VALUE=BINARY`
+- [ ] **Deactivated At** -> possible future sync-state tombstone handling after initial sync, such as web client updates from `/api/v1/calendar/{calendar_id}/events`; not a normal ICS event property
+- [ ] ~~**Pinned At**~~ (Not mapped; TimeTree-specific UI metadata)
+- [x] **Updated At** -> `LAST-MODIFIED`
+- [x] **Created At** -> `CREATED`
 
 Public TimeTree event fields:
 
