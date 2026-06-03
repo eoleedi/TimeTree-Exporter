@@ -8,7 +8,7 @@ from pathlib import Path
 
 from icalendar import Calendar as ICalendar
 
-from timetree_exporter import ICalEventFormatter, TimeTreeEvent
+from timetree_exporter import ICalEventFormatter, TimeTreeEvent, TimeTreePublicEvent
 from timetree_exporter.utils import add_bounded_timezones_before_events
 
 logger = logging.getLogger(__name__)
@@ -28,14 +28,18 @@ class Exporter:
         logger.info("Found %d events", len(events))
 
         labels = self.calendar.get_labels()
+        if self.calendar.is_public and not labels:
+            labels = public_labels_from_events(events)
         logger.info("Found %d labels", len(labels))
 
+        event_cls = TimeTreePublicEvent if self.calendar.is_public else TimeTreeEvent
+
         if self.split_by_label:
-            grouped_events = group_events_by_label(events, labels)
+            grouped_events = group_events_by_label(events, labels, event_cls=event_cls)
             write_split_calendars(grouped_events, labels, self.output, len(events))
             return
 
-        cal = build_single_calendar(events, labels)
+        cal = build_single_calendar(events, labels, event_cls=event_cls)
         logger.info(
             "A total of %d/%d events are added to the calendar",
             len(cal.subcomponents),
@@ -67,17 +71,44 @@ def write_calendar(cal, output_path: str | Path):
         logger.info("The .ics calendar file is saved to %s", path.resolve())
 
 
-def build_single_calendar(events, labels):
+def public_labels_from_events(events):
+    """Build label metadata from public calendar event payloads."""
+    labels = {}
+    for event in events:
+        label = event.get("public_calendar_label") or {}
+        label_id = label.get("label_id")
+        if label_id is None:
+            continue
+        color = label.get("color")
+        if color is None:
+            color = event.get("color", "")
+        labels[label_id] = {
+            "name": str(label.get("name") or ""),
+            "color": f"#{color:06x}" if isinstance(color, int) else color,
+        }
+    return labels
+
+
+def build_single_calendar(events, labels, event_cls=TimeTreeEvent):
     """Build single output calendar from events."""
     cal = create_calendar()
     label_lookup = {lid: info["name"] for lid, info in labels.items()} if labels else {}
     color_lookup = {lid: info["color"] for lid, info in labels.items()} if labels else {}
 
     for event in events:
-        time_tree_event = TimeTreeEvent.from_dict(event)
-        label_name = label_lookup.get(time_tree_event.label_id)
-        color = color_lookup.get(time_tree_event.label_id)
-        formatter = ICalEventFormatter(time_tree_event, label_name=label_name, color=color)
+        time_tree_event = event_cls.from_dict(event)
+        label_name = label_lookup.get(time_tree_event.label_id) or getattr(
+            time_tree_event, "label_name", None
+        )
+        color = color_lookup.get(time_tree_event.label_id) or getattr(
+            time_tree_event, "label_color", None
+        )
+        formatter = ICalEventFormatter(
+            time_tree_event,
+            label_name=label_name,
+            color=color,
+            category_names=getattr(time_tree_event, "category_names", None),
+        )
         ical_event = formatter.to_ical()
         if ical_event is not None:
             cal.add_component(ical_event)
@@ -85,22 +116,31 @@ def build_single_calendar(events, labels):
     return cal
 
 
-def group_events_by_label(events, labels):
+def group_events_by_label(events, labels, event_cls=TimeTreeEvent):
     """Group converted iCal events by label id (or None for unlabeled)."""
     grouped = defaultdict(list)
 
     for event in events:
-        time_tree_event = TimeTreeEvent.from_dict(event)
+        time_tree_event = event_cls.from_dict(event)
         label_info = labels.get(time_tree_event.label_id)
-        label_name = label_info["name"] if label_info is not None else None
-        color = label_info["color"] if label_info is not None else None
-        formatter = ICalEventFormatter(time_tree_event, label_name=label_name, color=color)
+        if label_info is not None:
+            label_name = label_info["name"]
+            color = label_info["color"]
+        else:
+            label_name = getattr(time_tree_event, "label_name", None)
+            color = getattr(time_tree_event, "label_color", None)
+        formatter = ICalEventFormatter(
+            time_tree_event,
+            label_name=label_name,
+            color=color,
+            category_names=getattr(time_tree_event, "category_names", None),
+        )
         ical_event = formatter.to_ical()
 
         if ical_event is None:
             continue
 
-        group_key = time_tree_event.label_id if label_info is not None else None
+        group_key = time_tree_event.label_id if label_name or color else None
         grouped[group_key].append(ical_event)
 
     return grouped

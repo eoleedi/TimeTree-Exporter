@@ -23,6 +23,28 @@ class _FakeSession:
         return _FakeResponse(self._payload)
 
 
+class _RecordingSession(_FakeSession):
+    def __init__(self, payload):
+        super().__init__(payload)
+        self.requested_url = None
+        self.requested_params = None
+
+    def get(self, url, **kwargs):
+        self.requested_url = url
+        self.requested_params = kwargs.get("params")
+        return _FakeResponse(self._payload)
+
+
+class _PagingSession:
+    def __init__(self, payloads):
+        self._payloads = list(payloads)
+        self.requested_params = []
+
+    def get(self, _url, **kwargs):
+        self.requested_params.append(kwargs.get("params"))
+        return _FakeResponse(self._payloads.pop(0))
+
+
 def _calendar_with_metadata_response(payload, capture_raw_responses=True):
     calendar = TimeTreeCalendar("dummy-session-id", capture_raw_responses=capture_raw_responses)
     calendar.session = _FakeSession(payload)
@@ -56,6 +78,43 @@ def test_raw_label_response_filename_includes_calendar_id(tmp_path):
         configure_developer_mode()
 
     assert (tmp_path / "calendar_1/01_labels.json").exists()
+
+
+def test_get_public_labels_uses_public_calendar_metadata_endpoint():
+    """Public calendar labels should come from metadata, not event payloads."""
+    calendar = TimeTreeCalendar("dummy-session-id")
+    session = _RecordingSession(
+        {
+            "public_calendar": {
+                "public_calendar_labels": [
+                    {"label_id": 4, "name": "Public Campaign", "color": 9732216}
+                ]
+            }
+        }
+    )
+    calendar.session = session
+
+    labels = calendar.get_public_labels("public-calendar-id")
+
+    assert session.requested_url.endswith("/api/v2/public_calendars/public-calendar-id")
+    assert session.requested_params is None
+    assert labels == {4: {"name": "Public Campaign", "color": "#948078"}}
+
+
+def test_parse_public_labels_skips_missing_id_and_coerces_name():
+    """Malformed public labels should not create None keys, and names should be strings."""
+    labels = TimeTreeCalendar._parse_public_labels(
+        {
+            "public_calendar": {
+                "public_calendar_labels": [
+                    {"name": "Missing ID", "color": 0},
+                    {"label_id": 0, "name": None, "color": 0},
+                ]
+            }
+        }
+    )
+
+    assert labels == {0: {"name": "", "color": "#000000"}}
 
 
 def test_raw_responses_are_not_recorded_by_default():
@@ -92,3 +151,58 @@ def test_api_calls_write_raw_responses_when_developer_output_is_configured(tmp_p
     assert (tmp_path / "01_calendars.json").exists()
     assert (tmp_path / "calendar_1/02_labels.json").exists()
     assert not (tmp_path / "calendar_1/03_events_sync.json").exists()
+
+
+def test_get_public_events_uses_public_calendar_endpoint():
+    """Public calendar exports should use the API v2 public_events endpoint."""
+    calendar = TimeTreeCalendar("dummy-session-id")
+    session = _RecordingSession({"public_events": [{"id": "public-event-id"}]})
+    calendar.session = session
+
+    events = calendar.get_public_events("public-calendar-id", "Public Calendar")
+
+    assert session.requested_url.endswith(
+        "/api/v2/public_calendars/public-calendar-id/public_events"
+    )
+    assert session.requested_params == {"from": 0}
+    assert events == [{"id": "public-event-id"}]
+
+
+def test_get_public_events_follows_pagination_cursor():
+    """Public calendar exports should follow the public_events paging envelope."""
+    calendar = TimeTreeCalendar("dummy-session-id")
+    session = _PagingSession(
+        [
+            {
+                "public_events": [{"id": "first-event"}],
+                "paging": {"next": True, "next_cursor": "next-page"},
+            },
+            {
+                "public_events": [{"id": "second-event"}],
+                "paging": {"next": False},
+            },
+        ]
+    )
+    calendar.session = session
+
+    events = calendar.get_public_events("public-calendar-id", "Public Calendar")
+
+    assert session.requested_params == [
+        {"from": 0},
+        {"from": 0, "cursor": "next-page"},
+    ]
+    assert events == [{"id": "first-event"}, {"id": "second-event"}]
+
+
+def test_raw_public_event_response_filename_includes_calendar_id(tmp_path):
+    """Raw public event response filenames should identify the selected public calendar."""
+    configure_developer_mode(raw_output_dir=tmp_path)
+
+    try:
+        calendar = TimeTreeCalendar("dummy-session-id")
+        calendar.session = _FakeSession({"public_events": []})
+        calendar.get_public_events("public-calendar-id", "Public Calendar")
+    finally:
+        configure_developer_mode()
+
+    assert (tmp_path / "public_calendar_public-calendar-id/01_public_events.json").exists()

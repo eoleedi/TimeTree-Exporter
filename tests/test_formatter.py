@@ -9,6 +9,7 @@ from icalendar.prop import vDuration
 from timetree_exporter.event import (
     TimeTreeEvent,
     TimeTreeEventType,
+    TimeTreePublicEvent,
 )
 from timetree_exporter.formatter import ICalEventFormatter
 from timetree_exporter.utils import convert_timestamp_to_datetime
@@ -216,6 +217,67 @@ def test_rrule_until_date_for_all_day_event_stays_date(normal_event_data):
     assert ical_event["RRULE"]["UNTIL"] == [date(2022, 5, 24)]
 
 
+def test_public_recurrence_does_not_map_until_at(normal_event_data):
+    """Public until_at should not synthesize recurrence bounds."""
+    data = normal_event_data.copy()
+    data.pop("uuid")
+    data.update(
+        {
+            "id": "public-event-id",
+            "recurrences": ["RRULE:FREQ=MONTHLY"],
+            "until_at": int(datetime(2085, 4, 1, tzinfo=ZoneInfo("UTC")).timestamp() * 1000),
+        }
+    )
+
+    event = TimeTreePublicEvent.from_dict(data)
+    formatter = ICalEventFormatter(event)
+    ical_event = formatter.to_ical()
+
+    assert ical_event["RRULE"]["FREQ"] == ["MONTHLY"]
+    assert "UNTIL" not in ical_event["RRULE"]
+
+
+def test_rrule_rejects_count_with_until(normal_event_data):
+    """RRULEs with both COUNT and UNTIL should fail loudly."""
+    data = normal_event_data.copy()
+    data.update(
+        {
+            "recurrences": ["RRULE:FREQ=DAILY;UNTIL=20251130;COUNT=3;INTERVAL=7"],
+            "all_day": True,
+        }
+    )
+
+    event = TimeTreeEvent.from_dict(data)
+    formatter = ICalEventFormatter(event)
+
+    try:
+        formatter.to_ical()
+    except ValueError as exc:
+        assert str(exc) == "RRULE must not include both COUNT and UNTIL"
+    else:
+        raise AssertionError("expected invalid RRULE to raise ValueError")
+
+
+def test_public_until_at_is_not_added_when_count_is_present(normal_event_data):
+    """Public until_at should not create invalid COUNT plus UNTIL rules."""
+    data = normal_event_data.copy()
+    data.pop("uuid")
+    data.update(
+        {
+            "id": "public-event-id",
+            "recurrences": ["RRULE:FREQ=DAILY;COUNT=1;INTERVAL=14"],
+            "until_at": int(datetime(2025, 12, 11, tzinfo=ZoneInfo("UTC")).timestamp() * 1000),
+        }
+    )
+
+    event = TimeTreePublicEvent.from_dict(data)
+    formatter = ICalEventFormatter(event)
+    ical_event = formatter.to_ical()
+
+    assert ical_event["RRULE"]["COUNT"] == [1]
+    assert "UNTIL" not in ical_event["RRULE"]
+
+
 def test_no_alarms_location_url(normal_event_data):
     """Test event formatting without optional fields."""
     # Create an event without alarms, location, and URL
@@ -249,7 +311,7 @@ def test_categories_with_label_name(normal_event_data):
     """Test that CATEGORIES is set when label_name is provided."""
     event = TimeTreeEvent.from_dict(normal_event_data)
     formatter = ICalEventFormatter(event, label_name="Work")
-    assert formatter.categories == "Work"
+    assert formatter.categories == ["Work"]
 
     ical_event = formatter.to_ical()
     assert "CATEGORIES" in ical_event
@@ -264,6 +326,89 @@ def test_categories_without_label_name(normal_event_data):
 
     ical_event = formatter.to_ical()
     assert "CATEGORIES" not in ical_event
+
+
+def test_categories_with_additional_category_names(normal_event_data):
+    """Test that additional public category names are included in CATEGORIES."""
+    event = TimeTreeEvent.from_dict(normal_event_data)
+    formatter = ICalEventFormatter(event, label_name="Work", category_names=["Sale", "Food"])
+
+    assert formatter.categories == ["Work", "Sale", "Food"]
+
+    ical_event = formatter.to_ical()
+    assert ical_event["CATEGORIES"].cats == ["Work", "Sale", "Food"]
+
+
+def test_public_images_are_exported_as_image_properties(normal_event_data):
+    """Public cover images should be exported as RFC 7986 IMAGE properties."""
+    data = normal_event_data.copy()
+    data.pop("uuid")
+    data["id"] = "public-event-id"
+    data["images"] = {
+        "cover": [
+            {
+                "url": "https://example.com/image.jpg",
+                "thumbnail_url": "https://example.com/thumb.jpg",
+            }
+        ]
+    }
+
+    event = TimeTreePublicEvent.from_dict(data)
+    formatter = ICalEventFormatter(event)
+    ical_event = formatter.to_ical()
+    serialized = ical_event.to_ical().decode()
+
+    assert "IMAGE;DISPLAY=FULLSIZE;VALUE=URI:https://example.com/image.jpg" in serialized
+    assert "IMAGE;DISPLAY=THUMBNAIL;VALUE=URI:https://example.com/thumb.jpg" in serialized
+
+
+def test_public_location_url_is_exported_as_location_altrep(normal_event_data):
+    """Public location URLs should be exported as LOCATION ALTREP."""
+    data = normal_event_data.copy()
+    data.pop("uuid")
+    data["id"] = "public-event-id"
+    data["location"] = "Public Venue"
+    data["location_url"] = "https://example.com/location"
+
+    event = TimeTreePublicEvent.from_dict(data)
+    formatter = ICalEventFormatter(event)
+    ical_event = formatter.to_ical()
+
+    assert ical_event["LOCATION"] == "Public Venue"
+    assert ical_event["LOCATION"].params["ALTREP"] == "https://example.com/location"
+
+
+def test_public_event_uses_link_url_as_ical_url_and_timetree_url_as_source(normal_event_data):
+    """Public campaign links should be URL, while TimeTree permalinks are SOURCE."""
+    data = normal_event_data.copy()
+    data.pop("uuid")
+    data["id"] = "public-event-id"
+    data["url"] = "https://timetr.ee/p/public-event-id"
+    data["link_url"] = "https://example.com/campaign"
+
+    event = TimeTreePublicEvent.from_dict(data)
+    formatter = ICalEventFormatter(event)
+    ical_event = formatter.to_ical()
+
+    assert ical_event["URL"] == "https://example.com/campaign"
+    assert ical_event["SOURCE"] == "https://timetr.ee/p/public-event-id"
+    assert ical_event["SOURCE"].params["VALUE"] == "URI"
+
+
+def test_public_event_without_link_url_has_source_but_no_ical_url(normal_event_data):
+    """Public TimeTree permalinks should not become URL when link_url is absent."""
+    data = normal_event_data.copy()
+    data.pop("uuid")
+    data.pop("url")
+    data["id"] = "public-event-id"
+    data["url"] = "https://timetr.ee/p/public-event-id"
+
+    event = TimeTreePublicEvent.from_dict(data)
+    formatter = ICalEventFormatter(event)
+    ical_event = formatter.to_ical()
+
+    assert "URL" not in ical_event
+    assert ical_event["SOURCE"] == "https://timetr.ee/p/public-event-id"
 
 
 def test_different_timezones(normal_event_data):

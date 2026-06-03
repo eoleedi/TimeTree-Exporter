@@ -4,6 +4,7 @@ import logging
 from importlib.metadata import PackageNotFoundError, version
 
 from timetree_exporter.event import TimeTreeEvent as TimeTreeEvent
+from timetree_exporter.event import TimeTreePublicEvent as TimeTreePublicEvent
 from timetree_exporter.formatter import ICalEventFormatter as ICalEventFormatter
 
 logger = logging.getLogger(__name__)

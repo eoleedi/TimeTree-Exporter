@@ -16,6 +16,7 @@ from timetree_exporter.exporter import (
     Exporter,
     create_calendar,
     label_suffix_for_group,
+    public_labels_from_events,
     write_calendar,
 )
 from timetree_exporter.formatter import ICalEventFormatter
@@ -46,6 +47,20 @@ class _FakeExportCalendarApi:
         return self.labels
 
 
+class _FakePublicCalendarApi(_FakeExportCalendarApi):
+    def __init__(self, events, labels):
+        super().__init__(events, labels)
+        self.fetched_public_labels_for = None
+
+    def get_public_events(self, calendar_id, calendar_name):
+        self.fetched_events_for = (calendar_id, calendar_name)
+        return self.events
+
+    def get_public_labels(self, calendar_id):
+        self.fetched_public_labels_for = calendar_id
+        return self.labels
+
+
 class _Args:
     def __init__(self, developer_mode=False, raw_output_dir=None):
         self.developer_mode = developer_mode
@@ -67,6 +82,26 @@ def test_list_labels_and_exit_handles_invalid_or_missing_color(capsys):
     assert "Empty" in output
     assert "Malformed" in output
     assert "\033[38;2;255;0;170m●\033[0m" in output
+
+
+def test_list_labels_and_exit_uses_public_labels_without_fetching_events(capsys):
+    """Public calendar label listing should not fetch public events."""
+    api = _FakePublicCalendarApi(
+        [{"id": "public-event-id"}],
+        {4: {"name": "Public Campaign", "color": "#948078"}},
+    )
+    calendar = Calendar(
+        api,
+        {"id": "public-calendar-id", "name": "Public Calendar", "public": True},
+    )
+
+    list_labels_and_exit(calendar)
+
+    output = capsys.readouterr().out
+    assert api.fetched_events_for is None
+    assert api.fetched_public_labels_for == "public-calendar-id"
+    assert "Public Campaign" in output
+    assert "No labels found" not in output
 
 
 def test_label_suffix_for_group_uses_label_id_when_name_is_empty():
@@ -164,6 +199,84 @@ def test_exporter_writes_split_calendars_by_label(tmp_path, labeled_event_data):
     serialized = split_path.read_text(encoding="utf-8")
     assert not output_path.exists()
     assert "SUMMARY:測試有標籤活動" in serialized
+
+
+def test_public_calendar_fetches_public_events_and_skips_labels(tmp_path, normal_event_data):
+    """Public calendars should export public_events without calling the labels endpoint."""
+    public_event_data = normal_event_data.copy()
+    public_event_data.pop("uuid")
+    public_event_data["id"] = "public-event-id"
+    public_event_data["public_calendar_label"] = {
+        "label_id": 4,
+        "name": "Public Campaign",
+        "color": 9732216,
+    }
+    public_event_data["public_calendar_hashtags"] = [{"name": "Shopping"}]
+    api = _FakePublicCalendarApi([public_event_data], {})
+    output_path = tmp_path / "calendar.ics"
+    calendar = Calendar(
+        api,
+        {
+            "id": "public-calendar-id",
+            "name": "Public Calendar",
+            "alias_code": "public-calendar-id",
+            "public": True,
+        },
+    )
+
+    Exporter(calendar, output_path).export()
+
+    serialized = output_path.read_text(encoding="utf-8")
+    assert api.fetched_events_for == ("public-calendar-id", "Public Calendar")
+    assert api.fetched_labels_for is None
+    assert api.fetched_public_labels_for == "public-calendar-id"
+    assert "SUMMARY:測試一般活動" in serialized
+    assert "UID:public-event-id" in serialized
+    assert "CATEGORIES:Public Campaign,Shopping" in serialized
+    assert "COLOR:#948078" in serialized
+
+
+def test_public_labels_use_event_color_when_label_color_is_missing():
+    """Public event top-level color should be used when label color is absent."""
+    labels = public_labels_from_events(
+        [
+            {
+                "color": 9732216,
+                "public_calendar_label": {"label_id": 4, "name": "Public Campaign"},
+            }
+        ]
+    )
+
+    assert labels == {4: {"name": "Public Campaign", "color": "#948078"}}
+
+
+def test_public_labels_preserve_zero_label_color():
+    """Public label color 0 should stay black instead of falling back to event color."""
+    labels = public_labels_from_events(
+        [
+            {
+                "color": 9732216,
+                "public_calendar_label": {"label_id": 4, "name": "Black", "color": 0},
+            }
+        ]
+    )
+
+    assert labels == {4: {"name": "Black", "color": "#000000"}}
+
+
+def test_public_labels_from_events_coerces_label_names():
+    """Fallback public labels should always use string names."""
+    labels = public_labels_from_events(
+        [
+            {"public_calendar_label": {"label_id": 4, "name": None, "color": 0}},
+            {"public_calendar_label": {"label_id": 5, "name": 123, "color": 0}},
+        ]
+    )
+
+    assert labels == {
+        4: {"name": "", "color": "#000000"},
+        5: {"name": "123", "color": "#000000"},
+    }
 
 
 def test_developer_mode_globally_enables_raw_output():

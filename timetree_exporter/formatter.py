@@ -26,10 +26,17 @@ class ICalEventFormatter:
     Class for formatting TimeTree events into iCalendar format.
     """
 
-    def __init__(self, time_tree_event: TimeTreeEvent, label_name: str = None, color: str = None):
+    def __init__(
+        self,
+        time_tree_event: TimeTreeEvent,
+        label_name: str = None,
+        color: str = None,
+        category_names: list = None,
+    ):
         self.time_tree_event = time_tree_event
         self.label_name = label_name
         self._color = color
+        self.category_names = category_names or []
 
     @property
     def color(self):
@@ -58,8 +65,12 @@ class ICalEventFormatter:
 
     @property
     def categories(self):
-        """Return the label name as CATEGORIES."""
-        return self.label_name
+        """Return label and public hashtag names as CATEGORIES."""
+        categories = []
+        if self.label_name:
+            categories.append(self.label_name)
+        categories.extend(self.category_names)
+        return categories or None
 
     @property
     def uid(self):
@@ -96,6 +107,11 @@ class ICalEventFormatter:
         return self.time_tree_event.location if self.time_tree_event.location != "" else None
 
     @property
+    def location_altrep(self):
+        """Return an alternate representation URI for the location."""
+        return getattr(self.time_tree_event, "location_url", None)
+
+    @property
     def geo(self):
         """Return the geolocation of the event."""
         if self.time_tree_event.location_lat is None or self.time_tree_event.location_lon is None:
@@ -106,6 +122,21 @@ class ICalEventFormatter:
     def url(self):
         """Return the URL of the event."""
         return self.time_tree_event.url if self.time_tree_event.url != "" else None
+
+    @property
+    def source(self):
+        """Return the source URL of the event."""
+        return getattr(self.time_tree_event, "source_url", None)
+
+    @property
+    def images(self):
+        """Return image URLs for the event."""
+        return getattr(self.time_tree_event, "image_urls", None) or []
+
+    @property
+    def thumbnail_images(self):
+        """Return thumbnail image URLs for the event."""
+        return getattr(self.time_tree_event, "thumbnail_image_urls", None) or []
 
     @property
     def related_to(self):
@@ -172,6 +203,9 @@ class ICalEventFormatter:
             if name.lower() == "rrule":
                 recurrence_rule = vRecur.from_ical(value)
                 until = recurrence_rule.get("UNTIL")
+                if "COUNT" in recurrence_rule and until:
+                    logger.error("RRULE must not include both COUNT and UNTIL: %s", recurrence)
+                    raise ValueError("RRULE must not include both COUNT and UNTIL")
                 if (
                     until
                     and not self.time_tree_event.all_day
@@ -236,17 +270,24 @@ class ICalEventFormatter:
         event.add("dtend", self.dtend)
 
         if self.location:
-            event.add("location", self.location)
+            params = {"ALTREP": self.location_altrep} if self.location_altrep else {}
+            event.add("location", self.location, parameters=params)
         if self.geo:
             event.add("geo", self.geo)
         if self.url:
             event.add("url", self.url)
+        if self.source:
+            event.add("source", self.source, parameters={"VALUE": "URI"})
+        for image_url in self.images:
+            event.add("image", image_url, parameters={"VALUE": "URI", "DISPLAY": "FULLSIZE"})
+        for image_url in self.thumbnail_images:
+            event.add("image", image_url, parameters={"VALUE": "URI", "DISPLAY": "THUMBNAIL"})
         if self.description:
             event.add("description", self.description)
         if self.related_to:
             event.add("related-to", self.related_to)
         if self.categories:
-            event.add("categories", [self.categories])
+            event.add("categories", self.categories)
         if self.color:
             event.add("color", self.color)
 
