@@ -217,15 +217,15 @@ def test_rrule_until_date_for_all_day_event_stays_date(normal_event_data):
     assert ical_event["RRULE"]["UNTIL"] == [date(2022, 5, 24)]
 
 
-def test_public_recurrence_uses_until_at_when_rrule_has_no_until(normal_event_data):
-    """Public recurring events should use until_at to avoid unbounded recurrence."""
+def test_public_recurrence_does_not_map_until_at(normal_event_data):
+    """Public until_at should not synthesize recurrence bounds."""
     data = normal_event_data.copy()
     data.pop("uuid")
     data.update(
         {
             "id": "public-event-id",
             "recurrences": ["RRULE:FREQ=MONTHLY"],
-            "until_at": int(datetime(2024, 9, 1, tzinfo=ZoneInfo("UTC")).timestamp() * 1000),
+            "until_at": int(datetime(2085, 4, 1, tzinfo=ZoneInfo("UTC")).timestamp() * 1000),
         }
     )
 
@@ -233,18 +233,40 @@ def test_public_recurrence_uses_until_at_when_rrule_has_no_until(normal_event_da
     formatter = ICalEventFormatter(event)
     ical_event = formatter.to_ical()
 
-    assert ical_event["RRULE"]["UNTIL"] == [datetime(2024, 9, 1, tzinfo=ZoneInfo("UTC"))]
+    assert ical_event["RRULE"]["FREQ"] == ["MONTHLY"]
+    assert "UNTIL" not in ical_event["RRULE"]
 
 
-def test_public_recurrence_preserves_zero_until_at(normal_event_data):
-    """Public until_at=0 should be treated as a valid recurrence bound."""
+def test_rrule_rejects_count_with_until(normal_event_data):
+    """RRULEs with both COUNT and UNTIL should fail loudly."""
+    data = normal_event_data.copy()
+    data.update(
+        {
+            "recurrences": ["RRULE:FREQ=DAILY;UNTIL=20251130;COUNT=3;INTERVAL=7"],
+            "all_day": True,
+        }
+    )
+
+    event = TimeTreeEvent.from_dict(data)
+    formatter = ICalEventFormatter(event)
+
+    try:
+        formatter.to_ical()
+    except ValueError as exc:
+        assert str(exc) == "RRULE must not include both COUNT and UNTIL"
+    else:
+        raise AssertionError("expected invalid RRULE to raise ValueError")
+
+
+def test_public_until_at_is_not_added_when_count_is_present(normal_event_data):
+    """Public until_at should not create invalid COUNT plus UNTIL rules."""
     data = normal_event_data.copy()
     data.pop("uuid")
     data.update(
         {
             "id": "public-event-id",
-            "recurrences": ["RRULE:FREQ=MONTHLY"],
-            "until_at": 0,
+            "recurrences": ["RRULE:FREQ=DAILY;COUNT=1;INTERVAL=14"],
+            "until_at": int(datetime(2025, 12, 11, tzinfo=ZoneInfo("UTC")).timestamp() * 1000),
         }
     )
 
@@ -252,7 +274,8 @@ def test_public_recurrence_preserves_zero_until_at(normal_event_data):
     formatter = ICalEventFormatter(event)
     ical_event = formatter.to_ical()
 
-    assert ical_event["RRULE"]["UNTIL"] == [datetime(1970, 1, 1, tzinfo=ZoneInfo("UTC"))]
+    assert ical_event["RRULE"]["COUNT"] == [1]
+    assert "UNTIL" not in ical_event["RRULE"]
 
 
 def test_no_alarms_location_url(normal_event_data):

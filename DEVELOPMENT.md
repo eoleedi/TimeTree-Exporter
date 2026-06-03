@@ -171,7 +171,7 @@ Public TimeTree event fields:
 - [ ] ~~**Campaign**~~ (Not mapped; TimeTree campaign metadata has no clear iCalendar equivalent)
 - [ ] ~~**Interest Count**~~ (Not mapped; social metric has no iCalendar equivalent)
 - [ ] ~~**Publish At**~~ (Not mapped; publication metadata is not the event schedule)
-- [x] **Until At** → recurrence `UNTIL` fallback
+- [ ] ~~**Until At**~~ (Not mapped; public events use it as a broad event/recurrence horizon, and RFC 5545 allows unbounded `RRULE`s)
 - [ ] ~~**Status**~~ (Not mapped; TimeTree-specific publication/status metadata)
 - [ ] ~~**Region Timezone**~~ (Not mapped; event times use `start_timezone` and `end_timezone`)
 - [ ] ~~**Location Access**~~ (Not mapped; no clear iCalendar property or parameter)
@@ -180,3 +180,5 @@ Public TimeTree event fields:
 - [ ] ~~**Period Note**~~ (Not mapped; no clear iCalendar property without mixing it into `DESCRIPTION`)
 
 Observed public calendars such as `rakuten_official` and `niigatacity` usually leave `headline` and `overview` empty and put event details in `note`. Public event `DESCRIPTION` is therefore sourced from `note` only, with video URLs appended when present.
+
+`until_at` is present on public one-off events as well as recurring events, so it is not mapped. Public calendars also use 60-year `until_at` horizons for recurring events that have no explicit end date. RFC 5545 allows unbounded `RRULE`s, so these are exported without synthesizing an `UNTIL`.
