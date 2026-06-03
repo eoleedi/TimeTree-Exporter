@@ -6,7 +6,7 @@
 [![Downloads](https://img.shields.io/pypi/dm/timetree-exporter)](https://pypistats.org/packages/timetree-exporter)
 [![Buy Me A Coffee](https://img.shields.io/badge/Buy%20Me%20A%20Coffee-Donate-orange.svg?logo=buymeacoffee&logoColor=white)](https://www.buymeacoffee.com/eoleedi)
 
-A Tool for Exporting TimeTree Calendar and Converting to iCal Format (.ics) ([RFC 5545](http://tools.ietf.org/html/rfc5545.html) Compatible) \
+A Tool for Exporting TimeTree Calendar and Converting to iCalendar Format (.ics) ([RFC 5545](https://datatracker.ietf.org/doc/html/rfc5545) compatible, with selected [RFC 7986](https://datatracker.ietf.org/doc/html/rfc7986) properties) \
 This script works by scraping the TimeTree web app and converting the data to iCal format.
 (The .ics file can then be imported into other calendar apps such as Google Calendar, Apple Calendar, Outlook Calendar, etc.)
 
@@ -68,6 +68,7 @@ Then, you can import the ics file to your calendar app.
     ```
 
     Note: Public calendar events use TimeTree's public API and may not include labels, alerts, recurrences, or UUIDs.
+    Public calendar metadata such as source links, images, and colors is exported with RFC 7986 properties like `SOURCE`, `IMAGE`, and `COLOR` when available. Calendar apps that only implement RFC 5545 may ignore these optional fields.
 
 - You can pass your email address and password with environment variables. (usually for automation purposes)
 
