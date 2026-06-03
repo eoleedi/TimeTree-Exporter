@@ -90,6 +90,19 @@ def test_to_ical_normal_event(normal_event_data):
     assert ical_event["RRULE"]["COUNT"] == [5]
 
 
+def test_related_to_prefers_recurring_uuid(normal_event_data):
+    """RELATED-TO should reference the parent event UID, not internal parent id."""
+    data = normal_event_data.copy()
+    data["parent_id"] = "parent-api-id"
+    data["recurring_uuid"] = "parent-event-uuid"
+    event = TimeTreeEvent.from_dict(data)
+    formatter = ICalEventFormatter(event)
+    ical_event = formatter.to_ical()
+
+    assert formatter.related_to == "parent-event-uuid"
+    assert ical_event["related-to"] == "parent-event-uuid"
+
+
 def test_to_ical_birthday_event(birthday_event_data):
     """Test converting a birthday TimeTreeEvent to an iCal event."""
     event = TimeTreeEvent.from_dict(birthday_event_data)

@@ -26,6 +26,7 @@ class TimeTreeEvent:
     location_lon: str
     location: str
     parent_id: str
+    recurring_uuid: str
     event_type: int
     category: int
     label_id: int = None
@@ -71,6 +72,7 @@ class TimeTreeEvent:
             alerts=event_data.get("alerts"),
             recurrences=event_data.get("recurrences"),
             parent_id=event_data.get("parent_id"),
+            recurring_uuid=event_data.get("recurring_uuid"),
             event_type=event_data.get("type"),
             category=event_data.get("category"),
             label_id=cls._extract_label_id(event_data),
@@ -191,6 +193,7 @@ class TimeTreePublicEvent(TimeTreeEvent):
             alerts=event_data.get("alerts"),
             recurrences=event_data.get("recurrences"),
             parent_id=event_data.get("parent_id"),
+            recurring_uuid=event_data.get("recurring_uuid"),
             event_type=event_data.get("type", TimeTreeEventType.NORMAL),
             category=event_data.get("category", TimeTreeEventCategory.NORMAL),
             label_id=label_id,

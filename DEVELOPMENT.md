@@ -99,10 +99,10 @@ uv run pre-commit run --all-files
 
 Private TimeTree event fields:
 
-- [ ] ~~**ID**~~ (Not mapped; `uuid` is used as the iCalendar stable identifier)
+- [ ] ~~**ID**~~ (Not mapped to `UID`; TimeTree internal/API object id, used only for API lookups such as `parent_id` resolution)
 - [ ] ~~**Primary ID**~~ (Not mapped; no clear iCalendar equivalent)
 - [ ] ~~**Calendar ID**~~ (Not mapped on each `VEVENT`; the selected calendar becomes the exported `VCALENDAR`)
-- [x] **UUID** -> `UID`
+- [x] **UUID** -> `UID`; private event exports intentionally use `uuid`, not `id`, for stable iCalendar identity
 - [x] **Category** -> export behavior; memo events are skipped, normal events are exported
 - [x] **Type** -> export behavior; birthday events are skipped, normal events are exported
 - [ ] ~~**Author ID**~~ (Not mapped; `ORGANIZER` and RFC 9073 `PARTICIPANT` require a calendar address or contact metadata, not only an internal TimeTree ID)
@@ -122,9 +122,9 @@ Private TimeTree event fields:
 - [ ] **Lunar** -> possible RFC 7529 `RRULE` `RSCALE=...` / `SKIP=...` for lunar or other non-Gregorian recurrence rules; requires confirming TimeTree lunar recurrence semantics
 - [ ] **Attendees** -> possible `ATTENDEE` with params such as `CN`, `CUTYPE`, `ROLE`, `PARTSTAT`, `RSVP`, and RFC 7986 `EMAIL`; requires usable calendar-user addresses
 - [x] **Recurrences** -> `RRULE`, `RDATE`, or `EXDATE`; recurrence parameters are preserved, and date-only timed-event `RRULE` `UNTIL` values are converted to UTC end-of-day
-- [ ] **Recurring UUID** -> recurring master event `uuid` for detached recurrence instances; possible future `RECURRENCE-ID` support when paired with the master's `EXDATE`/original occurrence timestamp
+- [x] **Recurring UUID** -> `RELATED-TO` when present; this is the recurring master event `uuid` for detached recurrence instances and matches the exported parent `UID`; possible future `RECURRENCE-ID` support when paired with the master's `EXDATE`/original occurrence timestamp
 - [x] **Alerts** -> `VALARM` with `ACTION:DISPLAY`, `DESCRIPTION:Reminder`, and relative `TRIGGER`
-- [x] **Parent ID** -> `RELATED-TO`; for detached recurrence instances this is the recurring master event `id`, while `recurring_uuid` is the master `uuid`
+- [x] **Parent ID** -> internal parent lookup fallback for `RELATED-TO`; for detached recurrence instances this is the recurring master event `id`, while `recurring_uuid` is the master `uuid` used by iCalendar `UID`
 - [ ] ~~**Link Object ID**~~ (Not mapped; currently observed as `null`; frontend stores it as `link_object_id` but does not appear to use it for event relationships)
 - [ ] ~~**Link Object ID String**~~ (Not mapped; frontend field is `link_object_id_string`; no observed non-empty payloads or current frontend relationship behavior)
 - [ ] ~~**Row Order**~~ (Ignore since it's a property for timetree notes)

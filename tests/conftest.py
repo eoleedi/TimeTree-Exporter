@@ -30,6 +30,7 @@ def normal_event_data():
         "alerts": [15, 60],  # 15 mins and 60 mins before event
         "recurrences": ["RRULE:FREQ=WEEKLY;COUNT=5"],
         "parent_id": "parent-uuid",
+        "recurring_uuid": None,
         "type": TimeTreeEventType.NORMAL,
         "category": TimeTreeEventCategory.NORMAL,
     }
@@ -56,6 +57,7 @@ def birthday_event_data():
         "alerts": [15 * 60],  # 15 hours before event
         "recurrences": ["RRULE:FREQ=YEARLY"],
         "parent_id": "",
+        "recurring_uuid": None,
         "type": TimeTreeEventType.BIRTHDAY,
         "category": TimeTreeEventCategory.NORMAL,
     }
@@ -82,6 +84,7 @@ def memo_event_data():
         "alerts": None,
         "recurrences": None,
         "parent_id": "",
+        "recurring_uuid": None,
         "type": TimeTreeEventType.NORMAL,
         "category": TimeTreeEventCategory.MEMO,
     }
@@ -108,6 +111,7 @@ def labeled_event_data():
         "alerts": None,
         "recurrences": None,
         "parent_id": "",
+        "recurring_uuid": None,
         "type": TimeTreeEventType.NORMAL,
         "category": TimeTreeEventCategory.NORMAL,
         "label_id": 3,
@@ -135,6 +139,7 @@ def relationship_label_event_data():
         "alerts": None,
         "recurrences": None,
         "parent_id": "",
+        "recurring_uuid": None,
         "type": TimeTreeEventType.NORMAL,
         "category": TimeTreeEventCategory.NORMAL,
         "relationships": {

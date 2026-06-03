@@ -140,8 +140,8 @@ class ICalEventFormatter:
 
     @property
     def related_to(self):
-        """Return the parent ID of the event."""
-        return self.time_tree_event.parent_id
+        """Return the related event UID."""
+        return self.time_tree_event.recurring_uuid or self.time_tree_event.parent_id
 
     def get_datetime(self, is_start_time):
         """Return the start or end time of the event."""

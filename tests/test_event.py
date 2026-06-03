@@ -28,6 +28,7 @@ def test_event_creation(normal_event_data):
         alerts=normal_event_data["alerts"],
         recurrences=normal_event_data["recurrences"],
         parent_id=normal_event_data["parent_id"],
+        recurring_uuid=normal_event_data["recurring_uuid"],
         event_type=normal_event_data["type"],
         category=normal_event_data["category"],
     )
@@ -49,6 +50,7 @@ def test_event_creation(normal_event_data):
     assert event.alerts == normal_event_data["alerts"]
     assert event.recurrences == normal_event_data["recurrences"]
     assert event.parent_id == normal_event_data["parent_id"]
+    assert event.recurring_uuid == normal_event_data["recurring_uuid"]
     assert event.event_type == normal_event_data["type"]
     assert event.category == normal_event_data["category"]
 
@@ -74,6 +76,7 @@ def test_from_dict(normal_event_data):
     assert event.alerts == normal_event_data["alerts"]
     assert event.recurrences == normal_event_data["recurrences"]
     assert event.parent_id == normal_event_data["parent_id"]
+    assert event.recurring_uuid == normal_event_data["recurring_uuid"]
     assert event.event_type == normal_event_data["type"]
     assert event.category == normal_event_data["category"]
 
