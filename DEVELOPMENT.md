@@ -86,6 +86,17 @@ uv run pytest tests/test_calendar.py tests/test_event.py tests/test_main.py
 uv run ruff check
 ```
 
+### Activity Endpoint (Comments)
+
+When `--include-comments` is used, the exporter fetches event comments from a separate endpoint:
+
+- Endpoint: `/api/v1/calendar/{calendar_id}/event/{event_id}/activities?since=0`
+- This is not part of the event payload; it's a per-event API call
+- Response includes `event_activities` array with comment text in `comment.body`, `attachment.content`, or other message fields
+- Pagination is supported via `chunk: true` and `since: <timestamp>`
+- Comment author names are resolved from `calendar_users` metadata and prefixed when available
+- Default behavior (`--include-comments` off) skips these calls to avoid performance impact and rate-limit risk
+
 ## Before Opening A PR
 
 Run these checks:

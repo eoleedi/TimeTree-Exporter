@@ -7,7 +7,14 @@ from typing import Protocol
 class CalendarApi(Protocol):
     """API methods needed by a selected calendar."""
 
-    def get_events(self, calendar_id, calendar_name):
+    def get_events(
+        self,
+        calendar_id,
+        calendar_name,
+        calendar_users=None,
+        include_comments=False,
+        num_workers=10,
+    ):
         """Return events for a calendar."""
 
     def get_public_events(self, calendar_id, calendar_name):
@@ -47,11 +54,17 @@ class Calendar:
         """Return whether this calendar should use the public calendar API."""
         return self.metadata.get("public", False)
 
-    def get_events(self):
+    def get_events(self, include_comments=False, num_workers=10):
         """Return events for this calendar."""
         if self.is_public:
             return self.api.get_public_events(self.id, self.name)
-        return self.api.get_events(self.id, self.name)
+        return self.api.get_events(
+            self.id,
+            self.name,
+            self.metadata.get("calendar_users"),
+            include_comments=include_comments,
+            num_workers=num_workers,
+        )
 
     def get_labels(self):
         """Return labels for this calendar."""

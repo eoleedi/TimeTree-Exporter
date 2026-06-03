@@ -30,6 +30,7 @@ class TimeTreeEvent:
     event_type: int
     category: int
     label_id: int = None
+    comments: list = None
 
     @staticmethod
     def _extract_label_id(event_data: dict):
@@ -76,6 +77,7 @@ class TimeTreeEvent:
             event_type=event_data.get("type"),
             category=event_data.get("category"),
             label_id=cls._extract_label_id(event_data),
+            comments=event_data.get("comments"),
         )
 
     def __str__(self):

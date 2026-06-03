@@ -5,6 +5,7 @@ Timetree calendar API
 import json
 import logging
 import re
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 
 import requests
@@ -190,7 +191,129 @@ class TimeTreeCalendar:
             events.extend(self.get_events_recur(calendar_id, r_json["since"]))
         return events
 
-    def get_events(self, calendar_id: int, calendar_name: str = None):
+    @staticmethod
+    def _extract_activity_comment(activity):
+        """Return comment text from a TimeTree activity payload when present."""
+        comment = activity.get("comment")
+        if isinstance(comment, str):
+            return comment
+        if isinstance(comment, dict):
+            for key in ("body", "text", "content", "message"):
+                if comment.get(key):
+                    return comment[key]
+
+        attachment = activity.get("attachment")
+        if isinstance(attachment, dict) and attachment.get("content"):
+            return attachment["content"]
+
+        for key in ("body", "text", "content", "message"):
+            if activity.get(key):
+                return activity[key]
+
+        return None
+
+    @staticmethod
+    def _calendar_user_names(calendar_users):
+        """Return calendar user names keyed by user id."""
+        names = {}
+        for user in calendar_users or []:
+            user_id = user.get("user_id") or user.get("id")
+            name = user.get("name")
+            if user_id is not None and name:
+                names[user_id] = name
+        return names
+
+    @staticmethod
+    def _format_activity_comment(activity, comment, user_names):
+        """Add the activity author name to a comment when known."""
+        author_name = user_names.get(activity.get("author_id"))
+        if author_name:
+            return f"{author_name}: {comment}"
+        return comment
+
+    def get_event_activities(
+        self,
+        calendar_id: int,
+        event_id: int,
+        since: int = 0,
+        user_names=None,
+    ):
+        """Get activities for an event."""
+        user_names = user_names or {}
+        url = f"{API_BASEURI}/calendar/{calendar_id}/event/{event_id}/activities?since={since}"
+        response = self.session.get(
+            url,
+            headers={
+                "Content-Type": "application/json",
+                "X-Timetreea": API_USER_AGENT,
+            },
+        )
+        if response.status_code != 200:
+            logger.warning("Failed to get activities for event %s", event_id)
+            logger.debug(response.text)
+            return []
+
+        r_json = response.json()
+        self._record_raw_response(
+            f"calendar_{calendar_id}/event_{event_id}/activities_since_{since}", r_json
+        )
+        activities = r_json.get("activities") or r_json.get("event_activities", [])
+        comments = []
+        for activity in activities:
+            comment = self._extract_activity_comment(activity)
+            if comment:
+                comments.append(self._format_activity_comment(activity, comment, user_names))
+        if r_json.get("chunk") is True:
+            comments.extend(
+                self.get_event_activities(calendar_id, event_id, r_json["since"], user_names)
+            )
+        return comments
+
+    def add_event_comments(self, calendar_id: int, events, calendar_users=None, num_workers=10):
+        """Attach comments from event activities to event payloads using thread pool."""
+        user_names = self._calendar_user_names(calendar_users)
+
+        # Create a mapping of event_id to event for result collection
+        events_by_id = {event.get("id"): event for event in events if event.get("id")}
+
+        if not events_by_id:
+            return events
+
+        # Use ThreadPoolExecutor to fetch activities concurrently.
+        max_workers = max(1, num_workers)
+
+        with ThreadPoolExecutor(max_workers=max_workers) as executor:
+            # Submit all activity fetch tasks
+            future_to_event_id = {
+                executor.submit(
+                    self.get_event_activities,
+                    calendar_id,
+                    event_id,
+                    user_names=user_names,
+                ): event_id
+                for event_id in events_by_id
+            }
+
+            # Collect results as they complete
+            for future in as_completed(future_to_event_id):
+                event_id = future_to_event_id[future]
+                try:
+                    comments = future.result()
+                    if comments:
+                        events_by_id[event_id]["comments"] = comments
+                except Exception as e:
+                    logger.warning("Failed to fetch activities for event %s: %s", event_id, e)
+
+        return events
+
+    def get_events(
+        self,
+        calendar_id: int,
+        calendar_name: str = None,
+        calendar_users=None,
+        include_comments: bool = False,
+        num_workers: int = 10,
+    ):
         """
         Get events from the calendar.
         """
@@ -218,6 +341,12 @@ class TimeTreeCalendar:
             json.dumps(events[:5], indent=2, ensure_ascii=False),
         )
 
+        if include_comments:
+            logger.warning(
+                "Exporting comments requires extra TimeTree requests per event and may take "
+                "much longer or trigger rate limits."
+            )
+            return self.add_event_comments(calendar_id, events, calendar_users, num_workers)
         return events
 
     def get_public_events(self, calendar_id: int, calendar_name: str = None):

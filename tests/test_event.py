@@ -81,6 +81,16 @@ def test_from_dict(normal_event_data):
     assert event.category == normal_event_data["category"]
 
 
+def test_from_dict_with_comments(normal_event_data):
+    """Test creating a TimeTreeEvent with activity comments."""
+    data = normal_event_data.copy()
+    data["comments"] = ["First comment", "Second comment"]
+
+    event = TimeTreeEvent.from_dict(data)
+
+    assert event.comments == ["First comment", "Second comment"]
+
+
 def test_str_representation(normal_event_data):
     """Test the string representation of a TimeTreeEvent."""
     event = TimeTreeEvent.from_dict(normal_event_data)

@@ -36,10 +36,21 @@ class _FakeExportCalendarApi:
         self.events = events
         self.labels = labels
         self.fetched_events_for = None
+        self.fetched_calendar_users = None
         self.fetched_labels_for = None
 
-    def get_events(self, calendar_id, calendar_name):
+    def get_events(
+        self,
+        calendar_id,
+        calendar_name,
+        calendar_users=None,
+        include_comments=False,
+        num_workers=10,
+    ):
         self.fetched_events_for = (calendar_id, calendar_name)
+        self.fetched_calendar_users = calendar_users
+        self.include_comments = include_comments
+        self.num_workers = num_workers
         return self.events
 
     def get_labels(self, calendar_id):
@@ -174,14 +185,35 @@ def test_exporter_fetches_labels_and_writes_single_calendar(tmp_path, normal_eve
     """Exporter should own fetching labels, fetching events, and writing output."""
     api = _FakeExportCalendarApi([normal_event_data], {})
     output_path = tmp_path / "calendar.ics"
-    calendar = Calendar(api, {"id": "calendar-id", "name": "Calendar Name", "alias_code": "code"})
+    calendar = Calendar(
+        api,
+        {
+            "id": "calendar-id",
+            "name": "Calendar Name",
+            "alias_code": "code",
+            "calendar_users": [{"user_id": 10, "name": "Alice"}],
+        },
+    )
 
     Exporter(calendar, output_path).export()
 
     serialized = output_path.read_text(encoding="utf-8")
     assert api.fetched_events_for == ("calendar-id", "Calendar Name")
+    assert api.fetched_calendar_users == [{"user_id": 10, "name": "Alice"}]
+    assert api.include_comments is False
     assert api.fetched_labels_for == "calendar-id"
     assert "SUMMARY:測試一般活動" in serialized
+
+
+def test_exporter_can_include_comments(tmp_path, normal_event_data):
+    """Exporter should pass through opt-in comment export."""
+    api = _FakeExportCalendarApi([normal_event_data], {})
+    output_path = tmp_path / "calendar.ics"
+    calendar = Calendar(api, {"id": "calendar-id", "name": "Calendar Name"})
+
+    Exporter(calendar, output_path, include_comments=True).export()
+
+    assert api.include_comments is True
 
 
 def test_exporter_writes_split_calendars_by_label(tmp_path, labeled_event_data):

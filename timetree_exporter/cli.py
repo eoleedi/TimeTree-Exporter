@@ -82,6 +82,20 @@ def parse_args():
         action="store_true",
     )
     parser.add_argument(
+        "--include-comments",
+        help=(
+            "Export private event comments. This makes one or more extra TimeTree requests "
+            "per event and may take much longer or trigger rate limits."
+        ),
+        action="store_true",
+    )
+    parser.add_argument(
+        "--num-workers",
+        type=int,
+        help="Number of concurrent threads for fetching comments (default: 10)",
+        default=10,
+    )
+    parser.add_argument(
         "--developer-mode",
         help=(
             "Enable developer diagnostics, including raw TimeTree API response output "

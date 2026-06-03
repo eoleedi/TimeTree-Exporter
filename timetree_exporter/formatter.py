@@ -102,6 +102,11 @@ class ICalEventFormatter:
         return self.time_tree_event.note if self.time_tree_event.note != "" else None
 
     @property
+    def comments(self):
+        """Return event comments."""
+        return self.time_tree_event.comments or []
+
+    @property
     def location(self):
         """Return the location of the event."""
         return self.time_tree_event.location if self.time_tree_event.location != "" else None
@@ -284,6 +289,8 @@ class ICalEventFormatter:
             event.add("image", image_url, parameters={"VALUE": "URI", "DISPLAY": "THUMBNAIL"})
         if self.description:
             event.add("description", self.description)
+        for comment in self.comments:
+            event.add("comment", comment)
         if self.related_to:
             event.add("related-to", self.related_to)
         if self.categories:
