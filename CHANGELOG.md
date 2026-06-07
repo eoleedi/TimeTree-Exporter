@@ -1,5 +1,33 @@
 # Changelog
 
+## [0.8.0](https://github.com/eoleedi/TimeTree-Exporter/compare/v0.7.2...v0.8.0) (2026-06-07)
+
+
+### Features
+
+* support public calendar exports ([#187](https://github.com/eoleedi/TimeTree-Exporter/issues/187)) ([ae1e5e6](https://github.com/eoleedi/TimeTree-Exporter/commit/ae1e5e6ca387b10c7a266194ac0499f75b5f65ff))
+
+
+### Bug Fixes
+
+* use recurring uuid for related events ([4b9e1c2](https://github.com/eoleedi/TimeTree-Exporter/commit/4b9e1c21d4cd86fd2e4bdf926903e803761af475))
+
+
+### Documentation
+
+* clarify private event mapping ([57bf0c8](https://github.com/eoleedi/TimeTree-Exporter/commit/57bf0c899475832eff04004b92d34a8aa3e01ff3))
+* show it's RFC 5545 compatible ([48fbc1a](https://github.com/eoleedi/TimeTree-Exporter/commit/48fbc1afbd7e15626c446c68fd763bdc60cf13b0))
+
+
+### Miscellaneous Chores
+
+* update dependencies ([8e60ca3](https://github.com/eoleedi/TimeTree-Exporter/commit/8e60ca3ec44b05e06abcca20e47fa072b1f31330))
+
+
+### Build System
+
+* **deps-dev:** bump ruff from 0.15.14 to 0.15.15 ([#189](https://github.com/eoleedi/TimeTree-Exporter/issues/189)) ([73c4303](https://github.com/eoleedi/TimeTree-Exporter/commit/73c4303b227237ced2154bc73a833d92322fcf36))
+
 ## [0.7.2](https://github.com/eoleedi/TimeTree-Exporter/compare/v0.7.1...v0.7.2) (2026-05-08)
 
 
