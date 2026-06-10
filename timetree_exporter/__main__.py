@@ -98,7 +98,13 @@ def main():
         email = resolve_email(args.email)
         password = resolve_password()
         calendar = select_calendar(email, password, args.calendar_code)
-    exporter = Exporter(calendar, args.output, split_by_label=args.split_by_label)
+    exporter = Exporter(
+        calendar,
+        args.output,
+        split_by_label=args.split_by_label,
+        include_comments=args.include_comments,
+        num_workers=args.num_workers,
+    )
 
     if args.list_labels:
         list_labels_and_exit(calendar)

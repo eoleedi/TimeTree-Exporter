@@ -45,6 +45,16 @@ class _PagingSession:
         return _FakeResponse(self._payloads.pop(0))
 
 
+class _UrlPayloadSession:
+    def __init__(self, payloads):
+        self._payloads = payloads
+        self.requested_urls = []
+
+    def get(self, url, **_kwargs):
+        self.requested_urls.append(url)
+        return _FakeResponse(self._payloads[url])
+
+
 def _calendar_with_metadata_response(payload, capture_raw_responses=True):
     calendar = TimeTreeCalendar("dummy-session-id", capture_raw_responses=capture_raw_responses)
     calendar.session = _FakeSession(payload)
@@ -166,6 +176,81 @@ def test_get_public_events_uses_public_calendar_endpoint():
     )
     assert session.requested_params == {"from": 0}
     assert events == [{"id": "public-event-id"}]
+
+
+def test_get_events_adds_comments_from_activity_endpoint():
+    """Private event exports should include event comments from activities."""
+    calendar = TimeTreeCalendar("dummy-session-id")
+    session = _UrlPayloadSession(
+        {
+            "https://timetreeapp.com/api/v1/calendar/1/events/sync": {
+                "events": [{"id": 10, "uuid": "event-uuid"}],
+                "chunk": False,
+            },
+            "https://timetreeapp.com/api/v1/calendar/1/event/10/activities?since=0": {
+                "event_activities": [
+                    {"author_id": 10, "comment": {"body": "First comment"}},
+                    {"author_id": 11, "comment": "Second comment"},
+                    {"author_id": 12, "attachment": {"content": "Third comment"}},
+                    {"action": "updated"},
+                ],
+                "chunk": True,
+                "since": 123,
+            },
+            "https://timetreeapp.com/api/v1/calendar/1/event/10/activities?since=123": {
+                "activities": [{"author_id": 10, "message": "Fourth comment"}],
+                "chunk": False,
+            },
+        }
+    )
+    calendar.session = session
+
+    events = calendar.get_events(
+        1,
+        "Family",
+        [
+            {"user_id": 10, "name": "Alice"},
+            {"id": 11, "name": "Bob"},
+        ],
+        include_comments=True,
+    )
+
+    assert session.requested_urls == [
+        "https://timetreeapp.com/api/v1/calendar/1/events/sync",
+        "https://timetreeapp.com/api/v1/calendar/1/event/10/activities?since=0",
+        "https://timetreeapp.com/api/v1/calendar/1/event/10/activities?since=123",
+    ]
+    assert events == [
+        {
+            "id": 10,
+            "uuid": "event-uuid",
+            "comments": [
+                "Alice: First comment",
+                "Bob: Second comment",
+                "Third comment",
+                "Alice: Fourth comment",
+            ],
+        }
+    ]
+
+
+def test_get_events_does_not_fetch_comments_by_default():
+    """Private event exports should avoid per-event activity calls by default."""
+    calendar = TimeTreeCalendar("dummy-session-id")
+    session = _UrlPayloadSession(
+        {
+            "https://timetreeapp.com/api/v1/calendar/1/events/sync": {
+                "events": [{"id": 10, "uuid": "event-uuid"}],
+                "chunk": False,
+            }
+        }
+    )
+    calendar.session = session
+
+    events = calendar.get_events(1, "Family")
+
+    assert session.requested_urls == ["https://timetreeapp.com/api/v1/calendar/1/events/sync"]
+    assert events == [{"id": 10, "uuid": "event-uuid"}]
 
 
 def test_get_public_events_follows_pagination_cursor():

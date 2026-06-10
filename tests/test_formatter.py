@@ -90,6 +90,22 @@ def test_to_ical_normal_event(normal_event_data):
     assert ical_event["RRULE"]["COUNT"] == [5]
 
 
+def test_to_ical_includes_comments(normal_event_data):
+    """Event comments should be exported as COMMENT properties."""
+    data = normal_event_data.copy()
+    data["comments"] = ["First comment", "Second comment"]
+    event = TimeTreeEvent.from_dict(data)
+    formatter = ICalEventFormatter(event)
+
+    assert formatter.description == "測試備註"
+    assert formatter.comments == ["First comment", "Second comment"]
+
+    ical_event = formatter.to_ical()
+
+    assert ical_event["description"] == "測試備註"
+    assert ical_event["comment"] == ["First comment", "Second comment"]
+
+
 def test_related_to_prefers_recurring_uuid(normal_event_data):
     """RELATED-TO should reference the parent event UID, not internal parent id."""
     data = normal_event_data.copy()

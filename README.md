@@ -85,10 +85,30 @@ Then, you can import the ics file to your calendar app.
 
    This creates individual ICS files for each label (e.g., `timetree_work.ics`, `timetree_personal.ics`).
 
+- Include private event comments.
+
+   ```bash
+   timetree-exporter --include-comments
+   ```
+
+   Comments are fetched from TimeTree's event activities endpoint and exported as iCalendar `COMMENT` properties, prefixed with the author name when available.
+
+   To change the number of concurrent requests used while fetching comments, pass `--num-workers`.
+
+   ```bash
+   timetree-exporter --include-comments --num-workers 5
+   ```
+
+   The default is `10`.
+
+   > [!Caution]
+   > This option is disabled by default because it makes one or more extra TimeTree requests per event. It can be slow for large calendars and may trigger TimeTree rate limits.
+
 ## Limitations
 
 - TimeTree labels include both a category name and a color. When using `--split-by-label`, each category is saved as a separate ICS file.
 - Label color information is preserved in the ICS output, but Google Calendar does not apply those event colors when importing ICS files. If you rely on colors to organize events, you may need to check historical color information in TimeTree.
+- TimeTree event notes are exported as the iCalendar `DESCRIPTION`. Private event comments are only exported when `--include-comments` is used.
 
 ## Support
 
