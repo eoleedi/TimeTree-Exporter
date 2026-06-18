@@ -234,13 +234,13 @@ class TimeTreeCalendar:
     def get_event_activities(
         self,
         calendar_id: int,
-        event_id: int,
+        event_uuid: str,
         since: int = 0,
         user_names=None,
     ):
         """Get activities for an event."""
         user_names = user_names or {}
-        url = f"{API_BASEURI}/calendar/{calendar_id}/event/{event_id}/activities?since={since}"
+        url = f"{API_BASEURI}/calendar/{calendar_id}/event/{event_uuid}/activities?since={since}"
         response = self.session.get(
             url,
             headers={
@@ -249,13 +249,13 @@ class TimeTreeCalendar:
             },
         )
         if response.status_code != 200:
-            logger.warning("Failed to get activities for event %s", event_id)
+            logger.warning("Failed to get activities for event %s", event_uuid)
             logger.debug(response.text)
             return []
 
         r_json = response.json()
         self._record_raw_response(
-            f"calendar_{calendar_id}/event_{event_id}/activities_since_{since}", r_json
+            f"calendar_{calendar_id}/event_{event_uuid}/activities_since_{since}", r_json
         )
         activities = r_json.get("activities") or r_json.get("event_activities", [])
         comments = []
@@ -265,7 +265,7 @@ class TimeTreeCalendar:
                 comments.append(self._format_activity_comment(activity, comment, user_names))
         if r_json.get("chunk") is True:
             comments.extend(
-                self.get_event_activities(calendar_id, event_id, r_json["since"], user_names)
+                self.get_event_activities(calendar_id, event_uuid, r_json["since"], user_names)
             )
         return comments
 
@@ -273,10 +273,9 @@ class TimeTreeCalendar:
         """Attach comments from event activities to event payloads using thread pool."""
         user_names = self._calendar_user_names(calendar_users)
 
-        # Create a mapping of event_id to event for result collection
-        events_by_id = {event.get("id"): event for event in events if event.get("id")}
+        events_by_uuid = {event.get("uuid"): event for event in events if event.get("uuid")}
 
-        if not events_by_id:
+        if not events_by_uuid:
             return events
 
         # Use ThreadPoolExecutor to fetch activities concurrently.
@@ -284,25 +283,25 @@ class TimeTreeCalendar:
 
         with ThreadPoolExecutor(max_workers=max_workers) as executor:
             # Submit all activity fetch tasks
-            future_to_event_id = {
+            future_to_event_uuid = {
                 executor.submit(
                     self.get_event_activities,
                     calendar_id,
-                    event_id,
+                    event_uuid,
                     user_names=user_names,
-                ): event_id
-                for event_id in events_by_id
+                ): event_uuid
+                for event_uuid in events_by_uuid
             }
 
             # Collect results as they complete
-            for future in as_completed(future_to_event_id):
-                event_id = future_to_event_id[future]
+            for future in as_completed(future_to_event_uuid):
+                event_uuid = future_to_event_uuid[future]
                 try:
                     comments = future.result()
                     if comments:
-                        events_by_id[event_id]["comments"] = comments
+                        events_by_uuid[event_uuid]["comments"] = comments
                 except Exception as e:
-                    logger.warning("Failed to fetch activities for event %s: %s", event_id, e)
+                    logger.warning("Failed to fetch activities for event %s: %s", event_uuid, e)
 
         return events
 

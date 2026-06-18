@@ -187,7 +187,7 @@ def test_get_events_adds_comments_from_activity_endpoint():
                 "events": [{"id": 10, "uuid": "event-uuid"}],
                 "chunk": False,
             },
-            "https://timetreeapp.com/api/v1/calendar/1/event/10/activities?since=0": {
+            "https://timetreeapp.com/api/v1/calendar/1/event/event-uuid/activities?since=0": {
                 "event_activities": [
                     {"author_id": 10, "comment": {"body": "First comment"}},
                     {"author_id": 11, "comment": "Second comment"},
@@ -197,7 +197,7 @@ def test_get_events_adds_comments_from_activity_endpoint():
                 "chunk": True,
                 "since": 123,
             },
-            "https://timetreeapp.com/api/v1/calendar/1/event/10/activities?since=123": {
+            "https://timetreeapp.com/api/v1/calendar/1/event/event-uuid/activities?since=123": {
                 "activities": [{"author_id": 10, "message": "Fourth comment"}],
                 "chunk": False,
             },
@@ -217,8 +217,8 @@ def test_get_events_adds_comments_from_activity_endpoint():
 
     assert session.requested_urls == [
         "https://timetreeapp.com/api/v1/calendar/1/events/sync",
-        "https://timetreeapp.com/api/v1/calendar/1/event/10/activities?since=0",
-        "https://timetreeapp.com/api/v1/calendar/1/event/10/activities?since=123",
+        "https://timetreeapp.com/api/v1/calendar/1/event/event-uuid/activities?since=0",
+        "https://timetreeapp.com/api/v1/calendar/1/event/event-uuid/activities?since=123",
     ]
     assert events == [
         {
