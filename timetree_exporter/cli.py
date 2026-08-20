@@ -90,6 +90,14 @@ def parse_args():
         action="store_true",
     )
     parser.add_argument(
+        "--include-images",
+        help=(
+            "Export images attached to private event activities. This makes extra TimeTree "
+            "requests per event and may take much longer."
+        ),
+        action="store_true",
+    )
+    parser.add_argument(
         "--num-workers",
         type=int,
         help="Number of concurrent threads for fetching comments (default: 10)",

@@ -38,6 +38,7 @@ class _FakeExportCalendarApi:
         self.fetched_events_for = None
         self.fetched_calendar_users = None
         self.fetched_labels_for = None
+        self.downloaded_images = []
 
     def get_events(
         self,
@@ -45,13 +46,20 @@ class _FakeExportCalendarApi:
         calendar_name,
         calendar_users=None,
         include_comments=False,
+        include_images=False,
         num_workers=10,
     ):
         self.fetched_events_for = (calendar_id, calendar_name)
         self.fetched_calendar_users = calendar_users
         self.include_comments = include_comments
+        self.include_images = include_images
         self.num_workers = num_workers
         return self.events
+
+    def download_image(self, object_key, output_path):
+        self.downloaded_images.append((object_key, output_path))
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        output_path.write_bytes(b"image data")
 
     def get_labels(self, calendar_id):
         self.fetched_labels_for = calendar_id
@@ -214,6 +222,44 @@ def test_exporter_can_include_comments(tmp_path, normal_event_data):
     Exporter(calendar, output_path, include_comments=True).export()
 
     assert api.include_comments is True
+
+
+def test_exporter_writes_event_images_and_manifest(tmp_path, normal_event_data):
+    """Private event images should be saved beside the ICS with a manifest."""
+    event = normal_event_data.copy()
+    event["_image_attachments"] = [{"object_key": "calendar/18d9/photo.jpg"}]
+    api = _FakeExportCalendarApi([event], {})
+    output_path = tmp_path / "calendar.ics"
+    calendar = Calendar(api, {"id": "calendar-id", "name": "Calendar Name"})
+
+    Exporter(calendar, output_path, include_images=True).export()
+
+    image_path = tmp_path / "timetree_images/test-uuid-normal/calendar/18d9/photo.jpg"
+    assert image_path.read_bytes() == b"image data"
+    assert api.include_images is True
+    assert api.downloaded_images == [("calendar/18d9/photo.jpg", image_path)]
+    assert (tmp_path / "timetree_images.json").read_text(encoding="utf-8") == (
+        '[\n  {\n    "event_uuid": "test-uuid-normal",\n    "title": "測試一般活動",\n'
+        '    "start_date": "2024-04-15",\n    "image_path": '
+        '"timetree_images/test-uuid-normal/calendar/18d9/photo.jpg",\n'
+        '    "object_key": "calendar/18d9/photo.jpg"\n  }\n]\n'
+    )
+
+
+def test_exporter_skips_existing_event_images(tmp_path, normal_event_data):
+    """Existing image files should make image export safely repeatable."""
+    event = normal_event_data.copy()
+    event["_image_attachments"] = [{"object_key": "calendar/18d9/photo.jpg"}]
+    image_path = tmp_path / "timetree_images/test-uuid-normal/calendar/18d9/photo.jpg"
+    image_path.parent.mkdir(parents=True)
+    image_path.write_bytes(b"existing image")
+    api = _FakeExportCalendarApi([event], {})
+    calendar = Calendar(api, {"id": "calendar-id", "name": "Calendar Name"})
+
+    Exporter(calendar, tmp_path / "calendar.ics", include_images=True).export()
+
+    assert image_path.read_bytes() == b"existing image"
+    assert api.downloaded_images == []
 
 
 def test_exporter_writes_split_calendars_by_label(tmp_path, labeled_event_data):

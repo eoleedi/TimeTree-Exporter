@@ -234,6 +234,45 @@ def test_get_events_adds_comments_from_activity_endpoint():
     ]
 
 
+def test_get_events_fetches_comments_and_images_from_one_activity_request():
+    """Comments and image attachments should share one activity fetch per event."""
+    calendar = TimeTreeCalendar("dummy-session-id")
+    session = _UrlPayloadSession(
+        {
+            "https://timetreeapp.com/api/v1/calendar/1/events/sync": {
+                "events": [{"uuid": "event-uuid", "title": "Trip"}],
+                "chunk": False,
+            },
+            "https://timetreeapp.com/api/v1/calendar/1/event/event-uuid/activities?since=0": {
+                "activities": [
+                    {
+                        "author_id": 10,
+                        "comment": {"body": "See attached"},
+                        "attachment": {"images": [{"object_key": "calendar/18d9/photo.jpg"}]},
+                    }
+                ],
+                "chunk": False,
+            },
+        }
+    )
+    calendar.session = session
+
+    events = calendar.get_events(
+        1,
+        "Family",
+        [{"user_id": 10, "name": "Alice"}],
+        include_comments=True,
+        include_images=True,
+    )
+
+    assert session.requested_urls == [
+        "https://timetreeapp.com/api/v1/calendar/1/events/sync",
+        "https://timetreeapp.com/api/v1/calendar/1/event/event-uuid/activities?since=0",
+    ]
+    assert events[0]["comments"] == ["Alice: See attached"]
+    assert events[0]["_image_attachments"] == [{"object_key": "calendar/18d9/photo.jpg"}]
+
+
 def test_get_events_does_not_fetch_comments_by_default():
     """Private event exports should avoid per-event activity calls by default."""
     calendar = TimeTreeCalendar("dummy-session-id")

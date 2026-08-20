@@ -14,6 +14,7 @@ class CalendarApi(Protocol):
         calendar_users=None,
         include_comments=False,
         num_workers=10,
+        include_images=False,
     ):
         """Return events for a calendar."""
 
@@ -22,6 +23,9 @@ class CalendarApi(Protocol):
 
     def get_public_labels(self, calendar_id):
         """Return labels for a public calendar."""
+
+    def download_image(self, object_key, output_path):
+        """Download a private event image."""
 
     def get_labels(self, calendar_id):
         """Return labels for a calendar."""
@@ -54,7 +58,7 @@ class Calendar:
         """Return whether this calendar should use the public calendar API."""
         return self.metadata.get("public", False)
 
-    def get_events(self, include_comments=False, num_workers=10):
+    def get_events(self, include_comments=False, num_workers=10, include_images=False):
         """Return events for this calendar."""
         if self.is_public:
             return self.api.get_public_events(self.id, self.name)
@@ -63,8 +67,13 @@ class Calendar:
             self.name,
             self.metadata.get("calendar_users"),
             include_comments=include_comments,
+            include_images=include_images,
             num_workers=num_workers,
         )
+
+    def download_image(self, object_key, output_path):
+        """Download a private event image through the calendar API."""
+        return self.api.download_image(object_key, output_path)
 
     def get_labels(self):
         """Return labels for this calendar."""

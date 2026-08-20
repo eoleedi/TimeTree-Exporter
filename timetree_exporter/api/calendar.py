@@ -240,6 +240,27 @@ class TimeTreeCalendar:
     ):
         """Get activities for an event."""
         user_names = user_names or {}
+        comments = []
+        for activity in self._fetch_event_activities(calendar_id, event_uuid, since):
+            comment = self._extract_activity_comment(activity)
+            if comment:
+                comments.append(self._format_activity_comment(activity, comment, user_names))
+        return comments
+
+    @staticmethod
+    def _extract_activity_images(activities):
+        """Return image attachment metadata from event activities."""
+        images = []
+        for activity in activities:
+            attachment = activity.get("attachment") or {}
+            for image in attachment.get("images") or []:
+                object_key = image.get("object_key")
+                if object_key:
+                    images.append({"object_key": object_key})
+        return images
+
+    def _fetch_event_activities(self, calendar_id, event_uuid, since=0):
+        """Fetch raw activities, including all pages, for one event."""
         url = f"{API_BASEURI}/calendar/{calendar_id}/event/{event_uuid}/activities?since={since}"
         response = self.session.get(
             url,
@@ -258,19 +279,22 @@ class TimeTreeCalendar:
             f"calendar_{calendar_id}/event_{event_uuid}/activities_since_{since}", r_json
         )
         activities = r_json.get("activities") or r_json.get("event_activities", [])
-        comments = []
-        for activity in activities:
-            comment = self._extract_activity_comment(activity)
-            if comment:
-                comments.append(self._format_activity_comment(activity, comment, user_names))
         if r_json.get("chunk") is True:
-            comments.extend(
-                self.get_event_activities(calendar_id, event_uuid, r_json["since"], user_names)
+            activities.extend(
+                self._fetch_event_activities(calendar_id, event_uuid, r_json["since"])
             )
-        return comments
+        return activities
 
-    def add_event_comments(self, calendar_id: int, events, calendar_users=None, num_workers=10):
-        """Attach comments from event activities to event payloads using thread pool."""
+    def add_event_activities(
+        self,
+        calendar_id: int,
+        events,
+        calendar_users=None,
+        include_comments=False,
+        include_images=False,
+        num_workers=10,
+    ):
+        """Attach requested activity data to event payloads using one fetch per event."""
         user_names = self._calendar_user_names(calendar_users)
 
         events_by_uuid = {event.get("uuid"): event for event in events if event.get("uuid")}
@@ -285,10 +309,9 @@ class TimeTreeCalendar:
             # Submit all activity fetch tasks
             future_to_event_uuid = {
                 executor.submit(
-                    self.get_event_activities,
+                    self._fetch_event_activities,
                     calendar_id,
                     event_uuid,
-                    user_names=user_names,
                 ): event_uuid
                 for event_uuid in events_by_uuid
             }
@@ -297,13 +320,35 @@ class TimeTreeCalendar:
             for future in as_completed(future_to_event_uuid):
                 event_uuid = future_to_event_uuid[future]
                 try:
-                    comments = future.result()
-                    if comments:
-                        events_by_uuid[event_uuid]["comments"] = comments
+                    activities = future.result()
+                    if include_comments:
+                        comments = []
+                        for activity in activities:
+                            comment = self._extract_activity_comment(activity)
+                            if comment:
+                                comments.append(
+                                    self._format_activity_comment(activity, comment, user_names)
+                                )
+                        if comments:
+                            events_by_uuid[event_uuid]["comments"] = comments
+                    if include_images:
+                        images = self._extract_activity_images(activities)
+                        if images:
+                            events_by_uuid[event_uuid]["_image_attachments"] = images
                 except Exception as e:
                     logger.warning("Failed to fetch activities for event %s: %s", event_uuid, e)
 
         return events
+
+    def add_event_comments(self, calendar_id: int, events, calendar_users=None, num_workers=10):
+        """Attach comments from event activities to event payloads using thread pool."""
+        return self.add_event_activities(
+            calendar_id,
+            events,
+            calendar_users=calendar_users,
+            include_comments=True,
+            num_workers=num_workers,
+        )
 
     def get_events(
         self,
@@ -312,6 +357,7 @@ class TimeTreeCalendar:
         calendar_users=None,
         include_comments: bool = False,
         num_workers: int = 10,
+        include_images: bool = False,
     ):
         """
         Get events from the calendar.
@@ -340,13 +386,35 @@ class TimeTreeCalendar:
             json.dumps(events[:5], indent=2, ensure_ascii=False),
         )
 
-        if include_comments:
+        if include_comments or include_images:
             logger.warning(
-                "Exporting comments requires extra TimeTree requests per event and may take "
-                "much longer or trigger rate limits."
+                "Exporting comments or images requires extra TimeTree requests per event and may "
+                "take much longer or trigger rate limits."
             )
-            return self.add_event_comments(calendar_id, events, calendar_users, num_workers)
+            return self.add_event_activities(
+                calendar_id,
+                events,
+                calendar_users,
+                include_comments=include_comments,
+                include_images=include_images,
+                num_workers=num_workers,
+            )
         return events
+
+    def download_image(self, object_key, output_path):
+        """Download one TimeTree attachment image to the requested path."""
+        url = f"https://attachments.timetreeapp.com/{object_key}"
+        response = self.session.get(url, stream=True)
+        response.raise_for_status()
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        try:
+            with output_path.open("wb") as output_file:
+                for chunk in response.iter_content(chunk_size=1024 * 1024):
+                    if chunk:
+                        output_file.write(chunk)
+        except Exception:
+            output_path.unlink(missing_ok=True)
+            raise
 
     def get_public_events(self, calendar_id: int, calendar_name: str = None):
         """

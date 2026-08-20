@@ -103,6 +103,7 @@ def main():
         args.output,
         split_by_label=args.split_by_label,
         include_comments=args.include_comments,
+        include_images=args.include_images,
         num_workers=args.num_workers,
     )
 

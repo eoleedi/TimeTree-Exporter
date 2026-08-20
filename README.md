@@ -104,6 +104,17 @@ Then, you can import the ics file to your calendar app.
    > [!Caution]
    > This option is disabled by default because it makes one or more extra TimeTree requests per event. It can be slow for large calendars and may trigger TimeTree rate limits.
 
+- Include images attached to private events.
+
+   ```bash
+   timetree-exporter --include-images --num-workers 2
+   ```
+
+   Images are saved beside the ICS output in `timetree_images/`, grouped by event UUID. The
+   `timetree_images.json` file maps each image to its event UUID, title, start date, object key,
+   and relative path. Existing image files are skipped, so the export can be run again safely.
+   This option applies only to private calendars and makes additional activity and image requests.
+
 ## Limitations
 
 - TimeTree labels include both a category name and a color. When using `--split-by-label`, each category is saved as a separate ICS file.
