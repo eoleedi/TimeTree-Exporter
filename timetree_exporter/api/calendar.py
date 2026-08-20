@@ -9,9 +9,14 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 
 import requests
-from requests.exceptions import HTTPError
+from requests.exceptions import HTTPError, Timeout
 
-from timetree_exporter.api.const import API_BASEURI, API_USER_AGENT, API_V2_BASEURI
+from timetree_exporter.api.const import (
+    API_BASEURI,
+    API_USER_AGENT,
+    API_V2_BASEURI,
+    ATTACHMENT_TIMEOUT,
+)
 from timetree_exporter.config import get_raw_output_dir
 
 logger = logging.getLogger(__name__)
@@ -404,7 +409,11 @@ class TimeTreeCalendar:
     def download_image(self, object_key, output_path):
         """Download one TimeTree attachment image to the requested path."""
         url = f"https://attachments.timetreeapp.com/{object_key}"
-        response = self.session.get(url, stream=True)
+        try:
+            response = self.session.get(url, stream=True, timeout=ATTACHMENT_TIMEOUT)
+        except Timeout:
+            logger.warning("Timed out downloading image %s", object_key)
+            raise
         response.raise_for_status()
         output_path.parent.mkdir(parents=True, exist_ok=True)
         try:
@@ -412,6 +421,10 @@ class TimeTreeCalendar:
                 for chunk in response.iter_content(chunk_size=1024 * 1024):
                     if chunk:
                         output_file.write(chunk)
+        except Timeout:
+            logger.warning("Timed out downloading image %s", object_key)
+            output_path.unlink(missing_ok=True)
+            raise
         except Exception:
             output_path.unlink(missing_ok=True)
             raise
