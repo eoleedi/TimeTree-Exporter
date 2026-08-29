@@ -1,5 +1,10 @@
 """Tests for TimeTree calendar API helpers."""
 
+from pathlib import Path
+
+import pytest
+from requests.exceptions import Timeout
+
 from timetree_exporter.api.calendar import TimeTreeCalendar
 from timetree_exporter.config import configure_developer_mode
 
@@ -53,6 +58,15 @@ class _UrlPayloadSession:
     def get(self, url, **_kwargs):
         self.requested_urls.append(url)
         return _FakeResponse(self._payloads[url])
+
+
+class _TimeoutSession:
+    def __init__(self):
+        self.requested_kwargs = None
+
+    def get(self, _url, **kwargs):
+        self.requested_kwargs = kwargs
+        raise Timeout("attachment download timed out")
 
 
 def _calendar_with_metadata_response(payload, capture_raw_responses=True):
@@ -232,6 +246,60 @@ def test_get_events_adds_comments_from_activity_endpoint():
             ],
         }
     ]
+
+
+def test_get_events_fetches_comments_and_images_from_one_activity_request():
+    """Comments and image attachments should share one activity fetch per event."""
+    calendar = TimeTreeCalendar("dummy-session-id")
+    session = _UrlPayloadSession(
+        {
+            "https://timetreeapp.com/api/v1/calendar/1/events/sync": {
+                "events": [{"uuid": "event-uuid", "title": "Trip"}],
+                "chunk": False,
+            },
+            "https://timetreeapp.com/api/v1/calendar/1/event/event-uuid/activities?since=0": {
+                "activities": [
+                    {
+                        "author_id": 10,
+                        "comment": {"body": "See attached"},
+                        "attachment": {"images": [{"object_key": "calendar/18d9/photo.jpg"}]},
+                    }
+                ],
+                "chunk": False,
+            },
+        }
+    )
+    calendar.session = session
+
+    events = calendar.get_events(
+        1,
+        "Family",
+        [{"user_id": 10, "name": "Alice"}],
+        include_comments=True,
+        include_images=True,
+    )
+
+    assert session.requested_urls == [
+        "https://timetreeapp.com/api/v1/calendar/1/events/sync",
+        "https://timetreeapp.com/api/v1/calendar/1/event/event-uuid/activities?since=0",
+    ]
+    assert events[0]["comments"] == ["Alice: See attached"]
+    assert events[0]["_image_attachments"] == [{"object_key": "calendar/18d9/photo.jpg"}]
+
+
+def test_download_image_uses_timeout_and_warns_on_timeout(tmp_path, caplog):
+    """Attachment timeouts should be bounded and reported without creating a file."""
+    calendar = TimeTreeCalendar("dummy-session-id")
+    session = _TimeoutSession()
+    calendar.session = session
+    output_path = Path(tmp_path) / "image.jpg"
+
+    with pytest.raises(Timeout):
+        calendar.download_image("calendar/18d9/image.jpg", output_path)
+
+    assert session.requested_kwargs["timeout"] == (10, 60)
+    assert not output_path.exists()
+    assert "Timed out downloading image calendar/18d9/image.jpg" in caplog.text
 
 
 def test_get_events_does_not_fetch_comments_by_default():

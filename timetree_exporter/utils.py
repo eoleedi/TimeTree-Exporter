@@ -13,6 +13,25 @@ from icalendar import Timezone
 logger = logging.getLogger(__name__)
 
 
+def escape_image_part(part):
+    """Escape characters that are unsafe in a portable filesystem component."""
+    escaped = "".join(
+        f"%{ord(character):02X}"
+        if character in '<>:"/\\|?*' or ord(character) < 32 or character == "%"
+        else character
+        for character in part
+    )
+    if part.endswith((".", " ")):
+        escaped = f"{escaped[:-1]}%{ord(part[-1]):02X}"
+    windows_name = part.rstrip(". ").split(".", 1)[0].upper()
+    reserved_names = {"CON", "PRN", "AUX", "NUL"}
+    reserved_names.update(f"COM{number}" for number in range(1, 10))
+    reserved_names.update(f"LPT{number}" for number in range(1, 10))
+    if windows_name in reserved_names:
+        escaped = f"%{ord(part[0]):02X}{escaped[1:]}"
+    return escaped
+
+
 def get_events_from_file(file_path) -> list:
     """Fetch events from Timetree response file"""
     try:

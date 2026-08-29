@@ -1,15 +1,19 @@
 """Build and write iCalendar exports from TimeTree events."""
 
+import json
 import logging
 import re
 from collections import defaultdict
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from datetime import datetime
 from importlib.metadata import version
-from pathlib import Path
+from pathlib import Path, PurePosixPath
+from zoneinfo import ZoneInfo
 
 from icalendar import Calendar as ICalendar
 
 from timetree_exporter import ICalEventFormatter, TimeTreeEvent, TimeTreePublicEvent
-from timetree_exporter.utils import add_bounded_timezones_before_events
+from timetree_exporter.utils import add_bounded_timezones_before_events, escape_image_part
 
 logger = logging.getLogger(__name__)
 
@@ -18,20 +22,32 @@ class Exporter:
     """Export a selected TimeTree calendar to one or more iCalendar files."""
 
     def __init__(
-        self, calendar, output, split_by_label=False, include_comments=False, num_workers=10
+        self,
+        calendar,
+        output,
+        split_by_label=False,
+        include_comments=False,
+        num_workers=10,
+        include_images=False,
     ):
         self.calendar = calendar
         self.output = output
         self.split_by_label = split_by_label
         self.include_comments = include_comments
+        self.include_images = include_images
         self.num_workers = num_workers
 
     def export(self):
         """Fetch labels and events, then write the configured iCalendar output."""
         events = self.calendar.get_events(
-            include_comments=self.include_comments, num_workers=self.num_workers
+            include_comments=self.include_comments,
+            include_images=self.include_images,
+            num_workers=self.num_workers,
         )
         logger.info("Found %d events", len(events))
+
+        if self.include_images and not self.calendar.is_public:
+            download_event_images(self.calendar, events, self.output, self.num_workers)
 
         labels = self.calendar.get_labels()
         if self.calendar.is_public and not labels:
@@ -75,6 +91,91 @@ def write_calendar(cal, output_path: str | Path):
     with path.open("wb") as f:
         f.write(cal.to_ical())
         logger.info("The .ics calendar file is saved to %s", path.resolve())
+
+
+def _image_path(output_path, event_uuid, object_key):
+    """Return a stable image path below the ICS output directory."""
+    if (
+        not isinstance(event_uuid, str)
+        or not event_uuid
+        or event_uuid in {".", ".."}
+        or "/" in event_uuid
+        or "\\" in event_uuid
+    ):
+        raise ValueError(f"Invalid event UUID: {event_uuid}")
+    if not isinstance(object_key, str) or not object_key:
+        raise ValueError(f"Invalid image object key: {object_key}")
+    key_path = PurePosixPath(object_key)
+    if key_path.is_absolute() or ".." in key_path.parts:
+        raise ValueError(f"Invalid image object key: {object_key}")
+    image_root = Path(output_path).parent / "timetree_images"
+    image_path = (
+        image_root / event_uuid / Path(*(escape_image_part(part) for part in key_path.parts))
+    )
+    try:
+        image_path.resolve().relative_to(image_root.resolve())
+    except ValueError as exc:
+        raise ValueError(f"Invalid image object key: {object_key}") from exc
+    return image_path
+
+
+def _event_start_date(event):
+    """Return an event's local start date as an ISO string."""
+    timestamp = event.get("start_at")
+    if timestamp is None:
+        return None
+    timezone = ZoneInfo(event.get("start_timezone") or "UTC")
+    return datetime.fromtimestamp(timestamp / 1000, timezone).date().isoformat()
+
+
+def download_event_images(calendar, events, output, num_workers):
+    """Download event images and write their event mapping manifest."""
+    output_path = Path(output)
+    manifest = []
+    tasks = []
+
+    for event in events:
+        event_uuid = event.get("uuid")
+        for image in event.get("_image_attachments", []):
+            object_key = image["object_key"]
+            try:
+                image_path = _image_path(output_path, event_uuid, object_key)
+            except ValueError:
+                logger.warning("Skipping invalid image path for event %s", event_uuid)
+                continue
+            entry = {
+                "event_uuid": event_uuid,
+                "title": event.get("title"),
+                "start_date": _event_start_date(event),
+                "image_path": image_path.relative_to(output_path.parent).as_posix(),
+                "object_key": object_key,
+            }
+            if not image_path.is_file():
+                tasks.append((object_key, image_path, entry))
+            else:
+                manifest.append(entry)
+
+    with ThreadPoolExecutor(max_workers=max(1, num_workers)) as executor:
+        futures = {
+            executor.submit(calendar.download_image, object_key, image_path): entry
+            for object_key, image_path, entry in tasks
+        }
+        for future in as_completed(futures):
+            entry = futures[future]
+            try:
+                future.result()
+                manifest.append(entry)
+                logger.info("Downloaded image to %s", entry["image_path"])
+            except Exception as exc:
+                logger.warning("Failed to download image to %s: %s", entry["image_path"], exc)
+
+    manifest.sort(key=lambda entry: (entry["event_uuid"], entry["object_key"]))
+
+    manifest_path = output_path.parent / "timetree_images.json"
+    manifest_path.write_text(
+        json.dumps(manifest, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
+    )
+    logger.info("The image manifest is saved to %s", manifest_path.resolve())
 
 
 def public_labels_from_events(events):
