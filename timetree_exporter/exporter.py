@@ -103,6 +103,8 @@ def _image_path(output_path, event_uuid, object_key):
         or "\\" in event_uuid
     ):
         raise ValueError(f"Invalid event UUID: {event_uuid}")
+    if not isinstance(object_key, str) or not object_key or "\\" in object_key:
+        raise ValueError(f"Invalid image object key: {object_key}")
     key_path = PurePosixPath(object_key)
     if key_path.is_absolute() or ".." in key_path.parts:
         raise ValueError(f"Invalid image object key: {object_key}")

@@ -3,6 +3,8 @@
 from datetime import datetime, timedelta
 from zoneinfo import ZoneInfo
 
+import pytest
+
 from timetree_exporter.calendar import Calendar
 from timetree_exporter.cli import (
     DEVELOPER_MODE_ENV,
@@ -14,6 +16,7 @@ from timetree_exporter.config import configure_developer_mode, get_raw_output_di
 from timetree_exporter.event import TimeTreeEvent
 from timetree_exporter.exporter import (
     Exporter,
+    _image_path,
     create_calendar,
     label_suffix_for_group,
     public_labels_from_events,
@@ -260,6 +263,12 @@ def test_exporter_skips_existing_event_images(tmp_path, normal_event_data):
 
     assert image_path.read_bytes() == b"existing image"
     assert api.downloaded_images == []
+
+
+def test_image_path_rejects_windows_separators():
+    """Image keys must not become traversal paths on Windows."""
+    with pytest.raises(ValueError, match="Invalid image object key"):
+        _image_path("calendar.ics", "event-uuid", r"calendar\..\outside.jpg")
 
 
 def test_exporter_writes_split_calendars_by_label(tmp_path, labeled_event_data):
