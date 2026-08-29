@@ -265,10 +265,27 @@ def test_exporter_skips_existing_event_images(tmp_path, normal_event_data):
     assert api.downloaded_images == []
 
 
-def test_image_path_rejects_windows_separators():
-    """Image keys must not become traversal paths on Windows."""
+def test_image_path_escapes_windows_separators():
+    """Backslashes in image keys must remain filename characters on every platform."""
+    assert _image_path("calendar.ics", "event-uuid", r"calendar\photo.jpg").as_posix() == (
+        "timetree_images/event-uuid/calendar%5Cphoto.jpg"
+    )
+
+
+def test_image_path_escapes_windows_reserved_names_and_characters():
+    """Image components must be valid on both POSIX and Windows filesystems."""
+    assert _image_path("calendar.ics", "event-uuid", "CON.txt").as_posix() == (
+        "timetree_images/event-uuid/%43ON.txt"
+    )
+    assert _image_path("calendar.ics", "event-uuid", "photo: .").as_posix() == (
+        "timetree_images/event-uuid/photo%3A %2E"
+    )
+
+
+def test_image_path_still_rejects_forward_slash_traversal():
+    """Forward-slash traversal segments must remain invalid."""
     with pytest.raises(ValueError, match="Invalid image object key"):
-        _image_path("calendar.ics", "event-uuid", r"calendar\..\outside.jpg")
+        _image_path("calendar.ics", "event-uuid", "calendar/../outside.jpg")
 
 
 def test_exporter_writes_split_calendars_by_label(tmp_path, labeled_event_data):

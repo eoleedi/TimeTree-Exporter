@@ -13,7 +13,7 @@ from zoneinfo import ZoneInfo
 from icalendar import Calendar as ICalendar
 
 from timetree_exporter import ICalEventFormatter, TimeTreeEvent, TimeTreePublicEvent
-from timetree_exporter.utils import add_bounded_timezones_before_events
+from timetree_exporter.utils import add_bounded_timezones_before_events, escape_image_part
 
 logger = logging.getLogger(__name__)
 
@@ -103,12 +103,20 @@ def _image_path(output_path, event_uuid, object_key):
         or "\\" in event_uuid
     ):
         raise ValueError(f"Invalid event UUID: {event_uuid}")
-    if not isinstance(object_key, str) or not object_key or "\\" in object_key:
+    if not isinstance(object_key, str) or not object_key:
         raise ValueError(f"Invalid image object key: {object_key}")
     key_path = PurePosixPath(object_key)
     if key_path.is_absolute() or ".." in key_path.parts:
         raise ValueError(f"Invalid image object key: {object_key}")
-    return Path(output_path).parent / "timetree_images" / event_uuid / Path(*key_path.parts)
+    image_root = Path(output_path).parent / "timetree_images"
+    image_path = (
+        image_root / event_uuid / Path(*(escape_image_part(part) for part in key_path.parts))
+    )
+    try:
+        image_path.resolve().relative_to(image_root.resolve())
+    except ValueError as exc:
+        raise ValueError(f"Invalid image object key: {object_key}") from exc
+    return image_path
 
 
 def _event_start_date(event):
