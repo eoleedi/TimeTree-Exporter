@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.9.0](https://github.com/eoleedi/TimeTree-Exporter/compare/v0.8.0...v0.9.0) (2026-08-29)
+
+
+### Features
+
+* export images from private event activities ([#210](https://github.com/eoleedi/TimeTree-Exporter/issues/210)) ([2c1f651](https://github.com/eoleedi/TimeTree-Exporter/commit/2c1f651e4920e9c0b69a785902bb2bece7589fc7))
+
+
+### Build System
+
+* **deps-dev:** bump pre-commit from 4.6.0 to 4.6.2 ([#208](https://github.com/eoleedi/TimeTree-Exporter/issues/208)) ([bcb408a](https://github.com/eoleedi/TimeTree-Exporter/commit/bcb408a402be470c05ae88f14ab256db8e411e73))
+* **deps-dev:** bump ruff from 0.15.20 to 0.16.4 ([#212](https://github.com/eoleedi/TimeTree-Exporter/issues/212)) ([072aafb](https://github.com/eoleedi/TimeTree-Exporter/commit/072aafb9977afbcdf94d13a51ecd5992bc58ea41))
+* **deps:** bump dawidd6/action-homebrew-bump-formula fom 7 to 8 ([421ebcc](https://github.com/eoleedi/TimeTree-Exporter/commit/421ebcc92c52c982b7b00aac0baae188a5507ed2))
+* **deps:** bump icalendar from 7.2.0 to 7.3.0 ([#211](https://github.com/eoleedi/TimeTree-Exporter/issues/211)) ([0b86b46](https://github.com/eoleedi/TimeTree-Exporter/commit/0b86b463e05335ce37a799830120652b2ed78938))
+* **deps:** bump tzdata from 2026.2 to 2026.3 ([#201](https://github.com/eoleedi/TimeTree-Exporter/issues/201)) ([e5903d2](https://github.com/eoleedi/TimeTree-Exporter/commit/e5903d20e999ee236ad75d2f5e568bfc1ec74a17))
+
 ## [0.8.0](https://github.com/eoleedi/TimeTree-Exporter/compare/v0.7.2...v0.8.0) (2026-07-01)
 
 
