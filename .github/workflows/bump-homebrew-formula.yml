@@ -14,7 +14,7 @@ jobs:
     runs-on: macos-latest
     environment: release-homebrew # 24 hours cooldown environment
     steps:
-      - uses: dawidd6/action-homebrew-bump-formula@v8
+      - uses: dawidd6/action-homebrew-bump-formula@v10
         with:
             formula: timetree-exporter
             tap: eoleedi/tap
