@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.9.1](https://github.com/eoleedi/TimeTree-Exporter/compare/v0.9.0...v0.9.1) (2026-09-11)
+
+
+### Build System
+
+* **chore:** Update Homebrew bump action to version 10 ([96d7193](https://github.com/eoleedi/TimeTree-Exporter/commit/96d719315cc79886358b680a903fcb8f4813c1b0))
+
 ## [0.9.0](https://github.com/eoleedi/TimeTree-Exporter/compare/v0.8.0...v0.9.0) (2026-08-29)
 
 
