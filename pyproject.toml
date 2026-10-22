@@ -10,17 +10,17 @@ keywords = ["timetree", "exporter", "icalendar", "ics"]
 classifiers = [
     # Supported Python versions
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
     "Programming Language :: Python :: 3.14",
+    "Programming Language :: Python :: 3.15",
     # License
     "License :: OSI Approved :: MIT License",
     # OS
     "Operating System :: OS Independent",
 ]
-requires-python = "<4.0,>=3.10"
+requires-python = "<4.0,>=3.11"
 dynamic = []
 dependencies = [
     "icalendar>=6.1.0,<8.0.0",
@@ -56,7 +56,7 @@ python_functions = "test_*"
 
 [tool.ruff]
 line-length = 100
-target-version = "py310"
+target-version = "py311"
 
 [tool.ruff.lint]
 select = [
