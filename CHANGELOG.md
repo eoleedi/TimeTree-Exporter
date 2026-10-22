@@ -1,5 +1,33 @@
 # Changelog
 
+## [1.0.0](https://github.com/eoleedi/TimeTree-Exporter/compare/v0.9.0...v1.0.0) (2026-10-22)
+
+
+### ⚠ BREAKING CHANGES
+
+* **deps:** drop python 3.10 suppport as it reach eol and add python 3.15 support ([#227](https://github.com/eoleedi/TimeTree-Exporter/issues/227))
+
+### Documentation
+
+* add banner image ([97badb4](https://github.com/eoleedi/TimeTree-Exporter/commit/97badb458e2c2a868c48fa5001e36c3c6390093b))
+* add 繁體中文 README ([fd2f1a2](https://github.com/eoleedi/TimeTree-Exporter/commit/fd2f1a2eaee9bcb628376be1bf746b33dc4705f3))
+
+
+### Miscellaneous Chores
+
+* **release:** adopt stable semantic versioning ([1165c82](https://github.com/eoleedi/TimeTree-Exporter/commit/1165c8288c30a06d59ff0c7990c55dfeea8896a6))
+
+
+### Build System
+
+* **chore:** Update Homebrew bump action to version 10 ([96d7193](https://github.com/eoleedi/TimeTree-Exporter/commit/96d719315cc79886358b680a903fcb8f4813c1b0))
+* **deps-dev:** bump pre-commit from 4.6.0 to 4.6.2 ([#216](https://github.com/eoleedi/TimeTree-Exporter/issues/216)) ([3588ea6](https://github.com/eoleedi/TimeTree-Exporter/commit/3588ea6cd25bb88685a28b7db65228b72a9240a3))
+* **deps-dev:** bump ruff from 0.16.6 to 0.17.1 ([#226](https://github.com/eoleedi/TimeTree-Exporter/issues/226)) ([58a215d](https://github.com/eoleedi/TimeTree-Exporter/commit/58a215dce4be6d76b099ec7c70882984bb4e45a7))
+* **deps:** bump the uv group across 1 directory with 2 updates ([#224](https://github.com/eoleedi/TimeTree-Exporter/issues/224)) ([3b0d545](https://github.com/eoleedi/TimeTree-Exporter/commit/3b0d5454754b8da9171b44340ce3daa5edc1abfd))
+* **deps:** bump the uv group across 1 directory with 2 updates ([#228](https://github.com/eoleedi/TimeTree-Exporter/issues/228)) ([6e9ace2](https://github.com/eoleedi/TimeTree-Exporter/commit/6e9ace219400f703deab905ab31973a2c86550d5))
+* **deps:** bump tzdata from 2026.3 to 2026.5 ([#222](https://github.com/eoleedi/TimeTree-Exporter/issues/222)) ([4d47501](https://github.com/eoleedi/TimeTree-Exporter/commit/4d4750126d5963be5b550fdb56c3baa4e192cd3f))
+* **deps:** drop python 3.10 suppport as it reach eol and add python 3.15 support ([#227](https://github.com/eoleedi/TimeTree-Exporter/issues/227)) ([fabe30a](https://github.com/eoleedi/TimeTree-Exporter/commit/fabe30a9e86ce95a4bedd6a23472e961938431ea))
+
 ## [0.9.0](https://github.com/eoleedi/TimeTree-Exporter/compare/v0.8.0...v0.9.0) (2026-08-29)
 
 
