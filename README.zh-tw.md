@@ -20,7 +20,7 @@
 ## 安裝
 
 > [!Note]
-> TimeTree Exporter 需要 Python 3.10 或更新版本。
+> TimeTree Exporter 需要 Python 3.11 或更新版本。
 
 如果你使用 macOS，可以透過 Homebrew 安裝：
 

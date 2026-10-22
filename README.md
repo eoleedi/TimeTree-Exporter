@@ -20,7 +20,7 @@ This script works by scraping the TimeTree web app and converting the data to iC
 ## Installation
 
 > [!Note]
-> Timetree Exporter requires Python 3.10 or later.
+> Timetree Exporter requires Python 3.11 or later.
 
 If you are on mac, you can install it using brew:
 
@@ -126,4 +126,4 @@ For development setup and contribution details, see [DEVELOPMENT.md](DEVELOPMENT
 
 If you think it's helpful, kindly support me!
 
-[!["Buy Me A Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/eoleedi)
+[![](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/eoleedi)
