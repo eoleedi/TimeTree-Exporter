@@ -1,5 +1,7 @@
 # TimeTree Exporter
 
+![TimeTree Exporter：將 TimeTree 行事曆匯出為 ICS 檔案，並匯入 Google 日曆、Apple 行事曆或 Outlook](https://raw.githubusercontent.com/eoleedi/TimeTree-exporter/main/assets/timetree-exporter-banner.png)
+
 [English](README.md) | [繁體中文](README.zh-tw.md)
 
 [![PyPI](https://img.shields.io/pypi/v/timetree-exporter.svg)](https://pypi.org/project/timetree-exporter/)

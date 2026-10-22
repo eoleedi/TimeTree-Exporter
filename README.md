@@ -1,5 +1,7 @@
 # TimeTree Exporter
 
+![TimeTree Exporter: export your TimeTree calendar as an ICS file for Google Calendar, Apple Calendar, or Outlook](https://raw.githubusercontent.com/eoleedi/TimeTree-exporter/main/assets/timetree-exporter-banner.png)
+
 [English](README.md) | [繁體中文](README.zh-tw.md)
 
 [![PyPI](https://img.shields.io/pypi/v/timetree-exporter.svg)](https://pypi.org/project/timetree-exporter/)
