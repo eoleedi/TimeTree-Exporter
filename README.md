@@ -75,6 +75,7 @@ Then, you can import the ics file to your calendar app.
   export TIMETREE_EMAIL=email@example.com
   export TIMETREE_PASSWORD=password
   ```
+
 - Create separate ICS files for each label with a custom output directory.
 
   ```bash
@@ -126,4 +127,4 @@ For development setup and contribution details, see [DEVELOPMENT.md](DEVELOPMENT
 
 If you think it's helpful, kindly support me!
 
-[![](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/eoleedi)
+[!["Buy Me a Coffee"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/eoleedi)
