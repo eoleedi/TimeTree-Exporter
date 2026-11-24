@@ -12,9 +12,8 @@ jobs:
   bump-homebrew-formula:
     name: Bump Homebrew Formula
     runs-on: macos-latest
-    environment: release-homebrew # 24 hours cooldown environment
     steps:
-      - uses: dawidd6/action-homebrew-bump-formula@v10
+      - uses: dawidd6/action-homebrew-bump-formula@v11
         with:
             formula: timetree-exporter
             tap: eoleedi/tap
