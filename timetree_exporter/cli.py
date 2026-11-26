@@ -84,8 +84,17 @@ def parse_args():
     parser.add_argument(
         "--include-comments",
         help=(
-            "Export private event comments. This makes one or more extra TimeTree requests "
+            "Export private event comments as ICS COMMENT properties. This makes extra requests "
             "per event and may take much longer or trigger rate limits."
+        ),
+        action="store_true",
+    )
+    parser.add_argument(
+        "--comments-in-description",
+        help=(
+            "Append private event comments to the description for Google Calendar and "
+            "Apple Calendar. Fetches comments with extra requests and rate-limit risk. "
+            "Combine with --include-comments to also write ICS COMMENT properties."
         ),
         action="store_true",
     )

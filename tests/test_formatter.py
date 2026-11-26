@@ -3,6 +3,7 @@
 from datetime import date, datetime, timedelta
 from zoneinfo import ZoneInfo
 
+import pytest
 from icalendar import Event
 from icalendar.prop import vDuration
 
@@ -104,6 +105,45 @@ def test_to_ical_includes_comments(normal_event_data):
 
     assert ical_event["description"] == "測試備註"
     assert ical_event["comment"] == ["First comment", "Second comment"]
+
+
+@pytest.mark.parametrize("note", ["Original notes", "", None])
+@pytest.mark.parametrize("include_comments", [False, True])
+def test_comments_in_description_preserves_text(normal_event_data, note, include_comments):
+    """Comments should survive ICS serialization with notes and author names intact."""
+    data = normal_event_data.copy()
+    data["note"] = note
+    data["comments"] = ["Alice: Hello, world;\nSecond line", "Bob: 你好"]
+    formatter = ICalEventFormatter(
+        TimeTreeEvent.from_dict(data),
+        comments_in_description=True,
+        include_comments=include_comments,
+    )
+
+    ical_event = Event.from_ical(formatter.to_ical().to_ical())
+
+    expected = "Comments:\nAlice: Hello, world;\nSecond line\n\nBob: 你好"
+    if note:
+        expected = f"{note}\n\n{expected}"
+    assert str(ical_event["description"]) == expected
+    if include_comments:
+        assert ical_event["comment"] == data["comments"]
+    else:
+        assert "comment" not in ical_event
+
+
+@pytest.mark.parametrize("note", ["Original notes", "", None])
+@pytest.mark.parametrize("comments", [[], None])
+def test_comments_in_description_without_comments(normal_event_data, note, comments):
+    """Do not append an empty heading or create an empty DESCRIPTION."""
+    data = normal_event_data.copy()
+    data.update(note=note, comments=comments)
+    formatter = ICalEventFormatter(TimeTreeEvent.from_dict(data), comments_in_description=True)
+
+    ical_event = formatter.to_ical()
+
+    assert formatter.description == (note or None)
+    assert ical_event.get("description") == (note or None)
 
 
 def test_related_to_prefers_recurring_uuid(normal_event_data):

@@ -92,6 +92,14 @@ timetree-exporter -o path/to/output.ics
 
   留言會從 TimeTree 的活動動態端點擷取，並匯出為 iCalendar 的 `COMMENT` 屬性；若有作者姓名，會加在留言前方。
 
+  若要在 Google 日曆或 Apple 行事曆中顯示留言，可將留言一併加入活動說明：
+
+  ```bash
+  timetree-exporter --comments-in-description
+  ```
+
+  此選項會擷取留言，並附加在原始備註後的 **Comments** 區段，保留可取得的作者姓名。單獨使用時，留言只會寫入 `DESCRIPTION`；若也需要 `COMMENT` 屬性，請同時加上 `--include-comments`。同時使用兩個選項不會重複擷取留言。兩個選項都需要額外請求，可能觸發速率限制，也可搭配 `--split-by-label` 使用。請注意，匯入後，能查看活動說明的人也能看到這些留言。
+
   若要調整擷取留言時同時的請求量，可以用 `--num-workers`。
 
   ```bash
@@ -118,7 +126,7 @@ timetree-exporter -o path/to/output.ics
 
 - TimeTree 標籤包含分類名稱與顏色。使用 `--split-by-label` 時，每個分類會儲存為獨立的 ICS 檔案。
 - 標籤顏色資訊會保留在 ICS 輸出中，但 Google 日曆匯入 ICS 檔案時，不會套用這些活動顏色。如果你依賴顏色來整理活動，可能需要回到 TimeTree 查看過往的顏色資訊。
-- TimeTree 活動的備註會匯出為 iCalendar 的 `DESCRIPTION`。私人行事曆活動的留言僅在使用 `--include-comments` 時才會匯出。
+- TimeTree 活動的備註會匯出為 iCalendar 的 `DESCRIPTION`。私人行事曆活動的留言僅在使用 `--include-comments` 或 `--comments-in-description` 時才會匯出。
 
 ## 開發
 

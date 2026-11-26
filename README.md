@@ -93,6 +93,14 @@ Then, you can import the ics file to your calendar app.
 
   Comments are fetched from TimeTree's event activities endpoint and exported as iCalendar `COMMENT` properties, prefixed with the author name when available.
 
+  To make comments visible in Google Calendar or Apple Calendar, also include them in the event description:
+
+  ```bash
+  timetree-exporter --comments-in-description
+  ```
+
+  This option fetches comments and appends a **Comments** section after the original notes, keeping author names when available. On its own, it writes comments only to `DESCRIPTION`; add `--include-comments` to also write `COMMENT` properties. Using both flags does not fetch comments twice. Both options require extra requests and may trigger rate limits. This also works with `--split-by-label`. Comments added to the description will be visible to anyone who can view that description in the destination calendar.
+
   To change the number of concurrent requests used while fetching comments, pass `--num-workers`.
 
   ```bash
@@ -119,7 +127,7 @@ Then, you can import the ics file to your calendar app.
 
 - TimeTree labels include both a category name and a color. When using `--split-by-label`, each category is saved as a separate ICS file.
 - Label color information is preserved in the ICS output, but Google Calendar does not apply those event colors when importing ICS files. If you rely on colors to organize events, you may need to check historical color information in TimeTree.
-- TimeTree event notes are exported as the iCalendar `DESCRIPTION`. Private event comments are only exported when `--include-comments` is used.
+- TimeTree event notes are exported as the iCalendar `DESCRIPTION`. Private event comments are only exported when `--include-comments` or `--comments-in-description` is used.
 
 ## Development
 
