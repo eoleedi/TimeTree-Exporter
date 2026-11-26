@@ -29,18 +29,20 @@ class Exporter:
         include_comments=False,
         num_workers=10,
         include_images=False,
+        comments_in_description=False,
     ):
         self.calendar = calendar
         self.output = output
         self.split_by_label = split_by_label
         self.include_comments = include_comments
+        self.comments_in_description = comments_in_description
         self.include_images = include_images
         self.num_workers = num_workers
 
     def export(self):
         """Fetch labels and events, then write the configured iCalendar output."""
         events = self.calendar.get_events(
-            include_comments=self.include_comments,
+            include_comments=self.include_comments or self.comments_in_description,
             include_images=self.include_images,
             num_workers=self.num_workers,
         )
@@ -57,11 +59,23 @@ class Exporter:
         event_cls = TimeTreePublicEvent if self.calendar.is_public else TimeTreeEvent
 
         if self.split_by_label:
-            grouped_events = group_events_by_label(events, labels, event_cls=event_cls)
+            grouped_events = group_events_by_label(
+                events,
+                labels,
+                event_cls=event_cls,
+                comments_in_description=self.comments_in_description,
+                include_comments=self.include_comments,
+            )
             write_split_calendars(grouped_events, labels, self.output, len(events))
             return
 
-        cal = build_single_calendar(events, labels, event_cls=event_cls)
+        cal = build_single_calendar(
+            events,
+            labels,
+            event_cls=event_cls,
+            comments_in_description=self.comments_in_description,
+            include_comments=self.include_comments,
+        )
         logger.info(
             "A total of %d/%d events are added to the calendar",
             len(cal.subcomponents),
@@ -196,7 +210,9 @@ def public_labels_from_events(events):
     return labels
 
 
-def build_single_calendar(events, labels, event_cls=TimeTreeEvent):
+def build_single_calendar(
+    events, labels, event_cls=TimeTreeEvent, comments_in_description=False, include_comments=True
+):
     """Build single output calendar from events."""
     cal = create_calendar()
     label_lookup = {lid: info["name"] for lid, info in labels.items()} if labels else {}
@@ -215,6 +231,8 @@ def build_single_calendar(events, labels, event_cls=TimeTreeEvent):
             label_name=label_name,
             color=color,
             category_names=getattr(time_tree_event, "category_names", None),
+            comments_in_description=comments_in_description,
+            include_comments=include_comments,
         )
         ical_event = formatter.to_ical()
         if ical_event is not None:
@@ -223,7 +241,9 @@ def build_single_calendar(events, labels, event_cls=TimeTreeEvent):
     return cal
 
 
-def group_events_by_label(events, labels, event_cls=TimeTreeEvent):
+def group_events_by_label(
+    events, labels, event_cls=TimeTreeEvent, comments_in_description=False, include_comments=True
+):
     """Group converted iCal events by label id (or None for unlabeled)."""
     grouped = defaultdict(list)
 
@@ -241,6 +261,8 @@ def group_events_by_label(events, labels, event_cls=TimeTreeEvent):
             label_name=label_name,
             color=color,
             category_names=getattr(time_tree_event, "category_names", None),
+            comments_in_description=comments_in_description,
+            include_comments=include_comments,
         )
         ical_event = formatter.to_ical()
 

@@ -1,15 +1,18 @@
 """Tests for CLI entry helpers in __main__."""
 
 from datetime import datetime, timedelta
+from unittest.mock import patch
 from zoneinfo import ZoneInfo
 
 import pytest
+from icalendar import Calendar as ICalendar
 
 from timetree_exporter.calendar import Calendar
 from timetree_exporter.cli import (
     DEVELOPER_MODE_ENV,
     RAW_OUTPUT_DIR,
     list_labels_and_exit,
+    parse_args,
     raw_output_dir,
 )
 from timetree_exporter.config import configure_developer_mode, get_raw_output_dir
@@ -225,6 +228,62 @@ def test_exporter_can_include_comments(tmp_path, normal_event_data):
     Exporter(calendar, output_path, include_comments=True).export()
 
     assert api.include_comments is True
+
+
+@pytest.mark.parametrize("split_by_label", [False, True])
+@pytest.mark.parametrize("include_comments", [False, True])
+@pytest.mark.parametrize("comments_in_description", [False, True])
+def test_exporter_comments_in_description(
+    tmp_path, labeled_event_data, split_by_label, include_comments, comments_in_description
+):
+    """Comment destinations are independent and share a single event fetch."""
+    data = labeled_event_data.copy()
+    data["note"] = "Original notes"
+    data["comments"] = ["Alice: First comment", "Bob: Second comment"]
+    api = _FakeExportCalendarApi([data], {3: {"name": "Work", "color": "#ff00aa"}})
+    calendar = Calendar(api, {"id": "calendar-id", "name": "Calendar Name"})
+    output_path = tmp_path / "calendar.ics"
+    exporter = Exporter(
+        calendar,
+        output_path,
+        split_by_label=split_by_label,
+        include_comments=include_comments,
+        comments_in_description=comments_in_description,
+    )
+    with patch.object(api, "get_events", wraps=api.get_events) as get_events:
+        exporter.export()
+        assert get_events.call_count == 1
+
+    assert api.include_comments is (include_comments or comments_in_description)
+    path = tmp_path / "calendar_Work.ics" if split_by_label else output_path
+    event = ICalendar.from_ical(path.read_bytes()).walk("VEVENT")[0]
+    expected_description = data["note"]
+    if comments_in_description:
+        expected_description += "\n\nComments:\nAlice: First comment\n\nBob: Second comment"
+    assert str(event["description"]) == expected_description
+    if include_comments:
+        assert event["comment"] == data["comments"]
+    else:
+        assert "comment" not in event
+
+
+@pytest.mark.parametrize(
+    "flags",
+    [
+        [],
+        ["--comments-in-description"],
+        ["--include-comments"],
+        ["--include-comments", "--comments-in-description"],
+    ],
+)
+def test_parse_comment_options(monkeypatch, flags):
+    """The new description flag is independent of legacy COMMENT-only exports."""
+    monkeypatch.setattr("sys.argv", ["timetree-exporter", *flags])
+
+    args = parse_args()
+
+    assert args.comments_in_description is ("--comments-in-description" in flags)
+    assert args.include_comments is ("--include-comments" in flags)
 
 
 def test_exporter_writes_event_images_and_manifest(tmp_path, normal_event_data):

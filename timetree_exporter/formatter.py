@@ -32,11 +32,15 @@ class ICalEventFormatter:
         label_name: str = None,
         color: str = None,
         category_names: list = None,
+        comments_in_description: bool = False,
+        include_comments: bool = True,
     ):
         self.time_tree_event = time_tree_event
         self.label_name = label_name
         self._color = color
         self.category_names = category_names or []
+        self.comments_in_description = comments_in_description
+        self.include_comments = include_comments
 
     @property
     def color(self):
@@ -98,8 +102,12 @@ class ICalEventFormatter:
 
     @property
     def description(self):
-        """Return the note of the event."""
-        return self.time_tree_event.note if self.time_tree_event.note != "" else None
+        """Return the event note, optionally followed by activity comments."""
+        note = self.time_tree_event.note or None
+        if self.comments_in_description and self.comments:
+            comments = "Comments:\n" + "\n\n".join(self.comments)
+            return f"{note}\n\n{comments}" if note else comments
+        return note
 
     @property
     def comments(self):
@@ -289,8 +297,9 @@ class ICalEventFormatter:
             event.add("image", image_url, parameters={"VALUE": "URI", "DISPLAY": "THUMBNAIL"})
         if self.description:
             event.add("description", self.description)
-        for comment in self.comments:
-            event.add("comment", comment)
+        if self.include_comments:
+            for comment in self.comments:
+                event.add("comment", comment)
         if self.related_to:
             event.add("related-to", self.related_to)
         if self.categories:
